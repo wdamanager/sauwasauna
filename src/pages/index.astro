@@ -1,0 +1,83 @@
+---
+import Layout from '@layouts/Layout.astro';
+import Header from '@components/layout/Header.astro';
+import Footer from '@components/layout/Footer.astro';
+---
+
+<Layout title="Welcome to Your Site" description="Your site description">
+  <Header lang="es" />
+  
+  <main class="flex-1">
+    <!-- Hero Section -->
+    <section class="container mx-auto px-4 py-20 text-center">
+      <h1 class="mb-6 text-5xl font-bold text-gray-900">
+        Welcome to Your WordPress Headless Site
+      </h1>
+      <p class="mx-auto mb-8 max-w-2xl text-xl text-gray-600">
+        Built with Astro and powered by WordPress GraphQL backend.
+      </p>
+      <div class="flex justify-center gap-4">
+        <a 
+          href="/blog" 
+          class="rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700"
+        >
+          View Blog
+        </a>
+        <a 
+          href="/about" 
+          class="rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50"
+        >
+          Learn More
+        </a>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="bg-gray-50 py-20">
+      <div class="container mx-auto px-4">
+        <h2 class="mb-12 text-center text-3xl font-bold text-gray-900">
+          Features
+        </h2>
+        <div class="grid gap-8 md:grid-cols-3">
+          <div class="rounded-lg bg-white p-6 shadow-sm">
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
+              <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <h3 class="mb-2 text-xl font-semibold text-gray-900">Fast Performance</h3>
+            <p class="text-gray-600">
+              Static generation with Astro for lightning-fast load times.
+            </p>
+          </div>
+
+          <div class="rounded-lg bg-white p-6 shadow-sm">
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
+              <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="mb-2 text-xl font-semibold text-gray-900">SEO Optimized</h3>
+            <p class="text-gray-600">
+              Built-in SEO best practices with meta tags and sitemaps.
+            </p>
+          </div>
+
+          <div class="rounded-lg bg-white p-6 shadow-sm">
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
+              <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+              </svg>
+            </div>
+            <h3 class="mb-2 text-xl font-semibold text-gray-900">Easy Content Management</h3>
+            <p class="text-gray-600">
+              Manage content easily with WordPress admin panel.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</Layout>

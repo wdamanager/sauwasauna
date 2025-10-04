@@ -1,0 +1,76 @@
+---
+interface Props {
+  lang?: string;
+}
+
+const { lang = 'es' } = Astro.props;
+
+// Add your navigation items here
+const navItems = [
+  { href: `/${lang}`, label: 'Home' },
+  { href: `/${lang}/about`, label: 'About' },
+  { href: `/${lang}/blog`, label: 'Blog' },
+  { href: `/${lang}/contact`, label: 'Contact' },
+];
+---
+
+<header class="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
+  <nav class="container mx-auto flex items-center justify-between px-4 py-4">
+    <div class="flex items-center">
+      <a href={`/${lang}`} class="text-xl font-bold text-gray-900">
+        Logo
+      </a>
+    </div>
+
+    <!-- Desktop Navigation -->
+    <ul class="hidden items-center gap-6 md:flex">
+      {navItems.map((item) => (
+        <li>
+          <a 
+            href={item.href}
+            class="text-gray-700 transition-colors hover:text-gray-900"
+          >
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <!-- Mobile Menu Button -->
+    <button 
+      class="md:hidden"
+      aria-label="Toggle menu"
+      id="mobile-menu-button"
+    >
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden border-t border-gray-200 bg-white md:hidden">
+    <ul class="container mx-auto px-4 py-4">
+      {navItems.map((item) => (
+        <li class="py-2">
+          <a 
+            href={item.href}
+            class="block text-gray-700 transition-colors hover:text-gray-900"
+          >
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</header>
+
+<script>
+  // Mobile menu toggle
+  const button = document.getElementById('mobile-menu-button');
+  const menu = document.getElementById('mobile-menu');
+  
+  button?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+  });
+</script>
