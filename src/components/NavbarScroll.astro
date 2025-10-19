@@ -19,7 +19,7 @@ const languages = ['ca', 'es', 'fr', 'en'];
     <!-- Logo (izquierda) -->
     <a href={`/${locale}`} class="navbar-logo-link" aria-label="SAUWA Home">
       <img
-        src="/logos/sauwa-full-white.svg"
+        src="/images/logo/sauwa-black.svg"
         alt="SAUWA"
         class="navbar-logo"
       />
@@ -84,7 +84,7 @@ const languages = ['ca', 'es', 'fr', 'en'];
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 5rem; /* h-20 */
+    height: 6.65rem; /* 5rem * 1.33 = ~106px */
     padding-left: 3rem; /* px-12 */
     padding-right: 3rem;
     max-width: 100%;
@@ -98,9 +98,8 @@ const languages = ['ca', 'es', 'fr', 'en'];
   }
 
   .navbar-logo {
-    height: 2.5rem; /* h-10 */
+    height: 3.33rem; /* 2.5rem * 1.33 = ~53px */
     width: auto;
-    filter: invert(1) brightness(0);
   }
 
   /* Navigation Right Side */
@@ -193,13 +192,13 @@ const languages = ['ca', 'es', 'fr', 'en'];
   /* Responsive */
   @media (max-width: 768px) {
     .navbar-container {
-      height: 4rem; /* h-16 */
+      height: 5.33rem; /* 4rem * 1.33 = ~85px */
       padding-left: 1.5rem; /* px-6 */
       padding-right: 1.5rem;
     }
 
     .navbar-logo {
-      height: 2rem; /* h-8 */
+      height: 2.66rem; /* 2rem * 1.33 = ~43px */
     }
 
     .navbar-nav {
@@ -226,13 +225,25 @@ const languages = ['ca', 'es', 'fr', 'en'];
   }
 </style>
 
+<style is:global>
+  /* Estado de ocultación para elementos del hero cuando navbar-scroll está visible */
+  .hero-elements-hidden .hero-section .language-selector,
+  .hero-elements-hidden .hero-section .instagram-link {
+    display: none !important;
+  }
+</style>
+
 <script>
   // Navbar Scroll Detection Script
-  (function() {
+  document.addEventListener('DOMContentLoaded', () => {
     const navbar = document.getElementById('navbar-scroll');
     if (!navbar) return;
 
-    let lastScrollY = 0;
+    // Elementos del hero que deben ocultarse cuando aparece la navbar scroll
+    const heroLanguageSelector = document.querySelector('.hero-section .language-selector');
+    const heroInstagramLink = document.querySelector('.hero-section .instagram-link');
+
+    let lastScrollY = window.scrollY;
     let ticking = false;
     const threshold = 100;
     let isVisible = false;
@@ -242,6 +253,9 @@ const languages = ['ca', 'es', 'fr', 'en'];
         navbar.classList.remove('navbar-exit');
         navbar.classList.add('navbar-enter', 'visible');
         isVisible = true;
+
+        // Ocultar elementos del hero añadiendo clase al body
+        document.body.classList.add('hero-elements-hidden');
       }
     }
 
@@ -250,6 +264,9 @@ const languages = ['ca', 'es', 'fr', 'en'];
         navbar.classList.remove('navbar-enter', 'visible');
         navbar.classList.add('navbar-exit');
         isVisible = false;
+
+        // Mostrar elementos del hero removiendo clase del body
+        document.body.classList.remove('hero-elements-hidden');
       }
     }
 
@@ -259,18 +276,26 @@ const languages = ['ca', 'es', 'fr', 'en'];
       // En top (scroll < threshold)
       if (scrollY < threshold) {
         hideNavbar();
+        // Asegurar que elementos hero estén visibles
+        document.body.classList.remove('hero-elements-hidden');
         lastScrollY = scrollY;
         return;
       }
+
+      // Cuando estamos scrolleados (> threshold), siempre ocultar hero elements
+      document.body.classList.add('hero-elements-hidden');
 
       // Scroll down - mostrar navbar
       if (scrollY > lastScrollY && scrollY > threshold) {
         showNavbar();
       }
 
-      // Scroll up (pero no en top) - ocultar navbar
+      // Scroll up (pero no en top) - ocultar navbar PERO mantener hero hidden
       if (scrollY < lastScrollY && scrollY > threshold) {
-        hideNavbar();
+        navbar.classList.remove('navbar-enter', 'visible');
+        navbar.classList.add('navbar-exit');
+        isVisible = false;
+        // NO remover hero-elements-hidden porque seguimos scrolleados
       }
 
       lastScrollY = scrollY;
@@ -287,6 +312,11 @@ const languages = ['ca', 'es', 'fr', 'en'];
       }
     }
 
+    // Verificar estado inicial en caso de refresh con scroll
+    if (window.scrollY >= threshold) {
+      showNavbar();
+    }
+
     // Event Listener
     window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -294,5 +324,5 @@ const languages = ['ca', 'es', 'fr', 'en'];
     window.addEventListener('beforeunload', () => {
       window.removeEventListener('scroll', onScroll);
     });
-  })();
+  });
 </script>
