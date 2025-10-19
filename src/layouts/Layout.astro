@@ -2,6 +2,7 @@
 import GoogleTagManager from '../components/GoogleTagManager.astro';
 import GoogleTagManagerNoScript from '../components/GoogleTagManagerNoScript.astro';
 import AnalyticsDebugger from '../components/AnalyticsDebugger.astro';
+import NavbarScroll from '../components/NavbarScroll.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -57,6 +58,9 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
   <body class="min-h-screen bg-transparent text-gray-900">
     <!-- Google Tag Manager NoScript -->
     <GoogleTagManagerNoScript gtmId={gtmId} />
+
+    <!-- Navbar Scroll (aparece al hacer scroll down) -->
+    <NavbarScroll locale={lang} />
 
     <slot />
 
