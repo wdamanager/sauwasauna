@@ -1,0 +1,69 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/layout/Navbar.astro';
+import Footer from '../../components/layout/Footer.astro';
+
+const lang = 'en';
+const title = 'Legal Notice | SAUWA';
+const description = 'Legal notice of SAUWA (PCR Europe, S.L.). Terms of use, intellectual property and website liability.';
+---
+
+<Layout title={title} description={description} lang={lang}>
+  <Navbar locale={lang} />
+  <main class="legal-page">
+    <div class="legal-container">
+      <h1>Legal Notice</h1>
+      <p class="update-date"><em>Last updated: October 5, 2025</em></p>
+
+      <section>
+        <h2>1. Website ownership</h2>
+        <p>In accordance with the provisions of Law 34/2002, of July 11, on Information Society Services and Electronic Commerce (LSSI-CE), you are hereby informed that this website is owned by:</p>
+        <ul>
+          <li><strong>Legal name:</strong> PCR Europe, S.L.</li>
+          <li><strong>Trade name:</strong> SAUWA</li>
+          <li><strong>NIF (Tax ID):</strong> B84604461</li>
+          <li><strong>Registered office:</strong> C/ Flor de los Tilos, 58 - Valdemorillo (Madrid), Spain</li>
+          <li><strong>Contact email address:</strong> info@sauwa.com</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>2. Purpose of the website</h2>
+        <p>The purpose of this website is to provide information about <strong>SAUWA</strong>'s Finnish sauna services, as well as to facilitate the sale and reservation of tickets for access to our facilities.</p>
+      </section>
+
+      <section>
+        <h2>3. Conditions of use</h2>
+        <p>Access to and navigation of this website implies full and unreserved acceptance of the conditions set forth herein. The user undertakes to use the website, its contents, and services in accordance with the law, this Legal Notice, good customs, and public order.</p>
+      </section>
+
+      <section>
+        <h2>4. Intellectual and industrial property</h2>
+        <p>All contents of the website (texts, images, logos, graphic design, source code, etc.) are the exclusive property of <strong>PCR Europe, S.L.</strong> or, where applicable, it has the necessary licenses and/or authorizations for their use.</p>
+      </section>
+
+      <section>
+        <h2>5. Applicable law and jurisdiction</h2>
+        <p>This Legal Notice is governed in each and every one of its points by Spanish law. For the resolution of any dispute or conflict that may arise from the interpretation or application of these conditions, the parties submit to the Courts and Tribunals of the city of Madrid.</p>
+      </section>
+    </div>
+  </main>
+  <Footer locale={lang} />
+</Layout>
+
+<style>
+  .legal-page { min-height: 100vh; padding: 8rem 2rem 4rem; background: var(--color-white); font-family: var(--font-avenir); }
+  .legal-container { max-width: 800px; margin: 0 auto; line-height: 1.7; }
+  h1 { font-family: var(--font-canela); font-size: 3rem; color: var(--color-accent); margin-bottom: 1rem; }
+  .update-date { color: var(--color-gray); margin-bottom: 3rem; }
+  section { margin-bottom: 3rem; }
+  h2 { font-family: var(--font-avenir); font-size: 1.5rem; color: var(--color-accent); margin-bottom: 1rem; font-weight: 500; }
+  p { margin-bottom: 1rem; color: var(--color-text); }
+  ul { margin-left: 1.5rem; margin-bottom: 1rem; }
+  li { margin-bottom: 0.5rem; color: var(--color-text); }
+  @media (max-width: 768px) {
+    .legal-page { padding: 6rem 1.5rem 3rem; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.25rem; }
+  }
+</style>

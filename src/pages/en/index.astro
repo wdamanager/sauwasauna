@@ -1,0 +1,76 @@
+---
+/**
+ * Homepage EN - SAUWA Landing Page
+ * Integrates all components created for WDA-98
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import VaporIntro from '../../components/VaporIntro.astro';
+import Navbar from '../../components/layout/Navbar.astro';
+import HeroSlider from '../../components/HeroSlider.astro';
+import Footer from '../../components/layout/Footer.astro';
+import HeroContent from '../../components/HeroContent.astro';
+import ScrollAnchor from '../../components/ScrollAnchor.astro';
+import BenefitsSection from '../../components/BenefitsSection.astro';
+import ExperienceSection from '../../components/ExperienceSection.astro';
+import NewsletterForm from '../../components/NewsletterForm.astro';
+
+const lang = 'en';
+
+// SEO metadata (from Contenido landing.txt)
+const title = 'Finnish sauna in Andorra | SAUWA: wood-fired + cold baths';
+const description = 'Experience authentic wood-fired Finnish sauna and cold water baths in the heart of Andorra\'s nature. Guided Nordic ritual to recover body and mind after the snow.';
+---
+
+<Layout title={title} description={description} lang={lang} pageType="homepage">
+  <!-- Vapor Intro (shows on every visit) -->
+  <VaporIntro />
+
+  <!-- Navbar -->
+  <Navbar locale={lang} />
+
+  <!-- Hero Section -->
+  <section class="hero-section relative">
+    <!-- Hero Slider (background) -->
+    <HeroSlider />
+
+    <!-- Hero Content (overlay) -->
+    <HeroContent locale={lang} />
+
+    <!-- Scroll Anchor -->
+    <ScrollAnchor targetId="beneficios" />
+  </section>
+
+  <!-- Benefits Section -->
+  <BenefitsSection locale={lang} />
+
+  <!-- Experience Section -->
+  <ExperienceSection locale={lang} />
+
+  <!-- Newsletter Section -->
+  <NewsletterForm locale={lang} />
+
+  <!-- Footer -->
+  <Footer locale={lang} />
+</Layout>
+
+<style>
+  .hero-section {
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+  }
+
+  /* Ensure smooth scroll behavior */
+  :global(html) {
+    scroll-behavior: smooth;
+  }
+
+  /* Disable smooth scroll for users who prefer reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    :global(html) {
+      scroll-behavior: auto;
+    }
+  }
+</style>

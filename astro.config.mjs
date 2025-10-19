@@ -5,11 +5,18 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
   integrations: [tailwind()],
   output: 'static',
-  site: 'https://example.com', // Update with your domain
+  site: 'https://sauwasauna.com',
   trailingSlash: 'never',
   build: {
     inlineStylesheets: 'auto',
-    format: 'file', // Generates clean URLs: /about instead of /about.html
+    format: 'file',
+  },
+  i18n: {
+    defaultLocale: 'es',
+    locales: ['es', 'ca', 'en', 'fr'],
+    routing: {
+      prefixDefaultLocale: true,
+    },
   },
   vite: {
     define: {
@@ -17,9 +24,5 @@ export default defineConfig({
         process.env.WORDPRESS_GRAPHQL_URL || 'http://localhost/graphql'
       ),
     },
-  },
-  // Enable experimental features if needed
-  experimental: {
-    // contentLayer: true,
   },
 });

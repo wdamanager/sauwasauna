@@ -1,0 +1,147 @@
+---
+/**
+ * Aviso Legal ES - SAUWA
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/layout/Navbar.astro';
+import Footer from '../../components/layout/Footer.astro';
+
+const lang = 'es';
+const title = 'Aviso Legal | SAUWA';
+const description = 'Aviso legal de SAUWA (PCR Europe, S.L.). Condiciones de uso, propiedad intelectual y responsabilidad del sitio web.';
+---
+
+<Layout title={title} description={description} lang={lang}>
+  <Navbar locale={lang} />
+
+  <main class="legal-page">
+    <div class="legal-container">
+      <h1>Aviso Legal</h1>
+      <p class="update-date"><em>Última actualización: 5 de octubre de 2025</em></p>
+
+      <section>
+        <h2>1. Titularidad del sitio web</h2>
+        <p>De acuerdo con lo dispuesto en la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), se informa que este sitio web es titularidad de:</p>
+        <ul>
+          <li><strong>Razón social:</strong> PCR Europe, S.L.</li>
+          <li><strong>Nombre comercial:</strong> SAUWA</li>
+          <li><strong>NIF:</strong> B84604461</li>
+          <li><strong>Domicilio social:</strong> C/ Flor de los Tilos, 58 - Valdemorillo (Madrid), España</li>
+          <li><strong>Dirección electrónica de contacto:</strong> info@sauwa.com</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>2. Finalidad del sitio web</h2>
+        <p>Este sitio web tiene como objetivo ofrecer información sobre los servicios de sauna finlandesa de <strong>SAUWA</strong>, así como facilitar la venta y reserva de entradas para el acceso a nuestras instalaciones.</p>
+      </section>
+
+      <section>
+        <h2>3. Condiciones de uso</h2>
+        <p>El acceso y la navegación por este sitio web implican la aceptación plena y sin reservas de las condiciones aquí expuestas. El usuario se compromete a utilizar el sitio web, sus contenidos y servicios de conformidad con la ley, el presente Aviso Legal, las buenas costumbres y el orden público.</p>
+      </section>
+
+      <section>
+        <h2>4. Propiedad intelectual e industrial</h2>
+        <p>Todos los contenidos del sitio web (textos, imágenes, logotipos, diseño gráfico, código fuente, etc.) son propiedad exclusiva de <strong>PCR Europe, S.L.</strong> o, en su caso, dispone de las licencias y/o autorizaciones necesarias para su uso. Queda expresamente prohibida su reproducción, distribución, comunicación pública o transformación, total o parcial, sin la autorización previa y por escrito del titular.</p>
+      </section>
+
+      <section>
+        <h2>5. Enlaces</h2>
+        <p>Este sitio web puede contener enlaces a sitios web de terceros o a perfiles en redes sociales. <strong>SAUWA</strong> no se responsabiliza del contenido, las políticas de privacidad ni de las prácticas de estos sitios externos. La inclusión de estos enlaces no implica la aprobación o respaldo de su contenido.</p>
+      </section>
+
+      <section>
+        <h2>6. Exclusión de responsabilidad</h2>
+        <p><strong>SAUWA</strong> trabaja para garantizar el correcto funcionamiento del sitio web, pero no puede asegurar la ausencia de interrupciones o errores en el acceso. El usuario acepta que el uso del sitio web se realiza bajo su exclusiva responsabilidad, y <strong>SAUWA</strong> no será responsable de los daños o perjuicios de cualquier naturaleza que pudieran derivarse de la falta de disponibilidad o de continuidad del funcionamiento del sitio.</p>
+      </section>
+
+      <section>
+        <h2>7. Uso de plataformas de terceros</h2>
+        <p>Este sitio web puede integrar servicios de terceros, como pasarelas de pago para la tramitación de reservas o plataformas para el envío de comunicaciones electrónicas. El uso de estos servicios por parte del usuario estará sujeto a las condiciones y políticas de privacidad de los respectivos proveedores.</p>
+      </section>
+
+      <section>
+        <h2>8. Política de Cookies</h2>
+        <p>Este sitio web utiliza cookies (pequeños archivos de información que el servidor envía al ordenador de quien accede a la página) para llevar a cabo determinadas funciones que son consideradas imprescindibles para el correcto funcionamiento y visualización del sitio. Para más información, consulta nuestra <a href="/es/politica-de-cookies">Política de Cookies</a>.</p>
+      </section>
+
+      <section>
+        <h2>9. Protección de datos personales</h2>
+        <p><strong>PCR Europe, S.L.</strong> cumple con la normativa vigente en materia de protección de datos, en especial con el Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD). Se garantizan las medidas técnicas y organizativas necesarias para un tratamiento lícito, leal y transparente de los datos personales. Para más información, consulta nuestra <a href="/es/politica-de-privacidad">Política de Privacidad</a>.</p>
+      </section>
+
+      <section>
+        <h2>10. Legislación aplicable y jurisdicción</h2>
+        <p>El presente Aviso Legal se rige en todos y cada uno de sus extremos por la legislación española. Para la resolución de cualquier controversia o conflicto que pudiera derivarse de la interpretación o aplicación de estas condiciones, las partes se someten a los Juzgados y Tribunales de la ciudad de Madrid, con renuncia expresa a cualquier otro fuero que pudiera corresponderles.</p>
+      </section>
+    </div>
+  </main>
+
+  <Footer locale={lang} />
+</Layout>
+
+<style>
+  .legal-page {
+    min-height: 100vh;
+    padding: 8rem 2rem 4rem;
+    background: var(--color-white);
+    font-family: var(--font-avenir);
+  }
+  .legal-container {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+  h1 {
+    font-family: var(--font-canela);
+    font-size: 3rem;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+  }
+  .update-date {
+    color: var(--color-gray);
+    margin-bottom: 3rem;
+  }
+  section {
+    margin-bottom: 3rem;
+  }
+  h2 {
+    font-family: var(--font-avenir);
+    font-size: 1.5rem;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  p {
+    margin-bottom: 1rem;
+    color: var(--color-text);
+  }
+  ul {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  li {
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+  }
+  a {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+  a:hover {
+    opacity: 0.8;
+  }
+  @media (max-width: 768px) {
+    .legal-page {
+      padding: 6rem 1.5rem 3rem;
+    }
+    h1 {
+      font-size: 2rem;
+    }
+    h2 {
+      font-size: 1.25rem;
+    }
+  }
+</style>

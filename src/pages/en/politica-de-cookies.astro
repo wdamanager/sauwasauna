@@ -1,0 +1,63 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/layout/Navbar.astro';
+import Footer from '../../components/layout/Footer.astro';
+
+const lang = 'en';
+const title = 'Cookies Policy | SAUWA';
+const description = 'Cookies policy of SAUWA. Information about the use of cookies, types and preference management in accordance with current regulations.';
+---
+
+<Layout title={title} description={description} lang={lang}>
+  <Navbar locale={lang} />
+  <main class="legal-page">
+    <div class="legal-container">
+      <h1>Cookies Policy</h1>
+      <p class="update-date"><em>Last updated: October 5, 2025</em></p>
+
+      <section>
+        <h2>1. What are cookies?</h2>
+        <p>Cookies are small text files that are stored on the user's device (computer, tablet, or mobile) when visiting a website. Their purpose is to collect information about the user's browsing to facilitate the user experience, remember preferences, perform analysis, and offer personalized content or advertising.</p>
+      </section>
+
+      <section>
+        <h2>2. Types of cookies used</h2>
+        <p>This website uses the following types of cookies:</p>
+        <ul>
+          <li><strong>Technical or necessary cookies:</strong> These are essential for the functioning of the website and allow the user to browse it and use its basic functions.</li>
+          <li><strong>Analysis or performance cookies:</strong> These collect anonymous information about how users interact with the website.</li>
+          <li><strong>Functionality cookies:</strong> These allow the website to remember the user's preferences.</li>
+          <li><strong>Advertising or marketing cookies:</strong> These are used to collect information about the user's behavior.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>3. Management and configuration of cookies</h2>
+        <p>The user has the option to allow, block, or delete the cookies installed on their computer through the cookie settings panel offered on this website.</p>
+      </section>
+
+      <section>
+        <h2>4. Consent</h2>
+        <p>When you visit our website for the first time, you will be informed about the use of cookies through a banner and will be given the opportunity to manage your preferences.</p>
+      </section>
+    </div>
+  </main>
+  <Footer locale={lang} />
+</Layout>
+
+<style>
+  .legal-page { min-height: 100vh; padding: 8rem 2rem 4rem; background: var(--color-white); font-family: var(--font-avenir); }
+  .legal-container { max-width: 800px; margin: 0 auto; line-height: 1.7; }
+  h1 { font-family: var(--font-canela); font-size: 3rem; color: var(--color-accent); margin-bottom: 1rem; }
+  .update-date { color: var(--color-gray); margin-bottom: 3rem; }
+  section { margin-bottom: 3rem; }
+  h2 { font-family: var(--font-avenir); font-size: 1.5rem; color: var(--color-accent); margin-bottom: 1rem; font-weight: 500; }
+  p { margin-bottom: 1rem; color: var(--color-text); }
+  ul { margin-left: 1.5rem; margin-bottom: 1rem; }
+  li { margin-bottom: 0.5rem; color: var(--color-text); }
+  @media (max-width: 768px) {
+    .legal-page { padding: 6rem 1.5rem 3rem; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.25rem; }
+  }
+</style>

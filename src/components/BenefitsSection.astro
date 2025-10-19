@@ -1,0 +1,256 @@
+---
+/**
+ * BenefitsSection - Benefits of heat-cold contrast
+ * - 5 benefits with icons
+ * - Grid/list layout
+ * - Multilingual support
+ */
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  class?: string;
+}
+
+const { locale = 'es', class: className = '' } = Astro.props;
+
+// Benefits content by language (from Contenido landing.txt)
+const benefitsContent = {
+  es: {
+    title: 'Beneficios reales del contraste calor-frío',
+    benefits: [
+      {
+        icon: 'muscle',
+        text: 'Recupera musculatura tras una actividad deportiva invernal y reduce fatiga muscular.',
+      },
+      {
+        icon: 'sleep',
+        text: 'Mejora el sueño y el descanso profundo.',
+      },
+      {
+        icon: 'circulation',
+        text: 'Activa la circulación y el foco mental.',
+      },
+      {
+        icon: 'resilience',
+        text: 'Refuerza la tolerancia al frío y la resiliencia.',
+      },
+      {
+        icon: 'nature',
+        text: 'Ritual guiado por sauna master en plena naturaleza.',
+      },
+    ],
+  },
+  ca: {
+    title: 'Beneficis reals del contrast calor-fred',
+    benefits: [
+      {
+        icon: 'muscle',
+        text: 'Recupera musculatura després d\'una activitat esportiva hivernal i redueix fatiga muscular.',
+      },
+      {
+        icon: 'sleep',
+        text: 'Millora el son i el descans profund.',
+      },
+      {
+        icon: 'circulation',
+        text: 'Activa la circulació i el focus mental.',
+      },
+      {
+        icon: 'resilience',
+        text: 'Reforça la tolerància al fred i la resiliència.',
+      },
+      {
+        icon: 'nature',
+        text: 'Ritual guiat per sauna master en plena natura.',
+      },
+    ],
+  },
+  en: {
+    title: 'Real benefits of heat-cold contrast',
+    benefits: [
+      {
+        icon: 'muscle',
+        text: 'Recovers muscles after winter sports activity and reduces muscle fatigue.',
+      },
+      {
+        icon: 'sleep',
+        text: 'Improves sleep and deep rest.',
+      },
+      {
+        icon: 'circulation',
+        text: 'Activates circulation and mental focus.',
+      },
+      {
+        icon: 'resilience',
+        text: 'Strengthens cold tolerance and resilience.',
+      },
+      {
+        icon: 'nature',
+        text: 'Ritual guided by sauna master in the heart of nature.',
+      },
+    ],
+  },
+  fr: {
+    title: 'Bienfaits réels du contraste chaud-froid',
+    benefits: [
+      {
+        icon: 'muscle',
+        text: 'Récupère la musculature après une activité sportive hivernale et réduit la fatigue musculaire.',
+      },
+      {
+        icon: 'sleep',
+        text: 'Améliore le sommeil et le repos profond.',
+      },
+      {
+        icon: 'circulation',
+        text: 'Active la circulation et la concentration mentale.',
+      },
+      {
+        icon: 'resilience',
+        text: 'Renforce la tolérance au froid et la résilience.',
+      },
+      {
+        icon: 'nature',
+        text: 'Rituel guidé par un maître de sauna en pleine nature.',
+      },
+    ],
+  },
+};
+
+const content = benefitsContent[locale];
+
+// Simple SVG icons (inline for performance)
+const icons = {
+  muscle: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />',
+  sleep: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />',
+  circulation: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />',
+  resilience: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />',
+  nature: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />',
+};
+---
+
+<section class={`benefits-section ${className}`} id="beneficios">
+  <div class="container mx-auto px-4 md:px-6 lg:px-8 py-16 md:py-24">
+    <!-- Section Title -->
+    <h2 class="section-title">
+      {content.title}
+    </h2>
+
+    <!-- Benefits Grid -->
+    <div class="benefits-grid">
+      {content.benefits.map((benefit) => (
+        <div class="benefit-card">
+          <div class="benefit-icon">
+            <svg
+              class="icon"
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              set:html={icons[benefit.icon as keyof typeof icons]}
+            />
+          </div>
+          <p class="benefit-text">
+            {benefit.text}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .benefits-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  }
+
+  .section-title {
+    font-family: var(--font-helvetica, 'Inter', 'Helvetica Neue', sans-serif);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 200;
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+    text-align: center;
+    color: #1a1a1a;
+    margin: 0 0 3rem;
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .benefit-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .benefit-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .benefit-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #DB4529 0%, #BA2515 100%);
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
+    color: white;
+  }
+
+  .icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .benefit-text {
+    font-family: var(--font-avenir, 'Nunito Sans', sans-serif);
+    font-size: clamp(0.95rem, 1.5vw, 1.125rem);
+    font-weight: 300;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .benefits-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .benefit-card {
+      padding: 1.5rem 1rem;
+    }
+
+    .section-title {
+      margin-bottom: 2rem;
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .benefit-card {
+      transition: none;
+    }
+
+    .benefit-card:hover {
+      transform: none;
+    }
+  }
+</style>

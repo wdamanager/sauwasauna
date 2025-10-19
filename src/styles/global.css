@@ -3,10 +3,62 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  /* Custom font imports (if needed) */
-  /* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap'); */
+/* Font Face Declarations */
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: url('/fonts/helvetica-neue-ultra-light.woff2') format('woff2'),
+       url('/fonts/helvetica-neue-ultra-light.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
 
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: url('/fonts/helvetica-neue-light.woff2') format('woff2'),
+       url('/fonts/helvetica-neue-light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Helvetica Neue';
+  src: url('/fonts/helvetica-neue-regular.woff2') format('woff2'),
+       url('/fonts/helvetica-neue-regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir Next';
+  src: url('/fonts/avenir-next-ultra-light.woff2') format('woff2'),
+       url('/fonts/avenir-next-ultra-light.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir Next';
+  src: url('/fonts/avenir-next-light.woff2') format('woff2'),
+       url('/fonts/avenir-next-light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir Next';
+  src: url('/fonts/avenir-next-regular.woff2') format('woff2'),
+       url('/fonts/avenir-next-regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
   html {
     @apply scroll-smooth;
   }
@@ -17,13 +69,257 @@
 }
 
 @layer components {
-  /* Custom component styles */
+  /* SAUWA Typography System - Brand Fonts */
+
+  /* Headings with Helvetica Neue Ultra Light */
+  .heading-display {
+    @apply font-helvetica font-thin text-white;
+  }
+
+  .heading-primary {
+    @apply font-helvetica font-thin text-white;
+  }
+
+  .heading-secondary {
+    @apply font-avenir font-thin text-white opacity-90;
+  }
+
+  .heading-tertiary {
+    @apply font-avenir font-light text-white;
+  }
+
+  /* Body text with Avenir Next */
+  .text-body {
+    @apply font-avenir font-light text-white;
+  }
+
+  .text-body-sm {
+    @apply font-avenir font-light text-white text-sm;
+  }
+
+  .text-cta {
+    @apply font-avenir font-light text-white;
+  }
+
+  /* Buttons */
   .btn-primary {
-    @apply rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700;
+    @apply font-avenir font-semibold rounded bg-sauwa-red px-8 py-4 text-white transition-colors hover:bg-sauwa-orange;
   }
 
   .btn-secondary {
-    @apply rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50;
+    @apply font-avenir rounded border border-white/40 bg-black/20 px-6 py-3 text-white transition-colors hover:border-white;
+  }
+
+  /* SAUWA Landing Page Components */
+
+  /* Hero Section Layout */
+  .hero-section {
+    @apply relative w-screen h-screen overflow-hidden flex items-center justify-center;
+  }
+
+  .hero-section :global(.hero-slider) {
+    @apply absolute inset-0 w-full h-full;
+  }
+
+  .hero-content-wrapper {
+    @apply relative z-10 flex flex-col items-center justify-center text-center;
+    @apply px-8 pb-16 pt-8 max-w-[1100px] w-full gap-2 mx-auto;
+  }
+
+  /* Logo Animation */
+  .logo {
+    @apply w-auto h-60 mb-1;
+    animation: fadeInUp 0.8s ease-out both;
+  }
+
+  /* Newsletter Form */
+  .newsletter-form {
+    @apply flex flex-col gap-4 w-full max-w-md;
+    animation: fadeInUp 0.8s ease-out 0.8s both;
+  }
+
+  .email-input {
+    @apply w-full px-5 py-3.5 text-base bg-black/20 border border-white/40 rounded text-white;
+    @apply transition-colors duration-300;
+    @apply placeholder:text-white/60 focus:outline-none focus:border-white;
+  }
+
+  .privacy-label {
+    @apply flex items-start gap-2 text-sm text-left cursor-pointer;
+  }
+
+  .privacy-checkbox {
+    @apply mt-1 cursor-pointer;
+  }
+
+  .privacy-text {
+    @apply text-white/80;
+  }
+
+  .privacy-link {
+    @apply text-white underline hover:opacity-90;
+  }
+
+  .required-asterisk {
+    @apply text-sauwa-red ml-0.5;
+  }
+
+  .submit-button {
+    @apply w-full px-8 py-4 text-base font-semibold tracking-wide;
+    @apply bg-sauwa-red text-white border-none rounded cursor-pointer;
+    @apply transition-colors duration-300 hover:bg-sauwa-orange;
+  }
+
+  /* Fixed UI Elements */
+  .language-selector {
+    @apply fixed top-8 left-8 flex gap-2 items-center z-20;
+  }
+
+  .lang-option {
+    @apply text-white/70 no-underline text-sm transition-opacity duration-300;
+    @apply hover:opacity-100;
+  }
+
+  .lang-option.active {
+    @apply opacity-100 underline;
+  }
+
+  .separator {
+    @apply text-white/50;
+  }
+
+  .instagram-link {
+    @apply fixed top-8 right-8 z-20;
+  }
+
+  .instagram-icon {
+    @apply w-6 h-6 fill-white opacity-70 transition-opacity duration-300;
+  }
+
+  .instagram-link:hover .instagram-icon {
+    @apply opacity-100;
+  }
+
+  .copyright {
+    @apply fixed bottom-2 left-0 right-0 text-center text-white/60 text-xs z-[5];
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out both;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 0.2s;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 0.4s;
+  }
+
+  .animation-delay-600 {
+    animation-delay: 0.6s;
+  }
+
+  .animation-delay-800 {
+    animation-delay: 0.8s;
+  }
+
+  /* Reduced motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .logo,
+    .animate-fade-in-up {
+      animation: none;
+    }
+  }
+
+  /* Responsive Design */
+  @media (min-width: 1920px) {
+    .hero-content-wrapper {
+      @apply px-12 pb-20 pt-12 gap-3;
+    }
+    .logo {
+      @apply h-72;
+    }
+  }
+
+  @media (max-width: 1680px) {
+    .logo {
+      @apply h-56;
+    }
+  }
+
+  @media (max-width: 1440px) {
+    .hero-content-wrapper {
+      @apply px-8 pb-14 pt-7 gap-2;
+    }
+    .logo {
+      @apply h-48 mb-1;
+    }
+  }
+
+  @media (max-width: 1366px) {
+    .hero-content-wrapper {
+      @apply px-6 pb-12 pt-6 max-w-[900px] gap-1.5;
+    }
+    .logo {
+      @apply h-40 mb-0.5;
+    }
+    .newsletter-form {
+      @apply max-w-[380px];
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .hero-content-wrapper {
+      @apply px-4 pb-10 pt-5 max-w-[700px] gap-1.5;
+    }
+    .logo {
+      @apply h-32 mb-0.5;
+    }
+    .language-selector,
+    .instagram-link {
+      @apply top-6;
+    }
+    .language-selector {
+      @apply left-6;
+    }
+    .instagram-link {
+      @apply right-6;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-content-wrapper {
+      @apply px-4 pb-8 pt-4 gap-1;
+    }
+    .logo {
+      @apply h-24 mb-0.5;
+    }
+    .language-selector,
+    .instagram-link {
+      @apply top-4;
+    }
+    .language-selector {
+      @apply left-4;
+    }
+    .instagram-link {
+      @apply right-4;
+    }
+    .copyright {
+      @apply text-[10px];
+    }
   }
 }
 

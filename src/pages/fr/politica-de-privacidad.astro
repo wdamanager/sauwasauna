@@ -1,0 +1,76 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/layout/Navbar.astro';
+import Footer from '../../components/layout/Footer.astro';
+
+const lang = 'fr';
+const title = 'Politique de Confidentialité | SAUWA';
+const description = 'Politique de confidentialité et protection des données de SAUWA (PCR Europe, S.L.). Informations sur le traitement des données personnelles conforme au RGPD.';
+---
+
+<Layout title={title} description={description} lang={lang}>
+  <Navbar locale={lang} />
+  <main class="legal-page">
+    <div class="legal-container">
+      <h1>Politique de Confidentialité</h1>
+      <p class="update-date"><em>Dernière mise à jour : 5 octobre 2025</em></p>
+
+      <section>
+        <h2>1. Responsable du traitement</h2>
+        <p>Conformément au Règlement (UE) 2016/679 (RGPD) et à la Loi Organique 3/2018, du 5 décembre, sur la Protection des Données Personnelles et la garantie des droits numériques, il est informé que le responsable du traitement des données personnelles collectées via ce site web est :</p>
+        <ul>
+          <li><strong>Raison sociale :</strong> PCR Europe, S.L.</li>
+          <li><strong>Nom commercial :</strong> SAUWA</li>
+          <li><strong>NIF :</strong> B84604461</li>
+          <li><strong>Siège social :</strong> C/ Flor de los Tilos, 58 - Valdemorillo (Madrid), Espagne</li>
+          <li><strong>Adresse e-mail de contact :</strong> info@sauwa.com</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>2. Finalités du traitement</h2>
+        <p>Les données personnelles que l'utilisateur fournit via ce site web seront traitées aux fins suivantes :</p>
+        <ul>
+          <li><strong>Gestion de la vente et de la réservation de billets :</strong> Traiter l'achat, le paiement et la réservation d'accès à nos installations de sauna.</li>
+          <li><strong>Gestion des consultations et des demandes :</strong> Répondre aux consultations, demandes d'information ou toute autre sollicitation formulée par les utilisateurs via les canaux de contact.</li>
+          <li><strong>Envoi de communications commerciales (Newsletter) :</strong> Envoyer des bulletins d'information, des promotions et d'autres communications relatives aux services de SAUWA, à condition que l'utilisateur ait donné son consentement explicite.</li>
+          <li><strong>Gestion administrative et comptable :</strong> Effectuer les tâches administratives, de facturation et comptables découlant de la prestation de nos services.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>3. Base légale du traitement</h2>
+        <p>La base légale pour le traitement de vos données personnelles est :</p>
+        <ul>
+          <li><strong>Exécution d'un contrat :</strong> Pour la gestion de l'achat et de la réservation de billets et la prestation des services demandés.</li>
+          <li><strong>Consentement de l'intéressé :</strong> Pour l'envoi de communications commerciales (newsletter) et pour la gestion des consultations non liées à un service contracté.</li>
+          <li><strong>Respect des obligations légales :</strong> Pour les gestions administratives, fiscales et comptables requises par la loi.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>4. Droits de l'utilisateur</h2>
+        <p>Pour exercer ces droits, l'utilisateur peut envoyer une demande écrite, accompagnée d'une copie de sa pièce d'identité, à l'adresse e-mail : info@sauwa.com</p>
+        <p>De même, s'il estime que ses droits ont été violés, il peut déposer une réclamation auprès de l'<strong>Agence Espagnole de Protection des Données (AEPD)</strong>.</p>
+      </section>
+    </div>
+  </main>
+  <Footer locale={lang} />
+</Layout>
+
+<style>
+  .legal-page { min-height: 100vh; padding: 8rem 2rem 4rem; background: var(--color-white); font-family: var(--font-avenir); }
+  .legal-container { max-width: 800px; margin: 0 auto; line-height: 1.7; }
+  h1 { font-family: var(--font-canela); font-size: 3rem; color: var(--color-accent); margin-bottom: 1rem; }
+  .update-date { color: var(--color-gray); margin-bottom: 3rem; }
+  section { margin-bottom: 3rem; }
+  h2 { font-family: var(--font-avenir); font-size: 1.5rem; color: var(--color-accent); margin-bottom: 1rem; font-weight: 500; }
+  p { margin-bottom: 1rem; color: var(--color-text); }
+  ul { margin-left: 1.5rem; margin-bottom: 1rem; }
+  li { margin-bottom: 0.5rem; color: var(--color-text); }
+  @media (max-width: 768px) {
+    .legal-page { padding: 6rem 1.5rem 3rem; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.25rem; }
+  }
+</style>

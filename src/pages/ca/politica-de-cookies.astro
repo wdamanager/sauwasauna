@@ -1,0 +1,58 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/layout/Navbar.astro';
+import Footer from '../../components/layout/Footer.astro';
+
+const lang = 'ca';
+const title = 'Política de Galetes | SAUWA';
+const description = 'Política de galetes de SAUWA. Informació sobre l\'ús de galetes, tipus i gestió de preferències conforme a la normativa vigent.';
+---
+
+<Layout title={title} description={description} lang={lang}>
+  <Navbar locale={lang} />
+  <main class="legal-page">
+    <div class="legal-container">
+      <h1>Política de Galetes</h1>
+      <p class="update-date"><em>Última actualització: 5 d'octubre de 2025</em></p>
+
+      <section>
+        <h2>1. Què són les galetes?</h2>
+        <p>Les galetes són petits fitxers de text que s'emmagatzemen al dispositiu de l'usuari (ordinador, tauleta o mòbil) quan visita un lloc web. La seva finalitat és recollir informació sobre la navegació per facilitar l'experiència de l'usuari, recordar-ne les preferències, realitzar anàlisis i oferir continguts o publicitat personalitzats.</p>
+      </section>
+
+      <section>
+        <h2>2. Tipus de galetes utilitzades</h2>
+        <p>Aquest lloc web utilitza els tipus de galetes següents:</p>
+        <ul>
+          <li><strong>Galetes tècniques o necessàries:</strong> Són essencials per al funcionament del lloc web i permeten a l'usuari navegar-hi i utilitzar-ne les funcions bàsiques.</li>
+          <li><strong>Galetes d'anàlisi o de rendiment:</strong> Recullen informació anònima sobre com interactuen els usuaris amb el lloc web.</li>
+          <li><strong>Galetes de funcionalitat:</strong> Permeten recordar les preferències de l'usuari.</li>
+          <li><strong>Galetes de publicitat o màrqueting:</strong> S'utilitzen per recopilar informació sobre el comportament dels usuaris.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>3. Gestió i configuració de les galetes</h2>
+        <p>L'usuari té l'opció de permetre, bloquejar o eliminar les galetes instal·lades al seu dispositiu mitjançant el panell de configuració de galetes ofert en aquest lloc web.</p>
+      </section>
+    </div>
+  </main>
+  <Footer locale={lang} />
+</Layout>
+
+<style>
+  .legal-page { min-height: 100vh; padding: 8rem 2rem 4rem; background: var(--color-white); font-family: var(--font-avenir); }
+  .legal-container { max-width: 800px; margin: 0 auto; line-height: 1.7; }
+  h1 { font-family: var(--font-canela); font-size: 3rem; color: var(--color-accent); margin-bottom: 1rem; }
+  .update-date { color: var(--color-gray); margin-bottom: 3rem; }
+  section { margin-bottom: 3rem; }
+  h2 { font-family: var(--font-avenir); font-size: 1.5rem; color: var(--color-accent); margin-bottom: 1rem; font-weight: 500; }
+  p { margin-bottom: 1rem; color: var(--color-text); }
+  ul { margin-left: 1.5rem; margin-bottom: 1rem; }
+  li { margin-bottom: 0.5rem; color: var(--color-text); }
+  @media (max-width: 768px) {
+    .legal-page { padding: 6rem 1.5rem 3rem; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.25rem; }
+  }
+</style>

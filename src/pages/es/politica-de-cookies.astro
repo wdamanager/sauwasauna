@@ -1,0 +1,140 @@
+---
+/**
+ * Política de Cookies ES - SAUWA
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/layout/Navbar.astro';
+import Footer from '../../components/layout/Footer.astro';
+
+const lang = 'es';
+const title = 'Política de Cookies | SAUWA';
+const description = 'Política de cookies de SAUWA. Información sobre el uso de cookies, tipos y gestión de preferencias conforme a la normativa vigente.';
+---
+
+<Layout title={title} description={description} lang={lang}>
+  <Navbar locale={lang} />
+
+  <main class="legal-page">
+    <div class="legal-container">
+      <h1>Política de Cookies</h1>
+      <p class="update-date"><em>Última actualización: 5 de octubre de 2025</em></p>
+
+      <section>
+        <h2>1. ¿Qué son las cookies?</h2>
+        <p>Las cookies son pequeños archivos de texto que se almacenan en el dispositivo del usuario (ordenador, tablet o móvil) al visitar un sitio web. Su finalidad es recoger información sobre la navegación para facilitar la experiencia del usuario, recordar sus preferencias, realizar análisis y ofrecer contenidos o publicidad personalizados.</p>
+      </section>
+
+      <section>
+        <h2>2. Tipos de cookies utilizadas</h2>
+        <p>Este sitio web utiliza los siguientes tipos de cookies:</p>
+        <ul>
+          <li><strong>Cookies técnicas o necesarias:</strong> Son esenciales para el funcionamiento del sitio web y permiten al usuario navegar por él y utilizar sus funciones básicas, como acceder a áreas seguras o gestionar una reserva.</li>
+          <li><strong>Cookies de análisis o de rendimiento:</strong> Recogen información anónima sobre cómo interactúan los usuarios con el sitio web (por ejemplo, qué páginas visitan más o si reciben mensajes de error), con el objetivo de introducir mejoras en el funcionamiento de la web.</li>
+          <li><strong>Cookies de funcionalidad:</strong> Permiten recordar las preferencias del usuario (como el idioma o la región desde la que accede) y ofrecen funcionalidades mejoradas y más personalizadas.</li>
+          <li><strong>Cookies de publicidad o marketing:</strong> Se utilizan para recopilar información sobre el comportamiento de los usuarios y mostrar anuncios relevantes adaptados a sus intereses.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>3. Cookies de terceros</h2>
+        <p>Este sitio web puede utilizar servicios de terceros que, por cuenta de <strong>SAUWA (PCR Europe, S.L.)</strong>, recogen información con finalidades estadísticas, de uso del sitio por parte del usuario y para la prestación de otros servicios relacionados con la actividad del sitio web.</p>
+        <p>En particular, este sitio web puede utilizar:</p>
+        <ul>
+          <li><strong>Google Analytics:</strong> Un servicio de análisis web proporcionado por Google, Inc., que utiliza cookies para ayudar a analizar el uso que hacen los usuarios del sitio web.</li>
+          <li><strong>Píxel de Meta (Facebook):</strong> Una herramienta de análisis que permite medir la eficacia de la publicidad al comprender las acciones que los usuarios realizan en el sitio web.</li>
+        </ul>
+        <p>Estos servicios pueden recoger información como la dirección IP del usuario, datos de navegación y otros datos relacionados con la interacción del usuario con el sitio web.</p>
+      </section>
+
+      <section>
+        <h2>4. Gestión y configuración de las cookies</h2>
+        <p>El usuario tiene la opción de permitir, bloquear o eliminar las cookies instaladas en su equipo mediante el panel de configuración de cookies ofrecido en este sitio web, así como a través de la configuración de las opciones del navegador que utilice.</p>
+        <p>A continuación, se proporcionan enlaces a las instrucciones para gestionar las cookies en los navegadores más habituales:</p>
+        <ul>
+          <li><a href="https://support.google.com/chrome/answer/95647?hl=es" target="_blank" rel="noopener noreferrer">Google Chrome</a></li>
+          <li><a href="https://support.mozilla.org/es/kb/habilitar-y-deshabilitar-cookies-sitios-web-rastrear-preferencias" target="_blank" rel="noopener noreferrer">Mozilla Firefox</a></li>
+          <li><a href="https://support.microsoft.com/es-es/windows/microsoft-edge-datos-de-exploraci%C3%B3n-y-privacidad-bb8174ba-9d73-dcf2-9b4a-c582b4e640dd" target="_blank" rel="noopener noreferrer">Microsoft Edge</a></li>
+          <li><a href="https://support.apple.com/es-es/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer">Safari</a></li>
+        </ul>
+        <p>Tenga en cuenta que si deshabilita las cookies, algunas funcionalidades del sitio web podrían no estar disponibles o su funcionamiento podría verse afectado.</p>
+      </section>
+
+      <section>
+        <h2>5. Consentimiento</h2>
+        <p>Al visitar nuestro sitio web por primera vez, se le informará sobre el uso de cookies a través de un banner y se le dará la oportunidad de gestionar sus preferencias. Podrá aceptar todas las cookies, rechazarlas o configurarlas de forma granular a través del panel de configuración. Su consentimiento explícito será necesario para la instalación de cookies que no sean técnicamente necesarias.</p>
+      </section>
+
+      <section>
+        <h2>6. Actualización de la política de cookies</h2>
+        <p><strong>SAUWA</strong> se reserva el derecho de modificar esta Política de Cookies para adaptarla a futuras novedades legislativas o jurisprudenciales. Se recomienda al usuario que revise esta política periódicamente para estar debidamente informado sobre cómo y para qué utilizamos las cookies.</p>
+      </section>
+    </div>
+  </main>
+
+  <Footer locale={lang} />
+</Layout>
+
+<style>
+  .legal-page {
+    min-height: 100vh;
+    padding: 8rem 2rem 4rem;
+    background: var(--color-white);
+    font-family: var(--font-avenir);
+  }
+  .legal-container {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+  h1 {
+    font-family: var(--font-canela);
+    font-size: 3rem;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+  }
+  .update-date {
+    color: var(--color-gray);
+    margin-bottom: 3rem;
+  }
+  section {
+    margin-bottom: 3rem;
+  }
+  h2 {
+    font-family: var(--font-avenir);
+    font-size: 1.5rem;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+  p {
+    margin-bottom: 1rem;
+    color: var(--color-text);
+  }
+  ul {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  li {
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+  }
+  a {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+  a:hover {
+    opacity: 0.8;
+  }
+  @media (max-width: 768px) {
+    .legal-page {
+      padding: 6rem 1.5rem 3rem;
+    }
+    h1 {
+      font-size: 2rem;
+    }
+    h2 {
+      font-size: 1.25rem;
+    }
+  }
+</style>

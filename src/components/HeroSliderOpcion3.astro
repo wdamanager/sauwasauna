@@ -1,0 +1,195 @@
+---
+/**
+ * HeroSliderOpcion3 - Modified for opcion-3
+ * - Removed first video
+ * - Added static image in second position
+ * - Images only, no video playback
+ */
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+// Media for desktop and mobile - Modified for opcion-3
+const desktopMedia = [
+  // Removed video, starting with images directly
+  { type: 'image', src: '/images/hero/desktop/2. interior-sauna-finlandesa-sauwa-andorra.webp', alt: 'Interior sauna finlandesa SAUWA Andorra' },
+  { type: 'image', src: '/images/hero/desktop/fuego-sauna-finlandesa-sauwa-andorra.webp', alt: 'Fuego en sauna finlandesa SAUWA' }, // Static image of fire - FIXED PATH
+  { type: 'image', src: '/images/hero/desktop/3. interior-2-sauna-finlandesa-sauwa-andorra.webp', alt: 'Interior 2 sauna finlandesa SAUWA' },
+  { type: 'image', src: '/images/hero/desktop/4. bano-frio-sauna-finlandesa-sauwa-andorra.webp', alt: 'Baño frío sauna SAUWA' },
+  { type: 'image', src: '/images/hero/desktop/5. bano-frio-lago-sauwa-andorra.webp', alt: 'Baño frío en lago SAUWA Andorra' },
+];
+
+const mobileMedia = [
+  // Removed video, starting with images directly
+  { type: 'image', src: '/images/hero/mobile/2. interior-sauna-finlandesa-sauwa-andorra.webp', alt: 'Interior sauna finlandesa SAUWA Andorra' },
+  { type: 'image', src: '/images/hero/mobile/fuego-sauna-finlandesa-sauwa-andorra.webp', alt: 'Fuego en sauna finlandesa SAUWA' }, // Static image of fire - FIXED PATH
+  { type: 'image', src: '/images/hero/mobile/3. interior-2-sauna-finlandesa-sauwa-andorra.webp', alt: 'Interior 2 sauna finlandesa SAUWA' },
+  { type: 'image', src: '/images/hero/mobile/4. bano-frio-lago-sauwa-andorra.webp', alt: 'Baño frío en lago SAUWA' },
+  { type: 'image', src: '/images/hero/mobile/5. bano-frio1-sauna-finlandesa-sauwa-andorra.webp', alt: 'Baño frío sauna SAUWA Andorra' },
+];
+
+// Preload the first image to prevent gray flash
+const firstDesktopImage = desktopMedia[0].src;
+const firstMobileImage = mobileMedia[0].src;
+---
+
+<!-- Preload first images to prevent gray flash -->
+<link rel="preload" as="image" href={firstDesktopImage} media="(min-width: 768px)" />
+<link rel="preload" as="image" href={firstMobileImage} media="(max-width: 767px)" />
+
+<div class={`hero-slider relative w-full h-screen overflow-hidden ${className}`}>
+  <!-- Desktop Media -->
+  <div class="desktop-media hidden md:block">
+    {desktopMedia.map((media, index) => (
+      <img
+        class={`hero-slide absolute inset-0 w-full h-full object-cover ${index === 0 ? 'first-slide' : ''}`}
+        data-index={index}
+        src={media.src}
+        alt={media.alt}
+        loading={index === 0 ? 'eager' : 'lazy'}
+        decoding={index === 0 ? 'sync' : 'async'}
+      />
+    ))}
+  </div>
+
+  <!-- Mobile Media -->
+  <div class="mobile-media block md:hidden">
+    {mobileMedia.map((media, index) => (
+      <img
+        class={`hero-slide absolute inset-0 w-full h-full object-cover ${index === 0 ? 'first-slide' : ''}`}
+        data-index={index}
+        src={media.src}
+        alt={media.alt}
+        loading={index === 0 ? 'eager' : 'lazy'}
+        decoding={index === 0 ? 'sync' : 'async'}
+      />
+    ))}
+  </div>
+
+  <!-- Overlay -->
+  <div class="hero-overlay absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 pointer-events-none z-[3]"></div>
+</div>
+
+<style>
+  .hero-slide {
+    opacity: 0;
+    transition: opacity 1500ms ease-in-out;
+    z-index: 1;
+  }
+
+  /* First slide is immediately visible on page load - no fade-in */
+  .hero-slide.first-slide {
+    opacity: 1;
+    z-index: 2;
+  }
+
+  .hero-slide.active {
+    opacity: 1;
+    z-index: 2;
+  }
+
+  .hero-slide.fading-out {
+    z-index: 1;
+  }
+
+  .hero-overlay {
+    z-index: 3;
+  }
+</style>
+
+<script>
+  class HeroSlider {
+    private currentIndex: number = 0;
+    private slides: NodeListOf<HTMLElement>;
+    private isTransitioning: boolean = false;
+    private slideInterval: number | null = null;
+    private readonly SLIDE_DURATION = 8000; // 8 seconds per image
+    private readonly FADE_DURATION = 1500; // 1500ms transition
+
+    constructor() {
+      // Detect current media (desktop or mobile)
+      const isMobile = window.innerWidth < 768;
+      const container = isMobile
+        ? document.querySelector('.mobile-media')
+        : document.querySelector('.desktop-media');
+
+      this.slides = container?.querySelectorAll('.hero-slide') as NodeListOf<HTMLElement>;
+
+      if (!this.slides || this.slides.length === 0) return;
+
+      this.init();
+    }
+
+    private init() {
+      // First slide is already visible via CSS (first-slide class)
+      // Don't add active class to avoid transition on page load
+
+      // Start auto-slide after the first slide duration
+      setTimeout(() => {
+        this.startAutoSlide();
+      }, this.SLIDE_DURATION);
+    }
+
+    private next() {
+      if (this.isTransitioning) return;
+
+      this.isTransitioning = true;
+
+      const currentSlide = this.slides[this.currentIndex];
+
+      // Calculate next index (loop back to 0)
+      let nextIndex = this.currentIndex + 1;
+      if (nextIndex >= this.slides.length) {
+        nextIndex = 0;
+      }
+
+      const nextSlide = this.slides[nextIndex];
+
+      // On first transition, remove the first-slide class
+      if (currentSlide.classList.contains('first-slide')) {
+        currentSlide.classList.remove('first-slide');
+        currentSlide.classList.add('active');
+      }
+
+      // Fade out current
+      currentSlide.classList.add('fading-out');
+
+      // Fade in next
+      nextSlide.classList.add('active');
+
+      // After transition
+      setTimeout(() => {
+        currentSlide.classList.remove('active', 'fading-out');
+        this.currentIndex = nextIndex;
+        this.isTransitioning = false;
+      }, this.FADE_DURATION);
+    }
+
+    private startAutoSlide() {
+      this.slideInterval = window.setInterval(() => {
+        this.next();
+      }, this.SLIDE_DURATION);
+    }
+
+    public destroy() {
+      if (this.slideInterval) {
+        clearInterval(this.slideInterval);
+      }
+    }
+  }
+
+  // Initialize slider
+  let slider: HeroSlider;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    slider = new HeroSlider();
+  });
+
+  // Cleanup on page change (if using view transitions)
+  document.addEventListener('astro:before-preparation', () => {
+    slider?.destroy();
+  });
+</script>

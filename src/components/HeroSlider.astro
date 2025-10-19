@@ -1,0 +1,213 @@
+---
+/**
+ * HeroSlider con video + imágenes
+ * - Video solo se reproduce una vez al inicio
+ * - Después alterna entre imágenes 2-5
+ * - Loop: 5 → 2 (NO vuelve al video)
+ */
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+// Media para desktop y mobile
+const desktopMedia = [
+  { type: 'video', src: '/images/hero/desktop/1. fuego-sauna-finlandesa-sauwa-andorra.webm', alt: 'Fuego en sauna finlandesa SAUWA' },
+  { type: 'image', src: '/images/hero/desktop/2. interior-sauna-finlandesa-sauwa-andorra.webp', alt: 'Interior sauna finlandesa SAUWA Andorra' },
+  { type: 'image', src: '/images/hero/desktop/3. interior-2-sauna-finlandesa-sauwa-andorra.webp', alt: 'Interior 2 sauna finlandesa SAUWA' },
+  { type: 'image', src: '/images/hero/desktop/4. bano-frio-sauna-finlandesa-sauwa-andorra.webp', alt: 'Baño frío sauna SAUWA' },
+  { type: 'image', src: '/images/hero/desktop/5. bano-frio-lago-sauwa-andorra.webp', alt: 'Baño frío en lago SAUWA Andorra' },
+];
+
+const mobileMedia = [
+  { type: 'video', src: '/images/hero/mobile/1. Fuego-Sauna-Finlandesa-Sauwa-Andorra.webm', alt: 'Fuego en sauna finlandesa SAUWA' },
+  { type: 'image', src: '/images/hero/mobile/2. interior-sauna-finlandesa-sauwa-andorra.webp', alt: 'Interior sauna finlandesa SAUWA Andorra' },
+  { type: 'image', src: '/images/hero/mobile/3. interior-2-sauna-finlandesa-sauwa-andorra.webp', alt: 'Interior 2 sauna finlandesa SAUWA' },
+  { type: 'image', src: '/images/hero/mobile/4. bano-frio-lago-sauwa-andorra.webp', alt: 'Baño frío en lago SAUWA' },
+  { type: 'image', src: '/images/hero/mobile/5. bano-frio1-sauna-finlandesa-sauwa-andorra.webp', alt: 'Baño frío sauna SAUWA Andorra' },
+];
+---
+
+<div class={`hero-slider absolute inset-0 w-full h-full overflow-hidden ${className}`}>
+  <!-- Desktop Media -->
+  <div class="desktop-media hidden md:block">
+    {desktopMedia.map((media, index) => (
+      media.type === 'video' ? (
+        <video
+          class="hero-slide absolute inset-0 w-full h-full object-cover"
+          data-index={index}
+          muted
+          playsinline
+          preload="auto"
+        >
+          <source src={media.src} type="video/webm" />
+        </video>
+      ) : (
+        <img
+          class="hero-slide absolute inset-0 w-full h-full object-cover"
+          data-index={index}
+          src={media.src}
+          alt={media.alt}
+          loading={index === 0 ? 'eager' : 'lazy'}
+        />
+      )
+    ))}
+  </div>
+
+  <!-- Mobile Media -->
+  <div class="mobile-media block md:hidden">
+    {mobileMedia.map((media, index) => (
+      media.type === 'video' ? (
+        <video
+          class="hero-slide absolute inset-0 w-full h-full object-cover"
+          data-index={index}
+          muted
+          playsinline
+          preload="auto"
+        >
+          <source src={media.src} type="video/webm" />
+        </video>
+      ) : (
+        <img
+          class="hero-slide absolute inset-0 w-full h-full object-cover"
+          data-index={index}
+          src={media.src}
+          alt={media.alt}
+          loading={index === 0 ? 'eager' : 'lazy'}
+        />
+      )
+    ))}
+  </div>
+
+  <!-- Overlay -->
+  <div class="hero-overlay absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 pointer-events-none z-[3]"></div>
+</div>
+
+<style>
+  .hero-slide {
+    opacity: 0;
+    transition: opacity 1500ms ease-in-out;
+    z-index: 1;
+  }
+
+  .hero-slide.active {
+    opacity: 1;
+    z-index: 2;
+  }
+
+  .hero-slide.fading-out {
+    z-index: 1;
+  }
+
+  .hero-overlay {
+    z-index: 3;
+  }
+</style>
+
+<script>
+  class HeroSlider {
+    private currentIndex: number = 0;
+    private slides: NodeListOf<HTMLElement>;
+    private isTransitioning: boolean = false;
+    private hasPlayedVideo: boolean = false;
+    private slideInterval: number | null = null;
+    private readonly SLIDE_DURATION = 8000; // 8 segundos por imagen (más lento)
+    private readonly FADE_DURATION = 1500; // 1500ms de transición (más suave)
+
+    constructor() {
+      // Detectar media actual (desktop o mobile)
+      const isMobile = window.innerWidth < 768;
+      const container = isMobile
+        ? document.querySelector('.mobile-media')
+        : document.querySelector('.desktop-media');
+
+      this.slides = container?.querySelectorAll('.hero-slide') as NodeListOf<HTMLElement>;
+
+      if (!this.slides || this.slides.length === 0) return;
+
+      this.init();
+    }
+
+    private init() {
+      // Mostrar primer slide (video)
+      this.slides[0].classList.add('active');
+
+      const firstSlide = this.slides[0] as HTMLVideoElement;
+
+      if (firstSlide.tagName === 'VIDEO') {
+        // Reproducir video y esperar a que termine
+        firstSlide.play();
+
+        firstSlide.addEventListener('ended', () => {
+          this.hasPlayedVideo = true;
+          this.next(); // Pasar a la siguiente imagen
+        });
+      } else {
+        // Si no es video, iniciar slider normal
+        this.hasPlayedVideo = true;
+        this.startAutoSlide();
+      }
+    }
+
+    private next() {
+      if (this.isTransitioning) return;
+
+      this.isTransitioning = true;
+
+      const currentSlide = this.slides[this.currentIndex];
+
+      // Calcular siguiente índice
+      // Si estamos en el último (4), volver al índice 1 (NO al 0 que es el video)
+      let nextIndex = this.currentIndex + 1;
+      if (nextIndex >= this.slides.length) {
+        nextIndex = 1; // Volver a la primera imagen (después del video)
+      }
+
+      const nextSlide = this.slides[nextIndex];
+
+      // Fade out actual
+      currentSlide.classList.add('fading-out');
+
+      // Fade in siguiente
+      nextSlide.classList.add('active');
+
+      // Después de la transición
+      setTimeout(() => {
+        currentSlide.classList.remove('active', 'fading-out');
+        this.currentIndex = nextIndex;
+        this.isTransitioning = false;
+
+        // Si es la primera vez después del video, iniciar auto-slide
+        if (this.hasPlayedVideo && this.slideInterval === null) {
+          this.startAutoSlide();
+        }
+      }, this.FADE_DURATION);
+    }
+
+    private startAutoSlide() {
+      this.slideInterval = window.setInterval(() => {
+        this.next();
+      }, this.SLIDE_DURATION);
+    }
+
+    public destroy() {
+      if (this.slideInterval) {
+        clearInterval(this.slideInterval);
+      }
+    }
+  }
+
+  // Inicializar slider
+  let slider: HeroSlider;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    slider = new HeroSlider();
+  });
+
+  // Cleanup al cambiar de página (si usas view transitions)
+  document.addEventListener('astro:before-preparation', () => {
+    slider?.destroy();
+  });
+</script>

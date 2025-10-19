@@ -1,0 +1,402 @@
+---
+/**
+ * NewsletterForm - Priority access signup form
+ * - Name + Email fields
+ * - GDPR checkbox with privacy policy link
+ * - Multilingual support
+ * - Form validation
+ */
+
+import Button from './ui/Button.astro';
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  class?: string;
+}
+
+const { locale = 'es', class: className = '' } = Astro.props;
+
+// Form content by language (from Contenido landing.txt)
+const formContent = {
+  es: {
+    title: 'Apúntate para recibir prioridad de apertura',
+    namePlaceholder: 'Nombre y apellidos',
+    emailPlaceholder: 'Email',
+    gdprLabel: 'Acepto la',
+    privacyLink: 'política de privacidad',
+    ctaButton: 'Quiero ser de los primeros',
+    successMessage: '¡Gracias! Te avisaremos cuando abramos.',
+    errorMessage: 'Error al enviar. Inténtalo de nuevo.',
+  },
+  ca: {
+    title: 'Apunta\'t per rebre prioritat d\'obertura',
+    namePlaceholder: 'Nom i cognoms',
+    emailPlaceholder: 'Email',
+    gdprLabel: 'Accepto la',
+    privacyLink: 'política de privacitat',
+    ctaButton: 'Vull ser dels primers',
+    successMessage: 'Gràcies! T\'avisarem quan obrim.',
+    errorMessage: 'Error en enviar. Torna-ho a intentar.',
+  },
+  en: {
+    title: 'Sign up for priority access',
+    namePlaceholder: 'Full name',
+    emailPlaceholder: 'Email',
+    gdprLabel: 'I accept the',
+    privacyLink: 'privacy policy',
+    ctaButton: 'I want to be among the first',
+    successMessage: 'Thank you! We\'ll notify you when we open.',
+    errorMessage: 'Error sending. Please try again.',
+  },
+  fr: {
+    title: 'Inscrivez-vous pour un accès prioritaire',
+    namePlaceholder: 'Nom et prénom',
+    emailPlaceholder: 'Email',
+    gdprLabel: 'J\'accepte la',
+    privacyLink: 'politique de confidentialité',
+    ctaButton: 'Je veux être parmi les premiers',
+    successMessage: 'Merci! Nous vous informerons lors de l\'ouverture.',
+    errorMessage: 'Erreur d\'envoi. Veuillez réessayer.',
+  },
+};
+
+const content = formContent[locale];
+---
+
+<section class={`newsletter-section ${className}`} id="newsletter">
+  <div class="container mx-auto px-4 md:px-6 lg:px-8 py-16 md:py-24">
+    <div class="newsletter-wrapper">
+      <!-- Section Title -->
+      <h3 class="newsletter-title">
+        {content.title}
+      </h3>
+
+      <!-- Form -->
+      <form class="newsletter-form" id="newsletter-form" novalidate>
+        <div class="form-fields">
+          <!-- Name Field -->
+          <div class="form-group">
+            <input
+              type="text"
+              name="name"
+              id="newsletter-name"
+              class="form-input"
+              placeholder={content.namePlaceholder}
+              required
+              aria-label={content.namePlaceholder}
+            />
+          </div>
+
+          <!-- Email Field -->
+          <div class="form-group">
+            <input
+              type="email"
+              name="email"
+              id="newsletter-email"
+              class="form-input"
+              placeholder={content.emailPlaceholder}
+              required
+              aria-label={content.emailPlaceholder}
+            />
+          </div>
+        </div>
+
+        <!-- GDPR Checkbox -->
+        <div class="gdpr-group">
+          <label class="gdpr-label">
+            <input
+              type="checkbox"
+              name="gdpr"
+              id="newsletter-gdpr"
+              class="gdpr-checkbox"
+              required
+            />
+            <span class="gdpr-text">
+              {content.gdprLabel}
+              <a href="/privacy" class="privacy-link" target="_blank" rel="noopener">
+                {content.privacyLink}
+              </a>
+            </span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <Button type="submit" variant="primary" size="lg" class="submit-button">
+          {content.ctaButton}
+        </Button>
+
+        <!-- Messages -->
+        <div class="form-message success-message hidden" id="success-message">
+          {content.successMessage}
+        </div>
+        <div class="form-message error-message hidden" id="error-message">
+          {content.errorMessage}
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  .newsletter-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  }
+
+  .newsletter-wrapper {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .newsletter-title {
+    font-family: var(--font-helvetica, 'Inter', 'Helvetica Neue', sans-serif);
+    font-size: clamp(1.5rem, 3.5vw, 2rem);
+    font-weight: 200;
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+    color: #1a1a1a;
+    margin: 0 0 2rem;
+  }
+
+  .newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-group {
+    width: 100%;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    font-family: var(--font-avenir, 'Nunito Sans', sans-serif);
+    font-size: 1rem;
+    font-weight: 300;
+    color: #1a1a1a;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #DB4529; /* sauwa-orange */
+    box-shadow: 0 0 0 3px rgba(219, 69, 41, 0.1);
+  }
+
+  .form-input::placeholder {
+    color: #9ca3af;
+  }
+
+  .form-input.error {
+    border-color: #ef4444;
+  }
+
+  .gdpr-group {
+    margin-top: 0.5rem;
+  }
+
+  .gdpr-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .gdpr-checkbox {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: #DB4529; /* sauwa-orange */
+  }
+
+  .gdpr-text {
+    font-family: var(--font-avenir, 'Nunito Sans', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 300;
+    line-height: 1.5;
+    color: #4b5563;
+  }
+
+  .privacy-link {
+    color: #DB4529; /* sauwa-orange */
+    text-decoration: underline;
+    transition: color 0.2s ease;
+  }
+
+  .privacy-link:hover {
+    color: #BA2515; /* sauwa-red */
+  }
+
+  .submit-button {
+    margin-top: 0.5rem;
+  }
+
+  .form-message {
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: var(--font-avenir, 'Nunito Sans', sans-serif);
+    font-size: 0.95rem;
+    font-weight: 400;
+    text-align: center;
+  }
+
+  .success-message {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .error-message {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  /* Desktop layout */
+  @media (min-width: 640px) {
+    .form-fields {
+      flex-direction: row;
+      gap: 1rem;
+    }
+
+    .form-group {
+      flex: 1;
+    }
+  }
+</style>
+
+<script>
+  class NewsletterFormController {
+    private form: HTMLFormElement;
+    private nameInput: HTMLInputElement;
+    private emailInput: HTMLInputElement;
+    private gdprCheckbox: HTMLInputElement;
+    private successMessage: HTMLElement;
+    private errorMessage: HTMLElement;
+
+    constructor() {
+      this.form = document.getElementById('newsletter-form') as HTMLFormElement;
+      this.nameInput = document.getElementById('newsletter-name') as HTMLInputElement;
+      this.emailInput = document.getElementById('newsletter-email') as HTMLInputElement;
+      this.gdprCheckbox = document.getElementById('newsletter-gdpr') as HTMLInputElement;
+      this.successMessage = document.getElementById('success-message') as HTMLElement;
+      this.errorMessage = document.getElementById('error-message') as HTMLElement;
+
+      if (!this.form) return;
+
+      this.init();
+    }
+
+    private init() {
+      this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+    }
+
+    private async handleSubmit(e: Event) {
+      e.preventDefault();
+
+      // Hide messages
+      this.hideMessages();
+
+      // Validate form
+      if (!this.validate()) {
+        return;
+      }
+
+      // Get form data
+      const formData = {
+        name: this.nameInput.value.trim(),
+        email: this.emailInput.value.trim(),
+        gdpr: this.gdprCheckbox.checked,
+      };
+
+      try {
+        // TODO: Send to backend/API (WDA-107)
+        // For now, simulate success
+        await this.sendToBackend(formData);
+
+        // Show success message
+        this.showSuccess();
+
+        // Reset form
+        this.form.reset();
+      } catch (error) {
+        // Show error message
+        this.showError();
+      }
+    }
+
+    private validate(): boolean {
+      let isValid = true;
+
+      // Reset error states
+      this.nameInput.classList.remove('error');
+      this.emailInput.classList.remove('error');
+
+      // Validate name
+      if (!this.nameInput.value.trim()) {
+        this.nameInput.classList.add('error');
+        isValid = false;
+      }
+
+      // Validate email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(this.emailInput.value.trim())) {
+        this.emailInput.classList.add('error');
+        isValid = false;
+      }
+
+      // Validate GDPR
+      if (!this.gdprCheckbox.checked) {
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    private async sendToBackend(data: any): Promise<void> {
+      // TODO: Implement actual backend call (WDA-107)
+      // For now, simulate API call
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          console.log('Newsletter signup:', data);
+          resolve();
+        }, 500);
+      });
+    }
+
+    private showSuccess() {
+      this.successMessage.classList.remove('hidden');
+    }
+
+    private showError() {
+      this.errorMessage.classList.remove('hidden');
+    }
+
+    private hideMessages() {
+      this.successMessage.classList.add('hidden');
+      this.errorMessage.classList.add('hidden');
+    }
+  }
+
+  // Initialize form controller
+  let newsletterController: NewsletterFormController;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    newsletterController = new NewsletterFormController();
+  });
+</script>
