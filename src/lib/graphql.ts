@@ -5,7 +5,7 @@
  * For more complex needs, consider graphql-request or Apollo Client.
  */
 
-const GRAPHQL_URL = import.meta.env.WORDPRESS_GRAPHQL_URL || 'http://localhost/graphql';
+const GRAPHQL_URL = import.meta.env.PUBLIC_WORDPRESS_GRAPHQL_URL || 'https://backend.sauwasauna.com/graphql';
 
 interface GraphQLResponse<T = any> {
   data?: T;
@@ -113,4 +113,38 @@ export async function getPostBySlug(slug: string) {
 
   const data = await graphqlQuery<{ post: any }>(query, { slug });
   return data.post;
+}
+
+/**
+ * Fetch latest posts for blog section
+ */
+export async function getLatestPosts(limit: number = 6) {
+  const query = `
+    query GetLatestPosts($first: Int = 6) {
+      posts(first: $first, where: { orderby: { field: DATE, order: DESC } }) {
+        nodes {
+          id
+          title
+          excerpt
+          slug
+          date
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+          categories {
+            nodes {
+              name
+              slug
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const data = await graphqlQuery<{ posts: any }>(query, { first: limit });
+  return data.posts.nodes;
 }

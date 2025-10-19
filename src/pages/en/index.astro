@@ -7,6 +7,7 @@
 import Layout from '../../layouts/Layout.astro';
 import HeroSlider from '../../components/HeroSlider.astro';
 import BenefitsSection from '../../components/BenefitsSection.astro';
+import BenefitsBlogSection from '../../components/BenefitsBlogSection.astro';
 import ExperienceSection from '../../components/ExperienceSection.astro';
 import NewsletterForm from '../../components/NewsletterForm.astro';
 import Footer from '../../components/layout/Footer.astro';
@@ -105,6 +106,9 @@ const description = 'Experience authentic Finnish wood-fired sauna and ice-cold 
 
   <!-- Benefits Section -->
   <BenefitsSection locale={lang} />
+
+  <!-- Benefits + Blog Section with Sticky Scroll -->
+  <BenefitsBlogSection locale={lang} />
 
   <!-- Experience Section -->
   <ExperienceSection locale={lang} />

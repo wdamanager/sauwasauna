@@ -1,0 +1,311 @@
+---
+/**
+ * BlogScrollCards - Cards de blog con scroll vertical
+ * Columna derecha del layout sticky
+ */
+
+import { getLatestPosts } from '../lib/graphql';
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  limit?: number;
+}
+
+const { locale = 'es', limit = 6 } = Astro.props;
+
+// Fetch latest posts from WordPress
+let posts = [];
+try {
+  posts = await getLatestPosts(limit);
+} catch (error) {
+  console.error('Error fetching blog posts:', error);
+  posts = [];
+}
+
+// Función helper para formatear fecha
+function formatDate(dateString: string, locale: string): string {
+  const date = new Date(dateString);
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  };
+
+  const localeMap: Record<string, string> = {
+    es: 'es-ES',
+    ca: 'ca-ES',
+    en: 'en-US',
+    fr: 'fr-FR',
+  };
+
+  return date.toLocaleDateString(localeMap[locale] || 'es-ES', options);
+}
+
+// Función helper para limpiar excerpt
+function cleanExcerpt(excerpt: string): string {
+  return excerpt
+    .replace(/<[^>]*>/g, '')
+    .replace(/&hellip;/g, '...')
+    .replace(/&[^;]+;/g, '')
+    .trim()
+    .substring(0, 150) + '...';
+}
+---
+
+<div class="blog-scroll-container">
+  {posts.length === 0 ? (
+    <div class="no-posts">
+      <p>No hay artículos disponibles en este momento.</p>
+    </div>
+  ) : (
+    posts.map((post, index) => (
+      <article class="blog-card" data-index={index}>
+        {post.featuredImage?.node?.sourceUrl && (
+          <a href={`/${locale}/blog/${post.slug}`} class="card-image-link">
+            <div class="card-image-wrapper">
+              <img
+                src={post.featuredImage.node.sourceUrl}
+                alt={post.featuredImage.node.altText || post.title}
+                loading="lazy"
+                class="card-image"
+              />
+            </div>
+          </a>
+        )}
+
+        <div class="card-content">
+          {post.categories?.nodes?.length > 0 && (
+            <div class="card-category">
+              {post.categories.nodes[0].name}
+            </div>
+          )}
+
+          <h3 class="card-title">
+            <a href={`/${locale}/blog/${post.slug}`}>
+              {post.title}
+            </a>
+          </h3>
+
+          {post.excerpt && (
+            <p class="card-excerpt">
+              {cleanExcerpt(post.excerpt)}
+            </p>
+          )}
+
+          <div class="card-meta">
+            <time datetime={post.date} class="card-date">
+              {formatDate(post.date, locale)}
+            </time>
+          </div>
+        </div>
+      </article>
+    ))
+  )}
+</div>
+
+<style>
+  .blog-scroll-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    padding: 4rem 3rem;
+    background-color: #F8F8F8;
+    min-height: 100vh;
+  }
+
+  .no-posts {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1.125rem;
+    color: #666;
+  }
+
+  .blog-card {
+    background: #FFFFFF;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .blog-card.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .blog-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+  }
+
+  .card-image-link {
+    display: block;
+    overflow: hidden;
+  }
+
+  .card-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+  }
+
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .blog-card:hover .card-image {
+    transform: scale(1.08);
+  }
+
+  .card-content {
+    padding: 2rem;
+  }
+
+  .card-category {
+    display: inline-block;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #FFFFFF;
+    background-color: #DB4529;
+    padding: 0.375rem 0.875rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: clamp(1.375rem, 2vw, 1.625rem);
+    font-weight: 300;
+    line-height: 1.4;
+    margin: 0 0 1rem;
+  }
+
+  .card-title a {
+    color: #1a1a1a;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .card-title a:hover {
+    color: #DB4529;
+  }
+
+  .card-excerpt {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: #555;
+    margin: 0 0 1.5rem;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E5E5E5;
+  }
+
+  .card-date {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: #888;
+  }
+
+  @media (max-width: 1024px) {
+    .blog-scroll-container {
+      gap: 2.5rem;
+      padding: 3rem 2rem;
+    }
+
+    .card-image-wrapper {
+      height: 240px;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .blog-scroll-container {
+      gap: 2rem;
+      padding: 2rem 1.5rem;
+    }
+
+    .card-image-wrapper {
+      height: 200px;
+    }
+
+    .card-content {
+      padding: 1.25rem;
+    }
+
+    .blog-card:hover {
+      transform: none;
+    }
+
+    .blog-card:hover .card-image {
+      transform: scale(1.04);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blog-card,
+    .card-image {
+      transition: none;
+    }
+
+    .blog-card:hover {
+      transform: none;
+    }
+
+    .blog-card:hover .card-image {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // Intersection Observer para animaciones de entrada
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.blog-card');
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    cards.forEach((card, index) => {
+      // Delay progresivo para efecto cascada
+      const delay = index * 100;
+      setTimeout(() => {
+        observer.observe(card);
+      }, delay);
+    });
+  });
+</script>
