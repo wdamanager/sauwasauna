@@ -181,11 +181,11 @@ const icons = {
   <div class="grid md:grid-cols-2 min-h-screen">
 
     <!-- Columna Izquierda: IMAGEN -->
-    <div class="relative fade-in-left">
+    <div class="relative fade-in-left image-wrapper">
       <img
         src="/images/sauwa-sauna-exterior-cosy.webp"
         alt="Sauna SAUWA exterior - Ambiente acogedor en naturaleza"
-        class="w-full h-full object-cover"
+        class="w-full h-full object-cover hover-zoom-image"
         style="min-height: 600px;"
         loading="lazy"
       />
@@ -243,6 +243,20 @@ const icons = {
   .fade-in-right.is-visible {
     opacity: 1;
     transform: translateX(0);
+  }
+
+  /* Efecto hover zoom en imagen */
+  .image-wrapper {
+    overflow: hidden;
+  }
+
+  .hover-zoom-image {
+    transition: transform 0.8s ease;
+    will-change: transform;
+  }
+
+  .image-wrapper:hover .hover-zoom-image {
+    transform: scale(1.05);
   }
 
   /* Estilos COPIADOS EXACTOS de BenefitsList.astro */
@@ -400,6 +414,11 @@ const icons = {
     .benefit-item {
       margin-bottom: 1.5rem;
     }
+
+    /* Deshabilitar zoom en móviles */
+    .image-wrapper:hover .hover-zoom-image {
+      transform: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -407,8 +426,13 @@ const icons = {
     .fade-in-right,
     .benefit-item,
     .cta-link,
-    .arrow-icon {
+    .arrow-icon,
+    .hover-zoom-image {
       transition: none;
+    }
+
+    .image-wrapper:hover .hover-zoom-image {
+      transform: none;
     }
   }
 </style>

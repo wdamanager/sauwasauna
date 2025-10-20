@@ -1,0 +1,618 @@
+---
+/**
+ * CTANewsletter - Sección CTA mejorada para prioridad de apertura
+ * WDA-269: Mejorar sección CTA Newsletter
+ * - Campo Nombre en primera fila
+ * - Formulario centrado
+ * - Background gris claro (#f4f4f4)
+ * - Texto negro (#000)
+ * - Botón "APUNTARME" en mayúsculas
+ * - Títulos formato WDA-266 (h2 SEO + h3 comercial)
+ */
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  class?: string;
+}
+
+const { locale = 'es', class: className = '' } = Astro.props;
+
+// Contenido del formulario por idioma
+const formContent = {
+  es: {
+    titleSeo: 'APERTURA SAUNA ANDORRA',
+    titleCommercial: 'Apúntate para recibir prioridad de apertura',
+    namePlaceholder: 'Nombre',
+    emailPlaceholder: 'Tu email',
+    gdprLabel: 'He leído y acepto la',
+    privacyLink: 'política de privacidad',
+    ctaButton: 'APUNTARME',
+    disclaimer: 'Recibe acceso prioritario en nuestra apertura y descuentos exclusivos',
+    successMessage: '¡Gracias! Te hemos añadido a la lista prioritaria',
+    errorMessage: 'Error al enviar. Inténtalo de nuevo.',
+    privacyUrl: '/es/politica-privacidad',
+  },
+  ca: {
+    titleSeo: 'OBERTURA SAUNA ANDORRA',
+    titleCommercial: 'Apunta\'t per rebre prioritat d\'obertura',
+    namePlaceholder: 'Nom',
+    emailPlaceholder: 'El teu email',
+    gdprLabel: 'He llegit i accepto la',
+    privacyLink: 'política de privacitat',
+    ctaButton: 'APUNTAR-ME',
+    disclaimer: 'Rep accés prioritari en la nostra obertura i descomptes exclusius',
+    successMessage: 'Gràcies! T\'hem afegit a la llista prioritària',
+    errorMessage: 'Error en enviar. Torna-ho a intentar.',
+    privacyUrl: '/ca/politica-privacitat',
+  },
+  en: {
+    titleSeo: 'ANDORRA SAUNA OPENING',
+    titleCommercial: 'Sign up for priority access',
+    namePlaceholder: 'Name',
+    emailPlaceholder: 'Your email',
+    gdprLabel: 'I have read and accept the',
+    privacyLink: 'privacy policy',
+    ctaButton: 'SIGN ME UP',
+    disclaimer: 'Get priority access at our opening and exclusive discounts',
+    successMessage: 'Thank you! We\'ve added you to the priority list',
+    errorMessage: 'Error sending. Please try again.',
+    privacyUrl: '/en/privacy-policy',
+  },
+  fr: {
+    titleSeo: 'OUVERTURE SAUNA ANDORRE',
+    titleCommercial: 'Inscrivez-vous pour un accès prioritaire',
+    namePlaceholder: 'Prénom',
+    emailPlaceholder: 'Votre email',
+    gdprLabel: 'J\'ai lu et j\'accepte la',
+    privacyLink: 'politique de confidentialité',
+    ctaButton: 'M\'INSCRIRE',
+    disclaimer: 'Recevez un accès prioritaire lors de notre ouverture et des réductions exclusives',
+    successMessage: 'Merci! Nous vous avons ajouté à la liste prioritaire',
+    errorMessage: 'Erreur d\'envoi. Veuillez réessayer.',
+    privacyUrl: '/fr/politique-confidentialite',
+  },
+};
+
+const content = formContent[locale];
+---
+
+<section id="cta-newsletter" class={`cta-newsletter-section ${className}`}>
+  <div class="container mx-auto px-6">
+    <div class="cta-wrapper">
+
+      <!-- Títulos con jerarquía SEO -->
+      <div class="titles-wrapper">
+        <h2 class="title-seo">
+          {content.titleSeo}
+        </h2>
+        <h3 class="title-commercial">
+          {content.titleCommercial}
+        </h3>
+      </div>
+
+      <!-- Formulario -->
+      <form class="newsletter-form" id="cta-newsletter-form" novalidate>
+
+        <!-- FILA 1: Campo Nombre -->
+        <div class="form-row">
+          <input
+            type="text"
+            name="nombre"
+            id="cta-nombre"
+            placeholder={content.namePlaceholder}
+            required
+            class="form-input"
+            aria-label={content.namePlaceholder}
+          />
+        </div>
+
+        <!-- FILA 2: Campo Email (separado del botón) -->
+        <div class="form-row">
+          <input
+            type="email"
+            name="email"
+            id="cta-email"
+            placeholder={content.emailPlaceholder}
+            required
+            class="form-input"
+            aria-label={content.emailPlaceholder}
+          />
+        </div>
+
+        <!-- FILA 3: Checkbox privacidad -->
+        <div class="form-row privacy-row">
+          <label class="privacy-label">
+            <input
+              type="checkbox"
+              id="cta-privacy"
+              name="privacy"
+              required
+              class="privacy-checkbox"
+            />
+            <span class="privacy-text">
+              {content.gdprLabel}
+              <a href={content.privacyUrl} class="privacy-link">
+                {content.privacyLink}
+              </a>
+            </span>
+          </label>
+        </div>
+
+        <!-- FILA 4: Botón APUNTARME (nueva fila) -->
+        <div class="form-row">
+          <button
+            type="submit"
+            class="cta-button"
+          >
+            {content.ctaButton}
+          </button>
+        </div>
+
+        <!-- Mensajes de estado -->
+        <div class="form-message success-message hidden" id="cta-success-message">
+          {content.successMessage}
+        </div>
+        <div class="form-message error-message hidden" id="cta-error-message">
+          {content.errorMessage}
+        </div>
+
+      </form>
+
+      <!-- Disclaimer -->
+      <p class="disclaimer-text">
+        {content.disclaimer}
+      </p>
+
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Sección principal */
+  .cta-newsletter-section {
+    background-color: #f4f4f4;
+    padding: 5rem 0 4rem 0; /* Padding superior 5rem, inferior 4rem */
+    position: relative;
+    margin-bottom: 0;
+  }
+
+  /* Contenedor centrado */
+  .cta-wrapper {
+    max-width: 48rem; /* max-w-3xl */
+    margin: 0 auto;
+    padding: 0 1.5rem; /* Añadir padding lateral para responsive */
+    text-align: center;
+  }
+
+  /* Wrapper de títulos */
+  .titles-wrapper {
+    margin-bottom: 3rem;
+  }
+
+  /* h2 SEO - Estilo WDA-266 */
+  .title-seo {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #DB4529;
+    margin: 0 0 1rem;
+    text-align: center;
+  }
+
+  /* h3 Comercial - Estilo WDA-266 */
+  .title-commercial {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 200;
+    line-height: 1.3;
+    color: #1a1a1a;
+    margin: 0 0 1.5rem;
+    text-align: center;
+  }
+
+  /* Formulario */
+  .newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0 auto 2rem auto; /* Centrar explícitamente */
+    max-width: 28rem; /* 448px - limitar ancho del formulario */
+  }
+
+  /* Filas del formulario */
+  .form-row {
+    width: 100%;
+  }
+
+  /* Inputs */
+  .form-input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 300;
+    color: #000000;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    transition: all 300ms ease-out;
+  }
+
+  .form-input::placeholder {
+    color: #6b7280;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #DB4529;
+    box-shadow: 0 0 0 4px rgba(219, 69, 41, 0.2);
+  }
+
+  .form-input.error {
+    border-color: #ef4444;
+  }
+
+  /* Botón CTA */
+  .cta-button {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #FFFFFF;
+    background-color: #DB4529;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 300ms ease-out;
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(219, 69, 41, 0.2);
+    white-space: nowrap;
+  }
+
+  .cta-button:hover {
+    background-color: #BA2515;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(219, 69, 41, 0.4);
+  }
+
+  .cta-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(219, 69, 41, 0.3);
+  }
+
+  .cta-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Fila de privacidad */
+  .privacy-row {
+    display: flex;
+    justify-content: center;
+    margin: 1.5rem 0;
+  }
+
+  .privacy-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .privacy-checkbox {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: #DB4529;
+  }
+
+  .privacy-text {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.8);
+    line-height: 1.4;
+  }
+
+  .privacy-link {
+    color: #DB4529;
+    text-decoration: underline;
+    transition: color 200ms ease;
+  }
+
+  .privacy-link:hover {
+    color: #BA2515;
+  }
+
+  /* Disclaimer */
+  .disclaimer-text {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: rgba(0, 0, 0, 0.7);
+    text-align: center;
+    margin-top: 1.5rem;
+    line-height: 1.5;
+  }
+
+  /* Mensajes de estado */
+  .form-message {
+    padding: 1rem;
+    border-radius: 4px;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  .success-message {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .error-message {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  /* Animación de aparición con Intersection Observer */
+  .cta-newsletter-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 600ms ease-out;
+  }
+
+  .cta-newsletter-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 767px) {
+    .cta-newsletter-section {
+      padding: 3rem 0 3rem 0; /* Padding superior e inferior 3rem en mobile */
+    }
+
+    .title-commercial {
+      font-size: 32px;
+    }
+
+    .cta-button {
+      padding: 0.875rem 1.5rem;
+    }
+
+    .form-input {
+      padding: 0.875rem 1.25rem;
+      font-size: 15px;
+    }
+
+    .disclaimer-text {
+      font-size: 0.8125rem;
+      padding: 0 1rem;
+    }
+  }
+
+  /* Tablet */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .title-commercial {
+      font-size: 36px;
+    }
+  }
+</style>
+
+<script>
+  class CTANewsletterController {
+    private form: HTMLFormElement;
+    private nombreInput: HTMLInputElement;
+    private emailInput: HTMLInputElement;
+    private privacyCheckbox: HTMLInputElement;
+    private successMessage: HTMLElement;
+    private errorMessage: HTMLElement;
+    private submitButton: HTMLButtonElement;
+
+    constructor() {
+      this.form = document.getElementById('cta-newsletter-form') as HTMLFormElement;
+      this.nombreInput = document.getElementById('cta-nombre') as HTMLInputElement;
+      this.emailInput = document.getElementById('cta-email') as HTMLInputElement;
+      this.privacyCheckbox = document.getElementById('cta-privacy') as HTMLInputElement;
+      this.successMessage = document.getElementById('cta-success-message') as HTMLElement;
+      this.errorMessage = document.getElementById('cta-error-message') as HTMLElement;
+      this.submitButton = this.form.querySelector('.cta-button') as HTMLButtonElement;
+
+      if (!this.form) return;
+
+      this.init();
+    }
+
+    private init() {
+      // Form submit handler
+      this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+
+      // Intersection Observer para animación
+      this.setupScrollAnimation();
+
+      // Remove error state on input
+      this.nombreInput.addEventListener('input', () => {
+        this.nombreInput.classList.remove('error');
+      });
+
+      this.emailInput.addEventListener('input', () => {
+        this.emailInput.classList.remove('error');
+      });
+    }
+
+    private setupScrollAnimation() {
+      const section = document.querySelector('.cta-newsletter-section');
+      if (!section) return;
+
+      const options = {
+        threshold: 0.2,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, options);
+
+      observer.observe(section);
+    }
+
+    private async handleSubmit(e: Event) {
+      e.preventDefault();
+
+      // Hide messages
+      this.hideMessages();
+
+      // Validate form
+      if (!this.validate()) {
+        return;
+      }
+
+      // Disable button
+      this.submitButton.disabled = true;
+
+      // Get form data
+      const formData = {
+        nombre: this.nombreInput.value.trim(),
+        email: this.emailInput.value.trim(),
+        privacy: this.privacyCheckbox.checked,
+        lista: 'apertura-prioridad',
+        source: 'cta-newsletter'
+      };
+
+      try {
+        // TODO: Integrar con backend real (MailChimp, SendGrid, etc.)
+        await this.sendToBackend(formData);
+
+        // Show success message
+        this.showSuccess();
+
+        // Reset form
+        this.form.reset();
+
+        // Track conversion
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'newsletter_signup', {
+            event_category: 'engagement',
+            event_label: 'priority_access',
+          });
+        }
+      } catch (error) {
+        // Show error message
+        this.showError();
+      } finally {
+        // Re-enable button
+        this.submitButton.disabled = false;
+      }
+    }
+
+    private validate(): boolean {
+      let isValid = true;
+
+      // Reset error states
+      this.nombreInput.classList.remove('error');
+      this.emailInput.classList.remove('error');
+
+      // Validate nombre
+      if (!this.nombreInput.value.trim()) {
+        this.nombreInput.classList.add('error');
+        this.nombreInput.focus();
+        isValid = false;
+      }
+
+      // Validate email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(this.emailInput.value.trim())) {
+        this.emailInput.classList.add('error');
+        if (isValid) this.emailInput.focus();
+        isValid = false;
+      }
+
+      // Validate privacy
+      if (!this.privacyCheckbox.checked) {
+        // Highlight checkbox
+        const label = this.privacyCheckbox.closest('.privacy-label');
+        if (label) {
+          label.style.animation = 'shake 0.3s';
+          setTimeout(() => {
+            label.style.animation = '';
+          }, 300);
+        }
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    private async sendToBackend(data: any): Promise<void> {
+      // TODO: Implementar llamada real al backend
+      // Por ahora simulamos la llamada
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          console.log('Newsletter signup (CTA):', data);
+          // Simular éxito en 90% de casos
+          if (Math.random() > 0.1) {
+            resolve();
+          } else {
+            reject(new Error('Network error'));
+          }
+        }, 500);
+      });
+    }
+
+    private showSuccess() {
+      this.successMessage.classList.remove('hidden');
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        this.successMessage.classList.add('hidden');
+      }, 5000);
+    }
+
+    private showError() {
+      this.errorMessage.classList.remove('hidden');
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        this.errorMessage.classList.add('hidden');
+      }, 5000);
+    }
+
+    private hideMessages() {
+      this.successMessage.classList.add('hidden');
+      this.errorMessage.classList.add('hidden');
+    }
+  }
+
+  // Initialize controller
+  let ctaNewsletterController: CTANewsletterController;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ctaNewsletterController = new CTANewsletterController();
+  });
+</script>
+
+<style>
+  /* Animación shake para validación */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+</style>

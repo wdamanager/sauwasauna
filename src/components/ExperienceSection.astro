@@ -16,6 +16,7 @@ const { locale = 'es', class: className = '' } = Astro.props;
 // Experience content by language (from Contenido landing.txt)
 const experienceContent = {
   es: {
+    seoTitle: 'Sesión de sauna',
     title: '¿Cómo es una sesión en SAUWA?',
     subtitle: 'Recupera, despeja la mente y conecta con la naturaleza en una experiencia premium guiada.',
     steps: [
@@ -37,6 +38,7 @@ const experienceContent = {
     ],
   },
   ca: {
+    seoTitle: 'Sessió de sauna',
     title: 'Com és una sessió a SAUWA?',
     subtitle: 'Recupera, aclareix la ment i connecta amb la natura en una experiència premium guiada.',
     steps: [
@@ -58,6 +60,7 @@ const experienceContent = {
     ],
   },
   en: {
+    seoTitle: 'Sauna session',
     title: 'What is a SAUWA session like?',
     subtitle: 'Recover, clear your mind and connect with nature in a guided premium experience.',
     steps: [
@@ -79,6 +82,7 @@ const experienceContent = {
     ],
   },
   fr: {
+    seoTitle: 'Séance de sauna',
     title: 'Comment se déroule une séance chez SAUWA?',
     subtitle: 'Récupérez, clarifiez votre esprit et connectez-vous avec la nature dans une expérience premium guidée.',
     steps: [
@@ -108,9 +112,12 @@ const content = experienceContent[locale];
   <div class="container mx-auto px-4 md:px-6 lg:px-8 py-16 md:py-24">
     <!-- Section Header -->
     <div class="section-header">
-      <h2 class="section-title">
-        {content.title}
+      <h2 class="seo-title">
+        {content.seoTitle}
       </h2>
+      <h3 class="main-heading">
+        {content.title}
+      </h3>
       <p class="section-subtitle">
         {content.subtitle}
       </p>
@@ -123,9 +130,9 @@ const content = experienceContent[locale];
           <div class="step-number">
             {step.number}
           </div>
-          <h3 class="step-title">
+          <h4 class="step-title">
             {step.title}
-          </h3>
+          </h4>
           <p class="step-description">
             {step.description}
           </p>
@@ -154,13 +161,25 @@ const content = experienceContent[locale];
     margin: 0 auto 4rem;
   }
 
-  .section-title {
-    font-family: var(--font-helvetica, 'Inter', 'Helvetica Neue', sans-serif);
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    font-weight: 200;
-    letter-spacing: 0.01em;
-    line-height: 1.3;
+  /* h2 SEO - Keyword principal */
+  .seo-title {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #DB4529;
     margin: 0 0 1rem;
+  }
+
+  /* h3 Título principal */
+  .main-heading {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 200;
+    line-height: 1.3;
+    color: #FFFFFF;
+    margin: 0 0 1.5rem;
   }
 
   .section-subtitle {

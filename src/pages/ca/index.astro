@@ -10,8 +10,10 @@ import BenefitsSection from '../../components/BenefitsSection.astro';
 import BenefitsBlogSection from '../../components/BenefitsBlogSection.astro';
 import BenefitsImageSection from '../../components/BenefitsImageSection.astro';
 import ExperienceSection from '../../components/ExperienceSection.astro';
-import NewsletterForm from '../../components/NewsletterForm.astro';
+import SessionPhases from '../../components/SessionPhases.astro';
+import CTANewsletter from '../../components/CTANewsletter.astro';
 import Footer from '../../components/layout/Footer.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
 
 const lang = 'ca';
 
@@ -114,14 +116,20 @@ const description = 'Viu l\'autèntica sauna finlandesa de llenya i banys d\'aig
   <!-- WDA-267: Imagen 50/50 + Beneficios -->
   <BenefitsImageSection locale={lang} />
 
-  <!-- Experience Section -->
-  <ExperienceSection locale={lang} />
+  <!-- Experience Section (Original - Comentat) -->
+  <!-- <ExperienceSection locale={lang} /> -->
 
-  <!-- Newsletter Section -->
-  <NewsletterForm locale={lang} />
+  <!-- SessionPhases Millorat (WDA-265) -->
+  <SessionPhases locale={lang} />
 
-  <!-- Footer -->
-  <Footer locale={lang} />
+  <!-- CTA Newsletter Mejorado (WDA-269) -->
+  <CTANewsletter locale={lang} />
+
+  <!-- Footer Original (comentat) -->
+  <!-- <Footer locale={lang} /> -->
+
+  <!-- Footer Negre (WDA-268) -->
+  <FooterBlack locale={lang} />
 </Layout>
 
 <script>
