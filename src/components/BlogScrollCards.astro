@@ -11,7 +11,15 @@ export interface Props {
   limit?: number;
 }
 
-const { locale = 'es', limit = 6 } = Astro.props;
+const { locale = 'es', limit = 3 } = Astro.props;
+
+// Traducciones para el botón "Ver más"
+const translations = {
+  es: { seeMore: 'Ver más' },
+  ca: { seeMore: 'Veure més' },
+  en: { seeMore: 'See more' },
+  fr: { seeMore: 'Voir plus' },
+};
 
 // Fetch latest posts from WordPress
 let posts = [];
@@ -58,48 +66,59 @@ function cleanExcerpt(excerpt: string): string {
       <p>No hay artículos disponibles en este momento.</p>
     </div>
   ) : (
-    posts.map((post, index) => (
-      <article class="blog-card" data-index={index}>
-        {post.featuredImage?.node?.sourceUrl && (
-          <a href={`/${locale}/blog/${post.slug}`} class="card-image-link">
-            <div class="card-image-wrapper">
-              <img
-                src={post.featuredImage.node.sourceUrl}
-                alt={post.featuredImage.node.altText || post.title}
-                loading="lazy"
-                class="card-image"
-              />
-            </div>
-          </a>
-        )}
-
-        <div class="card-content">
-          {post.categories?.nodes?.length > 0 && (
-            <div class="card-category">
-              {post.categories.nodes[0].name}
-            </div>
-          )}
-
-          <h3 class="card-title">
-            <a href={`/${locale}/blog/${post.slug}`}>
-              {post.title}
+    <>
+      {posts.map((post, index) => (
+        <article class="blog-card" data-index={index}>
+          {post.featuredImage?.node?.sourceUrl && (
+            <a href={`/${locale}/blog/${post.slug}`} class="card-image-link">
+              <div class="card-image-wrapper">
+                <img
+                  src={post.featuredImage.node.sourceUrl}
+                  alt={post.featuredImage.node.altText || post.title}
+                  loading="lazy"
+                  class="card-image"
+                />
+              </div>
             </a>
-          </h3>
-
-          {post.excerpt && (
-            <p class="card-excerpt">
-              {cleanExcerpt(post.excerpt)}
-            </p>
           )}
 
-          <div class="card-meta">
-            <time datetime={post.date} class="card-date">
-              {formatDate(post.date, locale)}
-            </time>
+          <div class="card-content">
+            {post.categories?.nodes?.length > 0 && (
+              <div class="card-category">
+                {post.categories.nodes[0].name}
+              </div>
+            )}
+
+            <h3 class="card-title">
+              <a href={`/${locale}/blog/${post.slug}`}>
+                {post.title}
+              </a>
+            </h3>
+
+            {post.excerpt && (
+              <p class="card-excerpt">
+                {cleanExcerpt(post.excerpt)}
+              </p>
+            )}
+
+            <div class="card-meta">
+              <time datetime={post.date} class="card-date">
+                {formatDate(post.date, locale)}
+              </time>
+            </div>
           </div>
-        </div>
-      </article>
-    ))
+        </article>
+      ))}
+
+      <div class="cta-container">
+        <a href={`/${locale}/blog`} class="cta-more">
+          {translations[locale].seeMore}
+          <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+    </>
   )}
 </div>
 
@@ -109,7 +128,7 @@ function cleanExcerpt(excerpt: string): string {
     flex-direction: column;
     gap: 3rem;
     padding: 4rem 3rem;
-    background-color: #F8F8F8;
+    background-color: #f4f4f4;
     min-height: 100vh;
   }
 
@@ -226,6 +245,44 @@ function cleanExcerpt(excerpt: string): string {
     color: #888;
   }
 
+  .cta-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 580px; /* Height of blog-card: 280px image + ~300px content */
+    margin-top: 0;
+  }
+
+  .cta-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #406E51;
+    text-decoration: none;
+    padding: 1rem 3.5rem;
+    border: 1px solid #406E51;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .cta-more:hover {
+    background-color: #406E51;
+    color: #FFFFFF;
+  }
+
+  .arrow-icon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  .cta-more:hover .arrow-icon {
+    transform: translateX(4px);
+  }
+
   @media (max-width: 1024px) {
     .blog-scroll-container {
       gap: 2.5rem;
@@ -238,6 +295,10 @@ function cleanExcerpt(excerpt: string): string {
 
     .card-content {
       padding: 1.5rem;
+    }
+
+    .cta-container {
+      min-height: 520px; /* Slightly smaller for tablet */
     }
   }
 
@@ -255,6 +316,15 @@ function cleanExcerpt(excerpt: string): string {
       padding: 1.25rem;
     }
 
+    .cta-container {
+      min-height: 460px; /* Smaller for mobile */
+    }
+
+    .cta-more {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.9375rem;
+    }
+
     .blog-card:hover {
       transform: none;
     }
@@ -266,7 +336,9 @@ function cleanExcerpt(excerpt: string): string {
 
   @media (prefers-reduced-motion: reduce) {
     .blog-card,
-    .card-image {
+    .card-image,
+    .cta-more,
+    .arrow-icon {
       transition: none;
     }
 
@@ -275,6 +347,10 @@ function cleanExcerpt(excerpt: string): string {
     }
 
     .blog-card:hover .card-image {
+      transform: none;
+    }
+
+    .cta-more:hover .arrow-icon {
       transform: none;
     }
   }

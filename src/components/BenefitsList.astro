@@ -13,11 +13,14 @@ const { locale = 'es' } = Astro.props;
 // Benefits content by language
 const content = {
   es: {
-    seoTitle: 'Beneficios sauna finlandesa',
-    heading: 'Beneficios reales del contraste calor-frío',
-    intro: 'La sauna finlandesa de leña combinada con baños de agua helada ofrece beneficios científicamente probados para tu cuerpo y mente.',
-    ctaText: 'Leer más en el blog',
-    ctaLink: '/es/blog',
+    seoTitle: 'DIARIO SAUWA SAUNA',
+    heading: 'Aprende más sobre sauna, baños fríos y recuperación',
+    newParagraph: 'En la calidez de la leña encendida y en el impacto del agua helada, descubrimos la fuerza del contraste: donde el cuerpo se renueva, la mente se calma y el alma se conecta con lo esencial.',
+    intro: 'Descubre los beneficios científicos del contraste térmico, rituales nórdicos auténticos y consejos prácticos para maximizar tu experiencia.',
+    ctaPrimary: 'Explorar el diario',
+    ctaPrimaryLink: '/es/blog',
+    ctaSecondary: 'ACCESO PRIORITARIO',
+    ctaSecondaryLink: '#cta-newsletter',
     benefits: [
       {
         icon: 'muscle',
@@ -47,11 +50,14 @@ const content = {
     ],
   },
   ca: {
-    seoTitle: 'Beneficis sauna finlandesa',
-    heading: 'Beneficis reals del contrast calor-fred',
-    intro: 'La sauna finlandesa de llenya combinada amb banys d\'aigua gelada ofereix beneficis científicament provats per al teu cos i ment.',
-    ctaText: 'Llegir més al blog',
-    ctaLink: '/ca/blog',
+    seoTitle: 'DIARI SAUWA SAUNA',
+    heading: 'Aprèn més sobre sauna, banys freds i recuperació',
+    newParagraph: 'En la calidesa de la llenya encesa i en l\'impacte de l\'aigua gelada, descobrim la força del contrast: on el cos es renova, la ment es calma i l\'ànima es connecta amb l\'essencial.',
+    intro: 'Descobreix els beneficis científics del contrast tèrmic, rituals nòrdics autèntics i consells pràctics per maximitzar la teva experiència.',
+    ctaPrimary: 'Explorar el diari',
+    ctaPrimaryLink: '/ca/blog',
+    ctaSecondary: 'ACCÉS PRIORITARI',
+    ctaSecondaryLink: '#cta-newsletter',
     benefits: [
       {
         icon: 'muscle',
@@ -81,11 +87,14 @@ const content = {
     ],
   },
   en: {
-    seoTitle: 'Finnish sauna benefits',
-    heading: 'Real benefits of heat-cold contrast',
-    intro: 'Wood-fired Finnish sauna combined with ice-cold baths offers scientifically proven benefits for your body and mind.',
-    ctaText: 'Read more on the blog',
-    ctaLink: '/en/blog',
+    seoTitle: 'SAUWA SAUNA JOURNAL',
+    heading: 'Learn more about sauna, cold baths and recovery',
+    newParagraph: 'In the warmth of burning wood and the impact of icy water, we discover the power of contrast: where the body renews, the mind calms, and the soul connects with the essential.',
+    intro: 'Discover the scientific benefits of thermal contrast, authentic Nordic rituals and practical tips to maximize your experience.',
+    ctaPrimary: 'Explore the journal',
+    ctaPrimaryLink: '/en/blog',
+    ctaSecondary: 'PRIORITY ACCESS',
+    ctaSecondaryLink: '#cta-newsletter',
     benefits: [
       {
         icon: 'muscle',
@@ -115,11 +124,14 @@ const content = {
     ],
   },
   fr: {
-    seoTitle: 'Bienfaits sauna finlandais',
-    heading: 'Bienfaits réels du contraste chaud-froid',
-    intro: 'Le sauna finlandais au bois combiné aux bains d\'eau glacée offre des bienfaits scientifiquement prouvés pour votre corps et esprit.',
-    ctaText: 'Lire plus sur le blog',
-    ctaLink: '/fr/blog',
+    seoTitle: 'JOURNAL SAUWA SAUNA',
+    heading: 'Apprenez-en plus sur le sauna, les bains froids et la récupération',
+    newParagraph: 'Dans la chaleur du bois qui brûle et l\'impact de l\'eau glacée, nous découvrons la force du contraste : où le corps se renouvelle, l\'esprit s\'apaise et l\'âme se connecte à l\'essentiel.',
+    intro: 'Découvrez les bienfaits scientifiques du contraste thermique, les rituels nordiques authentiques et des conseils pratiques pour maximiser votre expérience.',
+    ctaPrimary: 'Explorer le journal',
+    ctaPrimaryLink: '/fr/blog',
+    ctaSecondary: 'ACCÈS PRIORITAIRE',
+    ctaSecondaryLink: '#cta-newsletter',
     benefits: [
       {
         icon: 'muscle',
@@ -183,34 +195,33 @@ const icons = {
 ---
 
 <div class="benefits-content">
-  <h2 class="seo-title">{localizedContent.seoTitle}</h2>
-  <h3 class="main-heading">{localizedContent.heading}</h3>
-  <p class="intro-text">{localizedContent.intro}</p>
+  <h2 class="seo-title fade-in-left">{localizedContent.seoTitle}</h2>
+  <h3 class="main-heading fade-in-left">{localizedContent.heading}</h3>
+  <p class="new-paragraph fade-in-left">{localizedContent.newParagraph}</p>
+  <p class="intro-text fade-in-left">{localizedContent.intro}</p>
 
-  <ul class="benefits-list">
-    {localizedContent.benefits.map((benefit) => (
-      <li class="benefit-item">
-        <div class="benefit-icon" set:html={icons[benefit.icon as keyof typeof icons]} />
-        <div class="benefit-content">
-          <h4 class="benefit-title">{benefit.title}</h4>
-          <p class="benefit-text">{benefit.text}</p>
-        </div>
-      </li>
-    ))}
-  </ul>
+  <!-- WDA-272: Dual CTAs -->
+  <div class="cta-buttons-container fade-in-left">
+    <!-- Primary CTA: Explorar el diario (outline style) -->
+    <a href={localizedContent.ctaPrimaryLink} class="cta-link cta-primary">
+      {localizedContent.ctaPrimary}
+      <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+      </svg>
+    </a>
 
-  <a href={localizedContent.ctaLink} class="cta-link">
-    {localizedContent.ctaText}
-    <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-    </svg>
-  </a>
+    <!-- Secondary CTA: Acceso prioritario (inverted filled style) -->
+    <a href={localizedContent.ctaSecondaryLink} class="cta-link cta-secondary">
+      {localizedContent.ctaSecondary}
+    </a>
+  </div>
 </div>
 
 <style>
   .benefits-content {
     padding: 4rem 3rem;
     max-width: 100%;
+    background-color: #f4f4f4;
   }
 
   .seo-title {
@@ -294,34 +305,83 @@ const icons = {
     margin: 0;
   }
 
+  /* New paragraph styling */
+  .new-paragraph {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: clamp(1rem, 1.3vw, 1.25rem);
+    font-weight: 300;
+    line-height: 1.7;
+    color: #333;
+    margin: 0 0 1.5rem;
+    font-style: italic;
+  }
+
+  /* WDA-272: CTA Buttons Container - Side by side on desktop, stacked on mobile */
+  .cta-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .cta-buttons-container {
+      flex-direction: row;
+      gap: 1rem;
+    }
+  }
+
+  /* Base CTA styles */
   .cta-link {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
     font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
     font-size: 1rem;
     font-weight: 400;
-    color: #406E51;
     text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    border: 1px solid #406E51;
+    padding: 1rem 3.5rem;
     border-radius: 4px;
     transition: all 0.3s ease;
+    min-height: 44px;
+    text-align: center;
+    white-space: nowrap;
   }
 
-  .cta-link:hover {
-    background-color: #406E51;
-    color: #FFFFFF;
-  }
-
+  /* Arrow icon for primary button */
   .arrow-icon {
     width: 20px;
     height: 20px;
     transition: transform 0.3s ease;
   }
 
-  .cta-link:hover .arrow-icon {
+  /* Primary CTA: Outline style (existing green outline) */
+  .cta-primary {
+    color: #406E51;
+    background-color: transparent;
+    border: 1px solid #406E51;
+  }
+
+  .cta-primary:hover {
+    background-color: #406E51;
+    color: #FFFFFF;
+  }
+
+  .cta-primary:hover .arrow-icon {
     transform: translateX(4px);
+  }
+
+  /* Secondary CTA: Inverted filled style (green filled, hover to outline) */
+  .cta-secondary {
+    color: #FFFFFF;
+    background-color: #406E51;
+    border: 1px solid #406E51;
+  }
+
+  .cta-secondary:hover {
+    background-color: transparent;
+    color: #406E51;
   }
 
   @media (max-width: 1024px) {
@@ -358,11 +418,77 @@ const icons = {
     }
   }
 
+  /* Fade-in animation from left to right */
+  .fade-in-left {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+
+  .fade-in-left.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Stagger delays for cascading effect */
+  .seo-title.is-visible {
+    transition-delay: 0.1s;
+  }
+
+  .main-heading.is-visible {
+    transition-delay: 0.2s;
+  }
+
+  .new-paragraph.is-visible {
+    transition-delay: 0.3s;
+  }
+
+  .intro-text.is-visible {
+    transition-delay: 0.4s;
+  }
+
+  .cta-buttons-container.is-visible {
+    transition-delay: 0.5s;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .benefit-item,
     .cta-link,
+    .fade-in-left,
     .arrow-icon {
       transition: none;
+      opacity: 1;
+      transform: none;
+    }
+
+    .cta-primary:hover .arrow-icon {
+      transform: none;
     }
   }
 </style>
+
+<script>
+  // Intersection Observer for fade-in animations
+  document.addEventListener('DOMContentLoaded', () => {
+    const fadeElements = document.querySelectorAll('.fade-in-left');
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px 0px -100px 0px',
+      threshold: 0.1,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    fadeElements.forEach((element) => {
+      observer.observe(element);
+    });
+  });
+</script>

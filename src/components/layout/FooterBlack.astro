@@ -1,8 +1,11 @@
 ---
 /**
- * FooterBlack Component - WDA-268
+ * FooterBlack Component - WDA-268 (Updated per client feedback)
  * Footer elegante con fondo negro y logo blanco
- * Layout 4 columnas responsive
+ * Layout simplificado: 2 columnas (Logo + Tagline | Contacto + Social)
+ * Logo 2x más grande
+ * Solo email + Instagram
+ * Sin Términos y Condiciones
  * Multiidioma (es/ca/en/fr)
  */
 
@@ -16,152 +19,64 @@ const currentYear = new Date().getFullYear();
 // Contenido del footer por idioma
 const footerContent = {
   es: {
-    // Columna 1: Logo + Tagline
+    // Logo + Tagline
     tagline: 'La auténtica experiencia de sauna finlandesa en Andorra',
 
-    // Columna 2: Navegación
-    navigation: {
-      title: 'NAVEGACIÓN',
-      links: [
-        { href: `#experiencia`, label: 'Experiencia' },
-        { href: `#beneficios`, label: 'Beneficios' },
-        { href: `#sesion`, label: 'Cómo es una sesión' },
-        { href: `#newsletter`, label: 'Newsletter' },
-      ]
-    },
-
-    // Columna 3: Información
-    info: {
-      title: 'INFORMACIÓN',
-      links: [
-        { href: `/es/sobre-nosotros`, label: 'Sobre nosotros' },
-        { href: `/es/localizaciones`, label: 'Localizaciones' },
-        { href: `/es/preguntas-frecuentes`, label: 'FAQ' },
-        { href: `/es/blog`, label: 'Blog' },
-      ]
-    },
-
-    // Columna 4: Contacto + Social
+    // Contacto
     contact: {
       title: 'CONTACTO',
       email: 'info@sauwasauna.com',
-      phone: '+376 123 456',
-      address: 'Andorra la Vella',
       social: 'Síguenos'
     },
 
-    // Legal links (copyright section)
+    // Legal links (copyright section) - SIN Términos y Condiciones
     legal: [
       { href: `/es/politica-privacidad`, label: 'Política de Privacidad' },
       { href: `/es/politica-cookies`, label: 'Política de Cookies' },
       { href: `/es/aviso-legal`, label: 'Aviso Legal' },
-      { href: `/es/terminos-condiciones`, label: 'Términos y Condiciones' },
     ],
 
     copyright: `© ${currentYear} SAUWA - PCR Europe, S.L. Todos los derechos reservados.`
   },
   ca: {
     tagline: 'L\'autèntica experiència de sauna finlandesa a Andorra',
-    navigation: {
-      title: 'NAVEGACIÓ',
-      links: [
-        { href: `#experiencia`, label: 'Experiència' },
-        { href: `#beneficios`, label: 'Beneficis' },
-        { href: `#sesion`, label: 'Com és una sessió' },
-        { href: `#newsletter`, label: 'Newsletter' },
-      ]
-    },
-    info: {
-      title: 'INFORMACIÓ',
-      links: [
-        { href: `/ca/sobre-nosaltres`, label: 'Sobre nosaltres' },
-        { href: `/ca/localitzacions`, label: 'Localitzacions' },
-        { href: `/ca/preguntes-frequents`, label: 'FAQ' },
-        { href: `/ca/blog`, label: 'Blog' },
-      ]
-    },
     contact: {
       title: 'CONTACTE',
       email: 'info@sauwasauna.com',
-      phone: '+376 123 456',
-      address: 'Andorra la Vella',
       social: 'Segueix-nos'
     },
     legal: [
       { href: `/ca/politica-privacitat`, label: 'Política de Privacitat' },
       { href: `/ca/politica-cookies`, label: 'Política de Cookies' },
       { href: `/ca/avis-legal`, label: 'Avís Legal' },
-      { href: `/ca/termes-condicions`, label: 'Termes i Condicions' },
     ],
     copyright: `© ${currentYear} SAUWA - PCR Europe, S.L. Tots els drets reservats.`
   },
   en: {
     tagline: 'The authentic Finnish sauna experience in Andorra',
-    navigation: {
-      title: 'NAVIGATION',
-      links: [
-        { href: `#experience`, label: 'Experience' },
-        { href: `#benefits`, label: 'Benefits' },
-        { href: `#session`, label: 'How is a session' },
-        { href: `#newsletter`, label: 'Newsletter' },
-      ]
-    },
-    info: {
-      title: 'INFORMATION',
-      links: [
-        { href: `/en/about-us`, label: 'About us' },
-        { href: `/en/locations`, label: 'Locations' },
-        { href: `/en/faq`, label: 'FAQ' },
-        { href: `/en/blog`, label: 'Blog' },
-      ]
-    },
     contact: {
       title: 'CONTACT',
       email: 'info@sauwasauna.com',
-      phone: '+376 123 456',
-      address: 'Andorra la Vella',
       social: 'Follow us'
     },
     legal: [
       { href: `/en/privacy-policy`, label: 'Privacy Policy' },
       { href: `/en/cookie-policy`, label: 'Cookie Policy' },
       { href: `/en/legal-notice`, label: 'Legal Notice' },
-      { href: `/en/terms-conditions`, label: 'Terms & Conditions' },
     ],
     copyright: `© ${currentYear} SAUWA - PCR Europe, S.L. All rights reserved.`
   },
   fr: {
     tagline: 'L\'authentique expérience de sauna finlandais en Andorre',
-    navigation: {
-      title: 'NAVIGATION',
-      links: [
-        { href: `#experience`, label: 'Expérience' },
-        { href: `#benefices`, label: 'Bénéfices' },
-        { href: `#session`, label: 'Comment est une séance' },
-        { href: `#newsletter`, label: 'Newsletter' },
-      ]
-    },
-    info: {
-      title: 'INFORMATION',
-      links: [
-        { href: `/fr/a-propos`, label: 'À propos' },
-        { href: `/fr/localisations`, label: 'Localisations' },
-        { href: `/fr/faq`, label: 'FAQ' },
-        { href: `/fr/blog`, label: 'Blog' },
-      ]
-    },
     contact: {
       title: 'CONTACT',
       email: 'info@sauwasauna.com',
-      phone: '+376 123 456',
-      address: 'Andorre-la-Vieille',
       social: 'Suivez-nous'
     },
     legal: [
       { href: `/fr/politique-confidentialite`, label: 'Politique de Confidentialité' },
       { href: `/fr/politique-cookies`, label: 'Politique de Cookies' },
       { href: `/fr/mentions-legales`, label: 'Mentions Légales' },
-      { href: `/fr/termes-conditions`, label: 'Termes et Conditions' },
     ],
     copyright: `© ${currentYear} SAUWA - PCR Europe, S.L. Tous droits réservés.`
   }
@@ -180,8 +95,8 @@ const content = footerContent[locale];
         src="/images/logo/sauwa-full-white.svg"
         alt="SAUWA"
         class="footer-logo"
-        width="140"
-        height="48"
+        width="280"
+        height="96"
         loading="lazy"
       />
       <p class="footer-tagline">
@@ -189,37 +104,7 @@ const content = footerContent[locale];
       </p>
     </div>
 
-    <!-- Column 2: Navigation -->
-    <div class="footer-column">
-      <h3 class="footer-heading">{content.navigation.title}</h3>
-      <nav aria-label="Footer navigation">
-        <ul class="footer-links">
-          {content.navigation.links.map(link => (
-            <li>
-              <a href={link.href} class="footer-link">
-                {link.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </div>
-
-    <!-- Column 3: Information -->
-    <div class="footer-column">
-      <h3 class="footer-heading">{content.info.title}</h3>
-      <ul class="footer-links">
-        {content.info.links.map(link => (
-          <li>
-            <a href={link.href} class="footer-link">
-              {link.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    <!-- Column 4: Contact + Social -->
+    <!-- Column 2: Contact + Social -->
     <div class="footer-column footer-contact">
       <h3 class="footer-heading">{content.contact.title}</h3>
       <div class="contact-info">
@@ -230,19 +115,6 @@ const content = footerContent[locale];
           </svg>
           {content.contact.email}
         </a>
-        <a href={`tel:${content.contact.phone.replace(/\s/g, '')}`} class="footer-link contact-link">
-          <svg class="contact-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-          </svg>
-          {content.contact.phone}
-        </a>
-        <span class="footer-link contact-link">
-          <svg class="contact-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-          {content.contact.address}
-        </span>
       </div>
 
       <!-- Social Media -->
@@ -250,7 +122,7 @@ const content = footerContent[locale];
         <p class="social-label">{content.contact.social}</p>
         <div class="social-links">
           <a
-            href="https://www.instagram.com/sauwa.ad/"
+            href="https://www.instagram.com/sauwa.sauna/"
             target="_blank"
             rel="noopener noreferrer"
             class="social-link"
@@ -258,17 +130,6 @@ const content = footerContent[locale];
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-            </svg>
-          </a>
-          <a
-            href="https://www.facebook.com/sauwa.ad"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="social-link"
-            aria-label="Facebook"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/>
             </svg>
           </a>
         </div>
@@ -303,17 +164,18 @@ const content = footerContent[locale];
     background-color: #000000;
     color: #FFFFFF;
     font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
-    margin-top: 0; /* Eliminar el espacio de 80px */
+    margin-top: 0;
   }
 
-  /* Container principal */
+  /* Container principal - 2 columnas desktop */
   .footer-container {
     max-width: 1280px;
     margin: 0 auto;
     padding: 5rem 2rem 3rem;
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1.5fr;
-    gap: 3rem;
+    grid-template-columns: 2fr 1fr;
+    gap: 4rem;
+    align-items: start;
   }
 
   /* Columna Brand (Logo + Tagline) */
@@ -323,8 +185,9 @@ const content = footerContent[locale];
     gap: 1.5rem;
   }
 
+  /* Logo 2x más grande: 140px → 280px */
   .footer-logo {
-    width: 140px;
+    width: 280px;
     height: auto;
     object-fit: contain;
   }
@@ -335,7 +198,7 @@ const content = footerContent[locale];
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.7);
     margin: 0;
-    max-width: 280px;
+    max-width: 380px;
   }
 
   /* Columnas generales */
@@ -358,15 +221,6 @@ const content = footerContent[locale];
   }
 
   /* Links */
-  .footer-links {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
   .footer-link {
     font-size: 15px;
     font-weight: 300;
@@ -385,6 +239,7 @@ const content = footerContent[locale];
   /* Contacto */
   .footer-contact {
     gap: 1.5rem;
+    justify-self: end;
   }
 
   .contact-info {
@@ -496,12 +351,12 @@ const content = footerContent[locale];
   /* Tablet (768px - 1023px) */
   @media (min-width: 768px) and (max-width: 1023px) {
     .footer-container {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 3rem 2rem;
+      grid-template-columns: 1fr;
+      gap: 3rem;
     }
 
-    .footer-brand {
-      grid-column: 1 / -1;
+    .footer-logo {
+      width: 240px;
     }
   }
 
@@ -518,6 +373,10 @@ const content = footerContent[locale];
       text-align: center;
     }
 
+    .footer-logo {
+      width: 200px;
+    }
+
     .footer-tagline {
       text-align: center;
       max-width: 100%;
@@ -530,10 +389,6 @@ const content = footerContent[locale];
 
     .footer-heading {
       text-align: center;
-    }
-
-    .footer-links {
-      align-items: center;
     }
 
     .contact-info {

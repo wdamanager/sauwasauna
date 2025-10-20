@@ -11,8 +11,8 @@ const content = {
     seoTitle: 'Beneficios sauna finlandesa',
     heading: 'Beneficios reales del contraste calor-frío',
     intro: 'La sauna finlandesa de leña combinada con baños de agua helada ofrece beneficios científicamente probados para tu cuerpo y mente.',
-    ctaText: 'Reserva tu sesión',
-    ctaLink: '/es/reservas',
+    ctaText: 'Sesión de SAUWA',
+    ctaLink: '#session-phases',
     benefits: [
       {
         icon: 'muscle',
@@ -45,8 +45,8 @@ const content = {
     seoTitle: 'Beneficis sauna finlandesa',
     heading: 'Beneficis reals del contrast calor-fred',
     intro: 'La sauna finlandesa de llenya combinada amb banys d\'aigua gelada ofereix beneficis científicament provats per al teu cos i ment.',
-    ctaText: 'Reserva la teva sessió',
-    ctaLink: '/ca/reservas',
+    ctaText: 'Sessió de SAUWA',
+    ctaLink: '#session-phases',
     benefits: [
       {
         icon: 'muscle',
@@ -79,8 +79,8 @@ const content = {
     seoTitle: 'Finnish sauna benefits',
     heading: 'Real benefits of heat-cold contrast',
     intro: 'Wood-fired Finnish sauna combined with ice-cold baths offers scientifically proven benefits for your body and mind.',
-    ctaText: 'Book your session',
-    ctaLink: '/en/reservas',
+    ctaText: 'SAUWA Session',
+    ctaLink: '#session-phases',
     benefits: [
       {
         icon: 'muscle',
@@ -113,8 +113,8 @@ const content = {
     seoTitle: 'Bienfaits sauna finlandais',
     heading: 'Bienfaits réels du contraste chaud-froid',
     intro: 'Le sauna finlandais au bois combiné aux bains d\'eau glacée offre des bienfaits scientifiquement prouvés pour votre corps et esprit.',
-    ctaText: 'Réservez votre séance',
-    ctaLink: '/fr/reservas',
+    ctaText: 'Séance de SAUWA',
+    ctaLink: '#session-phases',
     benefits: [
       {
         icon: 'muscle',
@@ -192,7 +192,7 @@ const icons = {
     </div>
 
     <!-- Columna Derecha: CONTENIDO - COPIADO EXACTO DE BenefitsList.astro -->
-    <div class="flex items-center fade-in-right">
+    <div class="flex items-center fade-in-right benefits-right-column">
       <div class="benefits-content w-full">
         <h2 class="seo-title">{localizedContent.seoTitle}</h2>
         <h3 class="main-heading">{localizedContent.heading}</h3>
@@ -257,6 +257,11 @@ const icons = {
 
   .image-wrapper:hover .hover-zoom-image {
     transform: scale(1.05);
+  }
+
+  /* WDA-272: Fondo gris claro en columna derecha */
+  .benefits-right-column {
+    background-color: #f4f4f4;
   }
 
   /* Estilos COPIADOS EXACTOS de BenefitsList.astro */
@@ -355,7 +360,7 @@ const icons = {
     font-weight: 400;
     color: #406E51;
     text-decoration: none;
-    padding: 0.75rem 1.5rem;
+    padding: 1rem 3.5rem;
     border: 1px solid #406E51;
     border-radius: 4px;
     transition: all 0.3s ease;

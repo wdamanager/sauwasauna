@@ -142,7 +142,7 @@ const phasesContent = {
 const content = phasesContent[locale];
 ---
 
-<section id="sesion-sauwa" class={`session-phases-section ${className}`}>
+<section id="session-phases" class={`session-phases-section ${className}`}>
   <div class="container mx-auto px-6">
 
     <!-- Títulos con jerarquía SEO -->
@@ -203,6 +203,11 @@ const content = phasesContent[locale];
 </section>
 
 <style>
+  /* WDA-272: Scroll offset para compensar sticky headers */
+  #session-phases {
+    scroll-margin-top: 80px;
+  }
+
   /* Sección principal */
   .session-phases-section {
     padding: 5rem 0;
