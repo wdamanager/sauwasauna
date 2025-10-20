@@ -1,0 +1,440 @@
+---
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+}
+
+const { locale = 'es' } = Astro.props;
+
+// Contenido multiidioma - COPIADO EXACTO DE BenefitsList.astro
+const content = {
+  es: {
+    seoTitle: 'Beneficios sauna finlandesa',
+    heading: 'Beneficios reales del contraste calor-frío',
+    intro: 'La sauna finlandesa de leña combinada con baños de agua helada ofrece beneficios científicamente probados para tu cuerpo y mente.',
+    ctaText: 'Reserva tu sesión',
+    ctaLink: '/es/reservas',
+    benefits: [
+      {
+        icon: 'muscle',
+        title: 'Recuperación muscular',
+        text: 'Acelera la recuperación tras actividad física intensa y reduce la fatiga muscular.',
+      },
+      {
+        icon: 'sleep',
+        title: 'Mejora del sueño',
+        text: 'Favorece un descanso profundo y reparador gracias a la liberación de endorfinas.',
+      },
+      {
+        icon: 'circulation',
+        title: 'Activación circulatoria',
+        text: 'Estimula la circulación sanguínea y mejora el enfoque mental.',
+      },
+      {
+        icon: 'resilience',
+        title: 'Fortalecimiento inmune',
+        text: 'Refuerza la tolerancia al frío y mejora la respuesta inmunológica.',
+      },
+      {
+        icon: 'nature',
+        title: 'Conexión con la naturaleza',
+        text: 'Ritual auténtico guiado por sauna master en entorno natural único.',
+      },
+    ],
+  },
+  ca: {
+    seoTitle: 'Beneficis sauna finlandesa',
+    heading: 'Beneficis reals del contrast calor-fred',
+    intro: 'La sauna finlandesa de llenya combinada amb banys d\'aigua gelada ofereix beneficis científicament provats per al teu cos i ment.',
+    ctaText: 'Reserva la teva sessió',
+    ctaLink: '/ca/reservas',
+    benefits: [
+      {
+        icon: 'muscle',
+        title: 'Recuperació muscular',
+        text: 'Accelera la recuperació després d\'activitat física intensa i redueix la fatiga muscular.',
+      },
+      {
+        icon: 'sleep',
+        title: 'Millora del son',
+        text: 'Afavoreix un descans profund i reparador gràcies a l\'alliberament d\'endorfines.',
+      },
+      {
+        icon: 'circulation',
+        title: 'Activació circulatòria',
+        text: 'Estimula la circulació sanguínia i millora l\'enfocament mental.',
+      },
+      {
+        icon: 'resilience',
+        title: 'Enfortiment immune',
+        text: 'Reforça la tolerància al fred i millora la resposta immunològica.',
+      },
+      {
+        icon: 'nature',
+        title: 'Connexió amb la natura',
+        text: 'Ritual autèntic guiat per sauna master en entorn natural únic.',
+      },
+    ],
+  },
+  en: {
+    seoTitle: 'Finnish sauna benefits',
+    heading: 'Real benefits of heat-cold contrast',
+    intro: 'Wood-fired Finnish sauna combined with ice-cold baths offers scientifically proven benefits for your body and mind.',
+    ctaText: 'Book your session',
+    ctaLink: '/en/reservas',
+    benefits: [
+      {
+        icon: 'muscle',
+        title: 'Muscle recovery',
+        text: 'Accelerates recovery after intense physical activity and reduces muscle fatigue.',
+      },
+      {
+        icon: 'sleep',
+        title: 'Sleep improvement',
+        text: 'Promotes deep and restorative rest thanks to endorphin release.',
+      },
+      {
+        icon: 'circulation',
+        title: 'Circulation activation',
+        text: 'Stimulates blood circulation and improves mental focus.',
+      },
+      {
+        icon: 'resilience',
+        title: 'Immune strengthening',
+        text: 'Strengthens cold tolerance and improves immune response.',
+      },
+      {
+        icon: 'nature',
+        title: 'Nature connection',
+        text: 'Authentic ritual guided by sauna master in unique natural setting.',
+      },
+    ],
+  },
+  fr: {
+    seoTitle: 'Bienfaits sauna finlandais',
+    heading: 'Bienfaits réels du contraste chaud-froid',
+    intro: 'Le sauna finlandais au bois combiné aux bains d\'eau glacée offre des bienfaits scientifiquement prouvés pour votre corps et esprit.',
+    ctaText: 'Réservez votre séance',
+    ctaLink: '/fr/reservas',
+    benefits: [
+      {
+        icon: 'muscle',
+        title: 'Récupération musculaire',
+        text: 'Accélère la récupération après une activité physique intense et réduit la fatigue musculaire.',
+      },
+      {
+        icon: 'sleep',
+        title: 'Amélioration du sommeil',
+        text: 'Favorise un repos profond et réparateur grâce à la libération d\'endorphines.',
+      },
+      {
+        icon: 'circulation',
+        title: 'Activation circulatoire',
+        text: 'Stimule la circulation sanguine et améliore la concentration mentale.',
+      },
+      {
+        icon: 'resilience',
+        title: 'Renforcement immunitaire',
+        text: 'Renforce la tolérance au froid et améliore la réponse immunitaire.',
+      },
+      {
+        icon: 'nature',
+        title: 'Connexion avec la nature',
+        text: 'Rituel authentique guidé par un maître de sauna dans un cadre naturel unique.',
+      },
+    ],
+  },
+};
+
+const localizedContent = content[locale];
+
+// SVG Icons (optimized, 24x24) - COPIADO EXACTO DE BenefitsList.astro
+const icons = {
+  muscle: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+    </svg>
+  `,
+  sleep: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+    </svg>
+  `,
+  circulation: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    </svg>
+  `,
+  resilience: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+    </svg>
+  `,
+  nature: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  `,
+};
+---
+
+<section id="beneficios-imagen" class="relative">
+  <div class="grid md:grid-cols-2 min-h-screen">
+
+    <!-- Columna Izquierda: IMAGEN -->
+    <div class="relative fade-in-left">
+      <img
+        src="/images/sauwa-sauna-exterior-cosy.webp"
+        alt="Sauna SAUWA exterior - Ambiente acogedor en naturaleza"
+        class="w-full h-full object-cover"
+        style="min-height: 600px;"
+        loading="lazy"
+      />
+    </div>
+
+    <!-- Columna Derecha: CONTENIDO - COPIADO EXACTO DE BenefitsList.astro -->
+    <div class="flex items-center fade-in-right">
+      <div class="benefits-content w-full">
+        <h2 class="seo-title">{localizedContent.seoTitle}</h2>
+        <h3 class="main-heading">{localizedContent.heading}</h3>
+        <p class="intro-text">{localizedContent.intro}</p>
+
+        <ul class="benefits-list">
+          {localizedContent.benefits.map((benefit) => (
+            <li class="benefit-item">
+              <div class="benefit-icon" set:html={icons[benefit.icon as keyof typeof icons]} />
+              <div class="benefit-content">
+                <h4 class="benefit-title">{benefit.title}</h4>
+                <p class="benefit-text">{benefit.text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+
+        <a href={localizedContent.ctaLink} class="cta-link">
+          {localizedContent.ctaText}
+          <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /* Animaciones fade-in */
+  .fade-in-left,
+  .fade-in-right {
+    opacity: 0;
+    transition: all 800ms ease-out;
+  }
+
+  .fade-in-left {
+    transform: translateX(-40px);
+  }
+
+  .fade-in-right {
+    transform: translateX(40px);
+    transition-delay: 200ms;
+  }
+
+  .fade-in-left.is-visible,
+  .fade-in-right.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Estilos COPIADOS EXACTOS de BenefitsList.astro */
+  .benefits-content {
+    padding: 4rem 3rem;
+    max-width: 100%;
+  }
+
+  .seo-title {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #DB4529;
+    margin: 0 0 1rem;
+  }
+
+  .main-heading {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 200;
+    line-height: 1.3;
+    color: #1a1a1a;
+    margin: 0 0 1.5rem;
+  }
+
+  .intro-text {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: clamp(0.95rem, 1.2vw, 1.125rem);
+    font-weight: 300;
+    line-height: 1.7;
+    color: #444;
+    margin: 0 0 3rem;
+  }
+
+  .benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 3rem;
+  }
+
+  .benefit-item {
+    display: flex;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease;
+  }
+
+  .benefit-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .benefit-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #DB4529;
+  }
+
+  .benefit-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .benefit-content {
+    flex: 1;
+  }
+
+  .benefit-title {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin: 0 0 0.5rem;
+  }
+
+  .benefit-text {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: #555;
+    margin: 0;
+  }
+
+  .cta-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #406E51;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #406E51;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .cta-link:hover {
+    background-color: #406E51;
+    color: #FFFFFF;
+  }
+
+  .arrow-icon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  .cta-link:hover .arrow-icon {
+    transform: translateX(4px);
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .benefits-content {
+      padding: 3rem 2rem;
+    }
+
+    .benefit-item {
+      gap: 1rem;
+    }
+
+    .benefit-icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .benefit-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    #beneficios-imagen img {
+      height: 400px;
+      min-height: 400px;
+    }
+
+    .benefits-content {
+      padding: 2rem 1.5rem;
+    }
+
+    .intro-text {
+      margin-bottom: 2rem;
+    }
+
+    .benefit-item {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in-left,
+    .fade-in-right,
+    .benefit-item,
+    .cta-link,
+    .arrow-icon {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  // Intersection Observer para animaciones
+  document.addEventListener('DOMContentLoaded', () => {
+    const elements = document.querySelectorAll('.fade-in-left, .fade-in-right');
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    elements.forEach((el) => {
+      observer.observe(el);
+    });
+  });
+</script>
