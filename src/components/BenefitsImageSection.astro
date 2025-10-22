@@ -410,6 +410,19 @@ const icons = {
 
     .benefits-content {
       padding: 2rem 1.5rem;
+      text-align: center; /* WDA-295: Centrar contenido en móvil */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* WDA-295: Asegurar que todos los elementos de texto tengan ancho completo */
+    .seo-title,
+    .main-heading,
+    .intro-text,
+    .benefits-list {
+      width: 100%;
+      max-width: 100%;
     }
 
     .intro-text {
@@ -418,6 +431,13 @@ const icons = {
 
     .benefit-item {
       margin-bottom: 1.5rem;
+      text-align: left; /* Mantener items alineados a la izquierda */
+    }
+
+    /* WDA-295: Centrar botón CTA en móvil */
+    .cta-link {
+      display: inline-flex;
+      margin: 0;
     }
 
     /* Deshabilitar zoom en móviles */
