@@ -1,0 +1,459 @@
+---
+/**
+ * CategoryFilter Component
+ * Radio button style category filter inspired by elefantensauna.de/blog
+ * Features: smooth transitions, active states, keyboard navigation, ARIA support
+ */
+
+import type { Category, Locale } from '../../lib/types/blog';
+
+interface Props {
+  categories: Category[];
+  allCategoriesText?: string;
+  locale?: Locale;
+}
+
+const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' } = Astro.props;
+---
+
+<div class="category-filter" role="region" aria-label="Filtrar por categoría">
+  <div class="filter-wrapper">
+    <!-- All Categories Button -->
+    <button
+      class="filter-button active"
+      data-category="all"
+      type="button"
+      aria-pressed="true"
+    >
+      {allCategoriesText}
+    </button>
+
+    <!-- Category Buttons -->
+    {categories.map((category) => (
+      <button
+        class="filter-button"
+        data-category={category.slug}
+        type="button"
+        aria-pressed="false"
+      >
+        {category.name}
+        {category.count !== undefined && category.count > 0 && (
+          <span class="category-count" aria-label={`${category.count} artículos`}>
+            {category.count}
+          </span>
+        )}
+      </button>
+    ))}
+  </div>
+</div>
+
+<script>
+  /**
+   * Category Filter Client-Side Logic
+   * Handles filter state and dispatches custom events
+   */
+
+  // Get all filter buttons
+  const filterButtons = document.querySelectorAll<HTMLButtonElement>('.filter-button');
+
+  // State
+  let activeCategory = 'all';
+
+  /**
+   * Update active button state
+   */
+  function updateActiveState(selectedButton: HTMLButtonElement): void {
+    filterButtons.forEach(button => {
+      const isActive = button === selectedButton;
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+  }
+
+  /**
+   * Handle category selection
+   */
+  function handleCategoryClick(event: MouseEvent): void {
+    const button = event.currentTarget as HTMLButtonElement;
+    const category = button.dataset.category;
+
+    if (!category || category === activeCategory) {
+      return;
+    }
+
+    // Update state
+    activeCategory = category;
+    updateActiveState(button);
+
+    // Dispatch custom event for BlogGrid to listen
+    const filterEvent = new CustomEvent('blog:filter', {
+      detail: { category },
+      bubbles: true,
+    });
+    document.dispatchEvent(filterEvent);
+  }
+
+  /**
+   * Handle keyboard navigation
+   */
+  function handleKeyDown(event: KeyboardEvent): void {
+    const button = event.currentTarget as HTMLButtonElement;
+    const buttons = Array.from(filterButtons);
+    const currentIndex = buttons.indexOf(button);
+
+    let newIndex = currentIndex;
+
+    switch (event.key) {
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        event.preventDefault();
+        newIndex = currentIndex > 0 ? currentIndex - 1 : buttons.length - 1;
+        break;
+      case 'ArrowRight':
+      case 'ArrowDown':
+        event.preventDefault();
+        newIndex = currentIndex < buttons.length - 1 ? currentIndex + 1 : 0;
+        break;
+      case 'Home':
+        event.preventDefault();
+        newIndex = 0;
+        break;
+      case 'End':
+        event.preventDefault();
+        newIndex = buttons.length - 1;
+        break;
+      default:
+        return;
+    }
+
+    buttons[newIndex].focus();
+  }
+
+  /**
+   * Initialize event listeners
+   */
+  function init(): void {
+    filterButtons.forEach(button => {
+      button.addEventListener('click', handleCategoryClick);
+      button.addEventListener('keydown', handleKeyDown);
+    });
+
+    // Initialize drag functionality
+    initDragScroll();
+
+    // Check URL for category parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryParam = urlParams.get('category');
+
+    if (categoryParam) {
+      // Find and activate the corresponding button
+      const targetButton = Array.from(filterButtons).find(
+        btn => btn.dataset.category === categoryParam
+      );
+
+      if (targetButton) {
+        activeCategory = categoryParam;
+        updateActiveState(targetButton as HTMLButtonElement);
+
+        // Dispatch filter event to load posts
+        const filterEvent = new CustomEvent('blog:filter', {
+          detail: { category: categoryParam },
+          bubbles: true,
+        });
+        document.dispatchEvent(filterEvent);
+      }
+    }
+  }
+
+  /**
+   * Drag Scroll Functionality (estilo DATA)
+   */
+  function initDragScroll(): void {
+    const slider = document.querySelector('.filter-wrapper') as HTMLElement;
+    if (!slider) return;
+
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+    let isDragging = false;
+
+    // Prevent text selection while dragging
+    slider.addEventListener('selectstart', (e) => {
+      if (isDragging) e.preventDefault();
+    });
+
+    // Mouse down
+    slider.addEventListener('mousedown', (e) => {
+      isDown = true;
+      isDragging = false;
+      slider.classList.add('dragging');
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+    });
+
+    // Mouse leave
+    slider.addEventListener('mouseleave', () => {
+      isDown = false;
+      isDragging = false;
+      slider.classList.remove('dragging');
+    });
+
+    // Mouse up
+    slider.addEventListener('mouseup', () => {
+      isDown = false;
+      setTimeout(() => {
+        isDragging = false;
+        slider.classList.remove('dragging');
+      }, 10);
+    });
+
+    // Mouse move
+    slider.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      isDragging = true;
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      slider.scrollLeft = scrollLeft - walk;
+    });
+
+    // Prevent clicks on buttons when dragging
+    slider.addEventListener('click', (e) => {
+      if (isDragging) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+
+    // Touch events for mobile
+    let startTouchX = 0;
+    let touchScrollLeft = 0;
+
+    slider.addEventListener('touchstart', (e) => {
+      startTouchX = e.touches[0].clientX;
+      touchScrollLeft = slider.scrollLeft;
+      isDragging = false;
+    });
+
+    slider.addEventListener('touchmove', (e) => {
+      if (!startTouchX) return;
+      isDragging = true;
+      const currentX = e.touches[0].clientX;
+      const walk = (currentX - startTouchX) * 1.5;
+      slider.scrollLeft = touchScrollLeft - walk;
+    });
+
+    slider.addEventListener('touchend', () => {
+      startTouchX = 0;
+      setTimeout(() => {
+        isDragging = false;
+      }, 10);
+    });
+  }
+
+  // Initialize on DOM load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>
+
+<style>
+  /* Container */
+  .category-filter {
+    margin-bottom: 3rem;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* Filter Wrapper - Horizontal Carousel (sin scrollbar visible) */
+  .filter-wrapper {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-start;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 1rem 2rem;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  .filter-wrapper.dragging {
+    cursor: grabbing;
+    scroll-behavior: auto;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .filter-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Filter Button - Radio Style */
+  .filter-button {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #636464;
+    background: #ffffff;
+    border: 2px solid #e5e5e5;
+    border-radius: 4px; /* GUIDELINE standard radius */
+    padding: 0.75rem 1.5rem; /* Increased from 0.625rem to 0.75rem for 44px min-height */
+    min-height: 44px; /* WCAG 2.5.5 compliant touch target */
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    position: relative;
+    flex-shrink: 0; /* Prevent buttons from shrinking in carousel */
+  }
+
+  .filter-button:hover {
+    border-color: #DB4529;
+    color: #DB4529;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(219, 69, 41, 0.15);
+  }
+
+  .filter-button:focus-visible {
+    outline: 3px solid #BA2515;
+    outline-offset: 2px;
+    border-color: #BA2515;
+  }
+
+  /* Active State */
+  .filter-button.active {
+    background: #DB4529;
+    border-color: #DB4529;
+    color: #ffffff;
+    font-weight: 500;
+  }
+
+  .filter-button.active:hover {
+    background: #BA2515;
+    border-color: #BA2515;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(186, 37, 21, 0.25);
+  }
+
+  /* Category Count Badge */
+  .category-count {
+    font-size: 14px; /* Increased from 12px to 14px minimum */
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px; /* GUIDELINE standard radius */
+    min-width: 24px;
+    text-align: center;
+  }
+
+  .filter-button.active .category-count {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .category-filter {
+      margin-bottom: 2rem;
+      padding: 0 0.5rem;
+    }
+
+    .filter-wrapper {
+      gap: 0.5rem;
+      padding: 0.5rem 0.5rem;
+    }
+
+    .filter-button {
+      font-size: 14px; /* Increased from 13px to 14px minimum */
+      padding: 0.75rem 1.25rem; /* Maintain 44px min-height on mobile */
+      min-height: 44px; /* Ensure touch target on mobile */
+    }
+  }
+
+  @media (max-width: 640px) {
+    .category-filter {
+      padding: 0;
+    }
+
+    .filter-wrapper {
+      padding: 0.5rem 1rem;
+    }
+  }
+
+  /* Ultra-small screens support */
+  @media (max-width: 360px) {
+    .filter-button {
+      font-size: 14px;
+      padding: 0.625rem 1rem;
+      min-height: 44px;
+    }
+
+    .category-count {
+      font-size: 14px;
+      padding: 0.125rem 0.375rem;
+    }
+  }
+
+  /* Reduced motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .filter-button {
+      transition: none;
+    }
+
+    .filter-button:hover {
+      transform: none;
+    }
+
+    .filter-button.active:hover {
+      transform: none;
+    }
+  }
+
+  /* High contrast mode */
+  @media (prefers-contrast: high) {
+    .filter-button {
+      border-width: 3px;
+    }
+
+    .filter-button.active {
+      border-width: 3px;
+      font-weight: 700;
+    }
+  }
+
+  /* Loading state (for future use) */
+  .filter-button.loading {
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .filter-button.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
