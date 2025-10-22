@@ -175,7 +175,8 @@ try {
 
     .blog-header {
       padding: 2rem 0 1.5rem;
-      margin-top: 104px; /* WDA-295: Compensar altura navbar (104px) sin crear gap */
+      margin-top: -104px; /* WDA-295: Extender header detrás del navbar */
+      padding-top: calc(2rem + 104px); /* WDA-295: Compensar margin negativo + padding original */
     }
 
     .container {
