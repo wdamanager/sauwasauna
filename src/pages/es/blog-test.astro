@@ -1,0 +1,91 @@
+---
+/**
+ * Blog Test Page - Para probar el navbar en páginas no-home
+ * WDA-294: Navbar versión otras páginas
+ */
+
+import Layout from '../../layouts/Layout.astro';
+
+const lang = 'es';
+
+// SEO metadata
+const title = 'Blog - SAUWA Sauna Andorra';
+const description = 'Artículos sobre bienestar, sauna finlandesa y salud en Andorra.';
+---
+
+<Layout title={title} description={description} lang={lang} pageType="blog">
+
+  <!-- Hero Section con imagen de fondo para probar navbar transparente -->
+  <section class="relative min-h-screen bg-gradient-to-b from-gray-900 to-gray-700">
+    <div class="absolute inset-0">
+      <img
+        src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1920"
+        alt="Sauna background"
+        class="w-full h-full object-cover opacity-60"
+      />
+    </div>
+
+    <div class="relative z-10 flex flex-col items-center justify-center min-h-screen text-white px-8">
+      <h1 class="text-5xl md:text-6xl font-bold mb-6">Blog de SAUWA</h1>
+      <p class="text-xl md:text-2xl mb-8 text-center max-w-3xl">
+        Descubre los beneficios de la sauna finlandesa y el bienestar nórdico
+      </p>
+    </div>
+  </section>
+
+  <!-- Contenido de prueba para scrolling -->
+  <section class="py-20 bg-white">
+    <div class="container mx-auto px-8">
+      <h2 class="text-3xl font-bold mb-8">Artículos Destacados</h2>
+
+      <!-- Article Cards -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {[1, 2, 3, 4, 5, 6].map((item) => (
+          <article class="bg-gray-50 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
+            <div class="h-48 bg-gray-300 rounded mb-4"></div>
+            <h3 class="text-xl font-semibold mb-2">Artículo de Prueba {item}</h3>
+            <p class="text-gray-600 mb-4">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+            <a href="#" class="text-blue-600 hover:text-blue-800 font-medium">
+              Leer más →
+            </a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Más contenido para scroll -->
+  <section class="py-20 bg-gray-50">
+    <div class="container mx-auto px-8">
+      <h2 class="text-3xl font-bold mb-8">Categorías</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {['Bienestar', 'Salud', 'Tradición Nórdica', 'Consejos', 'Experiencias', 'Naturaleza', 'Rituales', 'Beneficios'].map((cat) => (
+          <a
+            href="#"
+            class="bg-white p-6 rounded-lg text-center hover:bg-gray-100 transition-colors shadow"
+          >
+            <span class="text-lg font-medium">{cat}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer space -->
+  <section class="py-20 bg-gray-800 text-white">
+    <div class="container mx-auto px-8 text-center">
+      <p class="text-lg">© 2025 SAUWA - Test Page for Navbar</p>
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+  /* Asegurar que el hero tenga espacio para la navbar transparente */
+  .min-h-screen {
+    min-height: 100vh;
+  }
+</style>

@@ -366,6 +366,7 @@ const content = footerContent[locale];
       grid-template-columns: 1fr;
       gap: 2.5rem;
       padding: 3rem 1.5rem 2rem;
+      text-align: center; /* Asegurar centrado general */
     }
 
     .footer-brand {
@@ -375,6 +376,7 @@ const content = footerContent[locale];
 
     .footer-logo {
       width: 200px;
+      margin: 0 auto; /* Centrar logo horizontalmente */
     }
 
     .footer-tagline {
@@ -387,8 +389,13 @@ const content = footerContent[locale];
       text-align: center;
     }
 
+    .footer-contact {
+      justify-self: center; /* Centrar columna de contacto */
+    }
+
     .footer-heading {
       text-align: center;
+      width: 100%; /* Asegurar ancho completo */
     }
 
     .contact-info {
@@ -399,16 +406,24 @@ const content = footerContent[locale];
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 100%; /* Asegurar ancho completo */
     }
 
     .footer-bottom-content {
       flex-direction: column;
       text-align: center;
       gap: 1.5rem;
+      align-items: center; /* Centrar contenido verticalmente */
+    }
+
+    .copyright-text {
+      text-align: center;
+      width: 100%; /* Asegurar ancho completo */
     }
 
     .legal-links {
       justify-content: center;
+      width: 100%; /* Asegurar ancho completo */
     }
   }
 

@@ -305,7 +305,7 @@
       @apply px-4 pb-8 pt-4 gap-1;
     }
     .logo {
-      @apply h-24 mb-0.5;
+      @apply h-32 mb-0.5; /* Aumentado de h-24 a h-32 para mayor visibilidad en móvil */
     }
     .language-selector,
     .instagram-link {

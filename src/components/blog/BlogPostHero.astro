@@ -1,0 +1,457 @@
+---
+/**
+ * BlogPostHero Component
+ * Full viewport width and height hero section with featured image overlay
+ *
+ * Design Specifications:
+ * - 100vw x 100vh featured image background
+ * - Dark gradient overlay for text readability
+ * - Title overlaid center-left
+ * - Category badge top-left
+ * - Breadcrumb navigation at top
+ * - Date and reading time at bottom
+ * - WCAG 2.1 AA compliant contrast
+ * - Responsive typography and spacing
+ */
+
+import { Image } from 'astro:assets';
+import Breadcrumb from '../ui/Breadcrumb.astro';
+import { useTranslations } from '../../i18n/utils';
+import { formatDate, stripHtml } from '../../lib/blog-queries';
+import type { BlogPost, Locale, BreadcrumbItem } from '../../lib/types/blog';
+
+interface Props {
+  post: BlogPost;
+  locale: Locale;
+}
+
+const { post, locale } = Astro.props;
+const t = useTranslations(locale);
+
+// Extract featured image data
+const featuredImage = post.featuredImage?.node;
+const imageUrl = featuredImage?.sourceUrl || '/images/blog/placeholder.jpg';
+const imageAlt = featuredImage?.altText || post.title;
+
+// Get primary category
+const primaryCategory = post.categories?.nodes?.[0];
+
+// Format date
+const formattedDate = formatDate(post.date, locale);
+
+// Calculate reading time (based on content length)
+const calculateReadingTime = (content: string): number => {
+  const wordsPerMinute = 200;
+  const text = stripHtml(content);
+  const wordCount = text.split(/\s+/).length;
+  return Math.ceil(wordCount / wordsPerMinute);
+};
+
+const readingTime = post.content ? calculateReadingTime(post.content) : 5;
+const readingTimeText = t('blog.post.readingtime').replace('{minutes}', readingTime.toString());
+
+// Breadcrumb items
+const breadcrumbItems: BreadcrumbItem[] = [
+  { label: t('blog.breadcrumb.home'), href: `/${locale}` },
+  { label: t('blog.breadcrumb.blog'), href: `/${locale}/blog` },
+  { label: post.title },
+];
+---
+
+<section class="blog-post-hero" role="banner">
+  <!-- Background Image -->
+  <div class="hero-background">
+    <img
+      src={imageUrl}
+      alt={imageAlt}
+      class="hero-image"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
+    />
+    <div class="hero-overlay" aria-hidden="true"></div>
+  </div>
+
+  <!-- Content Container -->
+  <div class="hero-content">
+    <!-- Category Badge -->
+    {primaryCategory && (
+      <div class="hero-category">
+        <a
+          href={`/${locale}/blog?category=${primaryCategory.slug}`}
+          class="category-badge"
+          aria-label={`${t('blog.category.all')}: ${primaryCategory.name}`}
+        >
+          {primaryCategory.name}
+        </a>
+      </div>
+    )}
+
+    <!-- Title -->
+    <div class="hero-title-wrapper">
+      <h1 class="hero-title">{post.title}</h1>
+    </div>
+
+    <!-- Meta Information -->
+    <div class="hero-meta">
+      <time datetime={post.date} class="meta-date">
+        {formattedDate}
+      </time>
+      <span class="meta-separator" aria-hidden="true">•</span>
+      <span class="meta-reading-time">
+        {readingTimeText}
+      </span>
+    </div>
+
+    <!-- Breadcrumb Navigation -->
+    <div class="hero-breadcrumb">
+      <Breadcrumb items={breadcrumbItems} locale={locale} />
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator" aria-hidden="true">
+      <div class="scroll-icon"></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Hero Container */
+  .blog-post-hero {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for iOS Safari */
+    min-height: 600px; /* Fallback minimum height */
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* iOS Safari fix for viewport height */
+  @supports (-webkit-touch-callout: none) {
+    .blog-post-hero {
+      min-height: -webkit-fill-available;
+    }
+  }
+
+  /* Background Image */
+  .hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Dark Gradient Overlay */
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.6) 50%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+  }
+
+  /* Content Container */
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1280px;
+    padding: 0 2rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100%;
+  }
+
+  /* Breadcrumb */
+  .hero-breadcrumb {
+    margin-top: 1.5rem;
+  }
+
+  .hero-breadcrumb :global(.breadcrumb) {
+    color: #ffffff;
+  }
+
+  .hero-breadcrumb :global(.breadcrumb-link) {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-decoration: underline !important;
+    text-decoration-color: rgba(255, 255, 255, 0.5) !important;
+    text-underline-offset: 3px;
+    transition: all 0.3s ease;
+  }
+
+  .hero-breadcrumb :global(.breadcrumb-link:hover) {
+    color: #ffffff !important;
+    text-decoration-color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .hero-breadcrumb :global(.breadcrumb-text) {
+    color: #ffffff !important;
+    font-weight: 400;
+  }
+
+  .hero-breadcrumb :global(.breadcrumb-separator) {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  /* Category Badge */
+  .hero-category {
+    margin-bottom: 1.5rem;
+  }
+
+  .category-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: rgba(186, 37, 21, 0.9);
+    color: #ffffff;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .category-badge:hover {
+    background: #BA2515;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(186, 37, 21, 0.4);
+  }
+
+  .category-badge:focus {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+
+  /* Title */
+  .hero-title-wrapper {
+    margin-bottom: 2rem;
+    max-width: 900px;
+  }
+
+  .hero-title {
+    font-family: 'Helvetica Neue', 'Avenir Next', sans-serif;
+    font-size: 64px;
+    font-weight: 100;
+    line-height: 1.1;
+    color: #ffffff;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Meta Information */
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .meta-separator {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .meta-date,
+  .meta-reading-time,
+  .meta-author {
+    margin: 0;
+  }
+
+  /* Scroll Indicator */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+  }
+
+  .scroll-icon {
+    width: 24px;
+    height: 36px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    position: relative;
+  }
+
+  .scroll-icon::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 2px;
+    animation: scroll 1.5s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateX(-50%) translateY(0);
+    }
+    40% {
+      transform: translateX(-50%) translateY(-10px);
+    }
+    60% {
+      transform: translateX(-50%) translateY(-5px);
+    }
+  }
+
+  @keyframes scroll {
+    0% {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-50%) translateY(12px);
+    }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .hero-title {
+      font-size: 52px;
+    }
+
+    .hero-content {
+      padding: 0 1.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 40px;
+    }
+
+    .hero-meta {
+      font-size: 14px;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .hero-content {
+      padding: 0 1rem;
+    }
+
+    .scroll-indicator {
+      bottom: 2rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .hero-title {
+      font-size: 32px;
+    }
+
+    .category-badge {
+      font-size: 14px; /* Increased from 12px to 14px minimum */
+      padding: 0.4rem 0.8rem;
+    }
+
+    .hero-meta {
+      font-size: 14px; /* Increased from 13px to 14px minimum */
+    }
+  }
+
+  /* Ultra-small screens support */
+  @media (max-width: 360px) {
+    .hero-title {
+      font-size: 28px;
+      line-height: 1.2;
+    }
+
+    .hero-content {
+      padding: 0 0.75rem;
+    }
+
+    .category-badge {
+      font-size: 14px;
+    }
+
+    .hero-meta {
+      font-size: 14px;
+      gap: 0.5rem;
+    }
+  }
+
+  /* High Contrast Mode */
+  @media (prefers-contrast: high) {
+    .hero-overlay {
+      background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.6) 0%,
+        rgba(0, 0, 0, 0.8) 50%,
+        rgba(0, 0, 0, 0.9) 100%
+      );
+    }
+
+    .hero-title {
+      font-weight: 300;
+    }
+
+    .category-badge {
+      border: 2px solid #ffffff;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-indicator {
+      animation: none;
+    }
+
+    .scroll-icon::before {
+      animation: none;
+    }
+
+    .category-badge {
+      transition: none;
+    }
+  }
+
+  /* Print Styles */
+  @media print {
+    .blog-post-hero {
+      height: auto;
+      min-height: auto;
+      max-height: 400px;
+      page-break-after: avoid;
+    }
+
+    .hero-overlay {
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .scroll-indicator {
+      display: none;
+    }
+  }
+</style>

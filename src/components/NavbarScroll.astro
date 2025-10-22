@@ -2,6 +2,10 @@
 /**
  * NavbarScroll - Navbar que aparece al hacer scroll down
  * Se oculta en scroll up y cuando estamos en el top
+ *
+ * Comportamiento por tipo de página:
+ * - Homepage: Navbar deshabilitado completamente
+ * - Otras páginas: Transparente en top, blanco al scrollear
  */
 
 interface Props {
@@ -18,10 +22,17 @@ const languages = ['ca', 'es', 'fr', 'en'];
   <div class="navbar-container">
     <!-- Logo (izquierda) -->
     <a href={`/${locale}`} class="navbar-logo-link" aria-label="SAUWA Home">
+      <!-- Logo negro (por defecto, se muestra cuando hay fondo blanco) -->
       <img
         src="/images/logo/sauwa-black.svg"
         alt="SAUWA"
-        class="navbar-logo"
+        class="navbar-logo navbar-logo-black"
+      />
+      <!-- Logo blanco (se muestra cuando el navbar es transparente) -->
+      <img
+        src="/images/logo/sauwa-full-white.svg"
+        alt="SAUWA"
+        class="navbar-logo navbar-logo-white"
       />
     </a>
 
@@ -71,23 +82,49 @@ const languages = ['ca', 'es', 'fr', 'en'];
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transform: translateY(-100%);
     opacity: 0;
-    transition: none;
-    will-change: transform, opacity;
+    /* Transiciones suaves y elegantes */
+    transition:
+      transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+      background-color 0.3s ease,
+      box-shadow 0.3s ease;
+    will-change: transform, opacity, background-color;
   }
 
+  /* Estado transparente (para páginas no-home cuando estamos en top) */
+  .navbar-scroll.transparent {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /* Estado visible (para páginas no-home) - animación suave al aparecer */
   .navbar-scroll.visible {
     transform: translateY(0);
     opacity: 1;
+  }
+
+  /* Para páginas no-home, la navbar siempre está visible */
+  .navbar-scroll.visible.transparent {
+    transform: translateY(0);
+    opacity: 1;
+    background: transparent;
+    box-shadow: none;
   }
 
   .navbar-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 6.65rem; /* 5rem * 1.33 = ~106px */
+    height: 6.65rem; /* ~106px - altura base */
     padding-left: 3rem; /* px-12 */
     padding-right: 3rem;
     max-width: 100%;
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Altura mayor cuando navbar es transparente (para logo grande) */
+  .navbar-scroll.transparent .navbar-container {
+    height: 8rem; /* ~128px - para acomodar logo de 6rem */
   }
 
   /* Logo Styles */
@@ -98,8 +135,30 @@ const languages = ['ca', 'es', 'fr', 'en'];
   }
 
   .navbar-logo {
-    height: 3.33rem; /* 2.5rem * 1.33 = ~53px */
     width: auto;
+    display: none;
+    transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Logo negro (cuando navbar tiene fondo blanco al scrollear) */
+  .navbar-logo-black {
+    display: block;
+    height: 3.33rem; /* ~53px - tamaño compacto */
+  }
+
+  /* Logo blanco (cuando navbar es transparente en TOP) */
+  .navbar-logo-white {
+    display: none;
+    height: 6rem; /* 96px - tamaño grande para transparente */
+  }
+
+  /* Cuando navbar es transparente, mostrar logo blanco grande */
+  .navbar-scroll.transparent .navbar-logo-black {
+    display: none;
+  }
+
+  .navbar-scroll.transparent .navbar-logo-white {
+    display: block;
   }
 
   /* Navigation Right Side */
@@ -122,7 +181,14 @@ const languages = ['ca', 'es', 'fr', 'en'];
     font-size: 0.875rem; /* text-sm */
     font-weight: 500;
     opacity: 0.7;
-    transition: opacity 0.3s ease;
+    transition:
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Texto blanco cuando navbar es transparente */
+  .navbar-scroll.transparent .navbar-lang {
+    color: white;
   }
 
   .navbar-lang:hover {
@@ -137,6 +203,12 @@ const languages = ['ca', 'es', 'fr', 'en'];
   .navbar-separator {
     color: #9ca3af; /* text-gray-400 */
     font-size: 0.875rem;
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Separador blanco cuando navbar es transparente */
+  .navbar-scroll.transparent .navbar-separator {
+    color: rgba(255, 255, 255, 0.6);
   }
 
   /* Instagram Icon */
@@ -151,7 +223,14 @@ const languages = ['ca', 'es', 'fr', 'en'];
     height: 1.5rem; /* h-6 */
     color: #1f2937; /* text-gray-800 */
     opacity: 0.7;
-    transition: opacity 0.3s ease;
+    transition:
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Icono blanco cuando navbar es transparente */
+  .navbar-scroll.transparent .navbar-instagram-icon {
+    color: white;
   }
 
   .navbar-instagram:hover .navbar-instagram-icon {
@@ -192,13 +271,21 @@ const languages = ['ca', 'es', 'fr', 'en'];
   /* Responsive */
   @media (max-width: 768px) {
     .navbar-container {
-      height: 5.33rem; /* 4rem * 1.33 = ~85px */
+      height: 5.33rem; /* ~85px */
       padding-left: 1.5rem; /* px-6 */
       padding-right: 1.5rem;
     }
 
-    .navbar-logo {
-      height: 2.66rem; /* 2rem * 1.33 = ~43px */
+    .navbar-scroll.transparent .navbar-container {
+      height: 6.5rem; /* ~104px - ajustado para mobile */
+    }
+
+    .navbar-logo-black {
+      height: 2.66rem; /* ~43px */
+    }
+
+    .navbar-logo-white {
+      height: 4.5rem; /* ~72px - más pequeño en mobile */
     }
 
     .navbar-nav {
@@ -239,90 +326,111 @@ const languages = ['ca', 'es', 'fr', 'en'];
     const navbar = document.getElementById('navbar-scroll');
     if (!navbar) return;
 
-    // Elementos del hero que deben ocultarse cuando aparece la navbar scroll
-    const heroLanguageSelector = document.querySelector('.hero-section .language-selector');
-    const heroInstagramLink = document.querySelector('.hero-section .instagram-link');
+    // Check if we're on homepage
+    const isHomepage = window.location.pathname === '/es/' ||
+                       window.location.pathname === '/ca/' ||
+                       window.location.pathname === '/en/' ||
+                       window.location.pathname === '/fr/' ||
+                       window.location.pathname === '/es' ||
+                       window.location.pathname === '/ca' ||
+                       window.location.pathname === '/en' ||
+                       window.location.pathname === '/fr';
 
-    let lastScrollY = window.scrollY;
     let ticking = false;
+    let lastScrollY = window.scrollY;
     const threshold = 100;
-    let isVisible = false;
+    const scrollDelta = 5; // Mínimo scroll para detectar dirección
 
-    function showNavbar() {
-      if (!isVisible) {
-        navbar.classList.remove('navbar-exit');
-        navbar.classList.add('navbar-enter', 'visible');
-        isVisible = true;
+    if (isHomepage) {
+      // Homepage: Navbar aparece al scrollear UP, se oculta al scrollear DOWN
+      function updateHomepageNavbar() {
+        const scrollY = window.scrollY;
+        const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
 
-        // Ocultar elementos del hero añadiendo clase al body
-        document.body.classList.add('hero-elements-hidden');
-      }
-    }
+        if (scrollY < threshold) {
+          // En el top: ocultar navbar
+          navbar.classList.remove('visible');
+        } else if (scrollDirection === 'down') {
+          // Scrolleando hacia abajo: OCULTAR navbar (usuario quiere ver contenido)
+          navbar.classList.remove('visible');
+        } else if (scrollDirection === 'up') {
+          // Scrolleando hacia arriba: MOSTRAR navbar blanco (usuario quiere navegar)
+          navbar.classList.add('visible');
+          navbar.classList.remove('transparent');
+        }
 
-    function hideNavbar() {
-      if (isVisible) {
-        navbar.classList.remove('navbar-enter', 'visible');
-        navbar.classList.add('navbar-exit');
-        isVisible = false;
-
-        // Mostrar elementos del hero removiendo clase del body
-        document.body.classList.remove('hero-elements-hidden');
-      }
-    }
-
-    function handleScroll() {
-      const scrollY = window.scrollY;
-
-      // En top (scroll < threshold)
-      if (scrollY < threshold) {
-        hideNavbar();
-        // Asegurar que elementos hero estén visibles
-        document.body.classList.remove('hero-elements-hidden');
         lastScrollY = scrollY;
-        return;
       }
 
-      // Cuando estamos scrolleados (> threshold), siempre ocultar hero elements
-      document.body.classList.add('hero-elements-hidden');
-
-      // Scroll down - mostrar navbar
-      if (scrollY > lastScrollY && scrollY > threshold) {
-        showNavbar();
+      function onHomeScroll() {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            updateHomepageNavbar();
+            ticking = false;
+          });
+          ticking = true;
+        }
       }
 
-      // Scroll up (pero no en top) - ocultar navbar PERO mantener hero hidden
-      if (scrollY < lastScrollY && scrollY > threshold) {
-        navbar.classList.remove('navbar-enter', 'visible');
-        navbar.classList.add('navbar-exit');
-        isVisible = false;
-        // NO remover hero-elements-hidden porque seguimos scrolleados
+      window.addEventListener('scroll', onHomeScroll, { passive: true });
+
+      window.addEventListener('beforeunload', () => {
+        window.removeEventListener('scroll', onHomeScroll);
+      });
+
+    } else {
+      // Páginas no-home: navbar transparente en TOP, aparece al scrollear UP, se oculta al scrollear DOWN
+      navbar.classList.add('visible');
+      navbar.classList.add('transparent'); // Inicialmente transparente en TOP
+
+      function updateNonHomepageNavbar() {
+        const scrollY = window.scrollY;
+        const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
+        const scrollDifference = Math.abs(scrollY - lastScrollY);
+
+        // Solo actuar si hay un scroll significativo
+        if (scrollDifference < scrollDelta) {
+          lastScrollY = scrollY;
+          return;
+        }
+
+        if (scrollY < threshold) {
+          // En el top: navbar transparente con logo blanco grande SIEMPRE VISIBLE
+          navbar.classList.add('transparent');
+          navbar.classList.add('visible');
+        } else if (scrollDirection === 'down') {
+          // Scrolleando hacia abajo: OCULTAR navbar (usuario quiere ver contenido)
+          navbar.classList.remove('visible');
+          navbar.classList.remove('transparent');
+        } else if (scrollDirection === 'up') {
+          // Scrolleando hacia arriba: MOSTRAR navbar blanco con logo negro (usuario quiere navegar)
+          navbar.classList.remove('transparent');
+          navbar.classList.add('visible');
+        }
+
+        lastScrollY = scrollY;
       }
 
-      lastScrollY = scrollY;
+      function onNonHomeScroll() {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            updateNonHomepageNavbar();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }
+
+      // Set initial state
+      if (window.scrollY < threshold) {
+        navbar.classList.add('transparent');
+      }
+
+      window.addEventListener('scroll', onNonHomeScroll, { passive: true });
+
+      window.addEventListener('beforeunload', () => {
+        window.removeEventListener('scroll', onNonHomeScroll);
+      });
     }
-
-    // Optimización con requestAnimationFrame
-    function onScroll() {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    }
-
-    // Verificar estado inicial en caso de refresh con scroll
-    if (window.scrollY >= threshold) {
-      showNavbar();
-    }
-
-    // Event Listener
-    window.addEventListener('scroll', onScroll, { passive: true });
-
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-      window.removeEventListener('scroll', onScroll);
-    });
   });
 </script>

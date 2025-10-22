@@ -18,16 +18,16 @@
 - **Impacto Desktop**: Ninguno - cambio solo en media query móvil
 - **Verificado**: ✅ Botón centrado en móvil
 
-### 3. Centrado de Botón en Sección Beneficios 🔄
+### 3. Centrado de Botón en Sección Beneficios ✅
 - **Archivo**: `src/components/BenefitsImageSection.astro`
 - **Líneas**: 411-441
 - **Cambios**:
-  - `.benefits-content` con `display: flex; flex-direction: column; align-items: center; text-align: center;`
-  - Elementos de texto con `width: 100%; max-width: 100%;`
-  - `.cta-link` con `display: inline-flex;`
+  - `.benefits-content` con `padding: 2rem 1.5rem`
+  - `.cta-link` con `align-self: center` para centrar el botón
+  - El botón hereda estilos base (`display: inline-flex`, `padding: 1rem 3.5rem`)
 - **Media Query**: `@media (max-width: 768px)`
 - **Impacto Desktop**: Ninguno - cambios solo en media query móvil
-- **Estado**: 🔄 Implementado (offset 32.5px - visualmente aceptable debido a estructura grid)
+- **Estado**: ✅ Botón centrado con márgenes correctos (275.25px de ancho)
 
 ### 4. Centrado de Contenido Footer ✅
 - **Archivo**: `src/components/layout/FooterBlack.astro`
@@ -41,6 +41,28 @@
 - **Media Query**: `@media (max-width: 767px)`
 - **Impacto Desktop**: Ninguno - cambios solo en media query móvil
 - **Verificado**: ✅ `textAlign: center` en móvil
+
+### 5. Correcciones Blog Page Móvil ✅
+- **Archivos**:
+  - `src/pages/es/blog.astro` (líneas 155-217)
+  - `src/pages/ca/blog.astro` (líneas 171-217)
+  - `src/pages/en/blog.astro` (líneas 171-217)
+  - `src/pages/fr/blog.astro` (líneas 171-217)
+- **Cambios @media (max-width: 768px)**:
+  - `.blog-page`: `padding-top: 0` (eliminar gap para que fondo marrón llegue arriba)
+  - `.blog-header`: `margin-top: 60px` (compensar altura navbar sin crear gap)
+  - `.blog-title` (h1): `font-size: 16px` + `letter-spacing: 3px` (pequeño como home)
+  - `.blog-subtitle` (h2): `font-size: 32px` + `font-weight: 300` + `line-height: 1.3` (grande como home)
+- **Cambios @media (max-width: 640px)**:
+  - `.blog-title` (h1): `font-size: 14px` + `letter-spacing: 2px`
+  - `.blog-subtitle` (h2): `font-size: 28px` + `line-height: 1.3`
+- **Jerarquía Correcta**: h1 pequeño (14-16px), h2 grande (28-32px) como en home page
+- **Impacto Desktop**: Ninguno - cambios solo en media queries móviles
+- **Verificado**:
+  - ✅ Fondo marrón sin gap (`paddingTop: 0px`)
+  - ✅ h1: 14px (pequeño) en mobile 375px
+  - ✅ h2: 28px (grande) en mobile 375px
+  - ✅ Desktop sin cambios (h1: 18px, h2: 56px)
 
 ## Verificación Desktop
 

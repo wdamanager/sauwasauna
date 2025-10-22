@@ -54,6 +54,9 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
     <meta property="twitter:url" content={canonicalURL} />
     <meta property="twitter:title" content={title} />
     {description && <meta property="twitter:description" content={description} />}
+
+    <!-- Custom head content (for specific pages) -->
+    <slot name="head" />
   </head>
   <body class="min-h-screen bg-transparent text-gray-900">
     <!-- Google Tag Manager NoScript -->
