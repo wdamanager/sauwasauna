@@ -409,7 +409,7 @@ const icons = {
     }
 
     .benefits-content {
-      padding: 2rem 1.5rem;
+      padding: 2rem 0; /* WDA-295: Sin padding horizontal para botón full-width */
       text-align: center; /* WDA-295: Centrar contenido en móvil */
       display: flex;
       flex-direction: column;
@@ -423,6 +423,7 @@ const icons = {
     .benefits-list {
       width: 100%;
       max-width: 100%;
+      padding: 0 1.5rem; /* Añadir padding a cada elemento individual */
     }
 
     .intro-text {
@@ -434,10 +435,14 @@ const icons = {
       text-align: left; /* Mantener items alineados a la izquierda */
     }
 
-    /* WDA-295: Centrar botón CTA en móvil */
+    /* WDA-295: Botón CTA ancho completo en móvil como otros botones */
     .cta-link {
-      display: inline-flex;
+      display: flex;
+      width: 100%;
       margin: 0;
+      justify-content: center;
+      padding-left: 3.5rem;
+      padding-right: 3.5rem;
     }
 
     /* Deshabilitar zoom en móviles */
