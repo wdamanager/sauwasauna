@@ -409,21 +409,11 @@ const icons = {
     }
 
     .benefits-content {
-      padding: 2rem 0; /* WDA-295: Sin padding horizontal para botón full-width */
+      padding: 2rem 1.5rem;
       text-align: center; /* WDA-295: Centrar contenido en móvil */
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-
-    /* WDA-295: Asegurar que todos los elementos de texto tengan ancho completo */
-    .seo-title,
-    .main-heading,
-    .intro-text,
-    .benefits-list {
-      width: 100%;
-      max-width: 100%;
-      padding: 0 1.5rem; /* Añadir padding a cada elemento individual */
     }
 
     .intro-text {
@@ -435,14 +425,11 @@ const icons = {
       text-align: left; /* Mantener items alineados a la izquierda */
     }
 
-    /* WDA-295: Botón CTA ancho completo en móvil como otros botones */
+    /* WDA-295: Botón CTA igual que otros botones en móvil */
     .cta-link {
-      display: flex;
-      width: 100%;
-      margin: 0;
-      justify-content: center;
-      padding-left: 3.5rem;
-      padding-right: 3.5rem;
+      /* El botón hereda display: inline-flex y padding: 1rem 3.5rem de los estilos base */
+      /* Solo necesitamos centrarlo en el contenedor */
+      align-self: center;
     }
 
     /* Deshabilitar zoom en móviles */
