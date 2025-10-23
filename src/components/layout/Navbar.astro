@@ -23,7 +23,7 @@ const { locale = 'es', class: className = '' } = Astro.props;
   <div class="container mx-auto px-6 md:px-8 lg:px-12">
     <div class="flex items-center justify-between h-24 md:h-32">
       <!-- Logo -->
-      <a href="/" class="logo-container relative flex items-center">
+      <a href={`/${locale}/`} class="logo-container relative flex items-center">
         <img
           src="/images/logo/sauwa-full-white.svg"
           alt="SAUWA"

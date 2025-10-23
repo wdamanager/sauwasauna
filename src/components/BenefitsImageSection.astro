@@ -425,11 +425,11 @@ const icons = {
       text-align: left; /* Mantener items alineados a la izquierda */
     }
 
-    /* WDA-295: Botón CTA igual que otros botones en móvil */
+    /* WDA-295: Botón CTA full-width en móvil con márgenes laterales */
     .cta-link {
-      /* El botón hereda display: inline-flex y padding: 1rem 3.5rem de los estilos base */
-      /* Solo necesitamos centrarlo en el contenedor */
-      align-self: center;
+      align-self: stretch;
+      justify-content: center;
+      padding: 1rem 2rem;
     }
 
     /* Deshabilitar zoom en móviles */

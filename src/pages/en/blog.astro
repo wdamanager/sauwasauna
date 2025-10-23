@@ -5,6 +5,7 @@
  */
 
 import Layout from '../../layouts/Layout.astro';
+import NavbarScroll from '../../components/NavbarScroll.astro';
 import FooterBlack from '../../components/layout/FooterBlack.astro';
 import Breadcrumb from '../../components/ui/Breadcrumb.astro';
 import CategoryFilter from '../../components/blog/CategoryFilter.astro';
@@ -22,7 +23,7 @@ const description = t('blog.description');
 
 // Breadcrumb items
 const breadcrumbItems: BreadcrumbItem[] = [
-  { label: t('blog.breadcrumb.home'), href: `/${locale}` },
+  { label: t('blog.breadcrumb.home'), href: `/${locale}/` },
   { label: t('blog.breadcrumb.blog') },
 ];
 
@@ -42,6 +43,9 @@ try {
   lang={locale}
   pageType="blog"
 >
+  <!-- Navbar Scroll -->
+  <NavbarScroll locale={locale} />
+
   <main class="blog-page">
     <!-- Header Section -->
     <section class="blog-header">
@@ -154,7 +158,7 @@ try {
   }
 
   /* Responsive */
-  @media (max-width: 1024px) {
+  @media (max-width: 1024px) and (min-width: 769px) {
     .blog-page {
       padding-top: 70px;
     }
@@ -170,13 +174,12 @@ try {
 
   @media (max-width: 768px) {
     .blog-page {
-      padding-top: 0; /* WDA-295: Eliminar padding para que el fondo marrón llegue arriba */
+      padding-top: 0;
     }
 
     .blog-header {
       padding: 2rem 0 1.5rem;
-      margin-top: -104px; /* WDA-295: Extender header detrás del navbar */
-      padding-top: calc(2rem + 104px); /* WDA-295: Compensar margin negativo + padding original */
+      padding-top: calc(3rem + 3rem); /* 3rem base + 3rem del navbar */
     }
 
     .container {

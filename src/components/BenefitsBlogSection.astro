@@ -33,7 +33,7 @@ const { locale = 'es', class: className = '' } = Astro.props;
 
     <!-- Columna derecha - Scroll -->
     <div class="scroll-column">
-      <BlogScrollCards locale={locale} limit={3} />
+      <BlogScrollCards locale={locale} limit={6} verticalScroll={false} />
     </div>
   </div>
 </section>
@@ -42,6 +42,7 @@ const { locale = 'es', class: className = '' } = Astro.props;
   .benefits-blog-section {
     position: relative;
     background-color: #FFFFFF;
+    min-height: 100vh;
   }
 
   .sticky-grid {
@@ -58,17 +59,20 @@ const { locale = 'es', class: className = '' } = Astro.props;
 
   .sticky-content {
     position: sticky;
-    top: 0;
-    height: 100vh;
+    top: 80px;
+    height: calc(100vh - 80px);
     display: flex;
     align-items: center;
-    overflow: hidden;
+    justify-content: center;
+    padding: 2rem;
+    z-index: 10;
   }
 
   /* Columna derecha - Scroll */
   .scroll-column {
     position: relative;
     background-color: #F8F8F8;
+    scroll-behavior: smooth;
   }
 
   /* Responsive Design */

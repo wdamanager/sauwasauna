@@ -2,7 +2,7 @@
 
 /* Hero Section Layout */
 .hero-section {
-  @apply relative w-screen h-screen overflow-hidden flex items-center justify-center;
+  @apply relative w-full h-screen overflow-hidden flex items-center justify-center;
 }
 
 .hero-section :global(.hero-slider) {

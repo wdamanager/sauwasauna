@@ -52,8 +52,8 @@ const readingTimeText = t('blog.post.readingtime').replace('{minutes}', readingT
 
 // Breadcrumb items
 const breadcrumbItems: BreadcrumbItem[] = [
-  { label: t('blog.breadcrumb.home'), href: `/${locale}` },
-  { label: t('blog.breadcrumb.blog'), href: `/${locale}/blog` },
+  { label: t('blog.breadcrumb.home'), href: `/${locale}/` },
+  { label: t('blog.breadcrumb.blog'), href: `/${locale}/blog/` },
   { label: post.title },
 ];
 ---
@@ -78,7 +78,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
     {primaryCategory && (
       <div class="hero-category">
         <a
-          href={`/${locale}/blog?category=${primaryCategory.slug}`}
+          href={`/${locale}/blog/?category=${primaryCategory.slug}`}
           class="category-badge"
           aria-label={`${t('blog.category.all')}: ${primaryCategory.name}`}
         >

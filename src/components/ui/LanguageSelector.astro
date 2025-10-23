@@ -32,15 +32,21 @@ const langCodes = ['es', 'ca', 'en', 'fr'] as const;
 
   <!-- Dropdown Menu -->
   <div class="lang-dropdown" id="lang-dropdown">
-    {langCodes.map((code) => (
-      <a
-        href={`/${code}${Astro.url.pathname.substring(3)}`}
-        class={`lang-option ${code === currentLang ? 'active' : ''}`}
-        data-lang={code}
-      >
-        {code.toUpperCase()}
-      </a>
-    ))}
+    {langCodes.map((code) => {
+      const currentPath = Astro.url.pathname.substring(3);
+      const newPath = `/${code}${currentPath}`;
+      // Ensure trailing slash if path doesn't have one and isn't a file
+      const href = newPath.endsWith('/') ? newPath : `${newPath}/`;
+      return (
+        <a
+          href={href}
+          class={`lang-option ${code === currentLang ? 'active' : ''}`}
+          data-lang={code}
+        >
+          {code.toUpperCase()}
+        </a>
+      );
+    })}
   </div>
 </div>
 

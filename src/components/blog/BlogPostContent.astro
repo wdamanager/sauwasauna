@@ -27,7 +27,7 @@ const { post, locale } = Astro.props;
 const t = useTranslations(locale);
 
 // Current URL for sharing
-const currentUrl = `https://sauwasauna.com/${locale}/blog/${post.slug}`;
+const currentUrl = `https://sauwasauna.com/${locale}/blog/${post.slug}/`;
 const encodedUrl = encodeURIComponent(currentUrl);
 const encodedTitle = encodeURIComponent(post.title);
 
@@ -46,7 +46,7 @@ const shareLinks = {
   <div class="content-container">
     <!-- Back to Blog Link -->
     <div class="back-to-blog">
-      <a href={`/${locale}/blog`} class="back-link">
+      <a href={`/${locale}/blog/`} class="back-link">
         <svg
           width="20"
           height="20"

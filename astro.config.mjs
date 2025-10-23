@@ -6,10 +6,10 @@ export default defineConfig({
   integrations: [tailwind()],
   output: 'static',
   site: 'https://sauwasauna.com',
-  trailingSlash: 'never',
+  trailingSlash: 'always',
   build: {
     inlineStylesheets: 'auto',
-    format: 'file',
+    format: 'directory',
   },
   i18n: {
     defaultLocale: 'es',

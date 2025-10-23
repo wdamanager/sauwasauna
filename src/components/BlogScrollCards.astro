@@ -9,9 +9,10 @@ import { getLatestPosts } from '../lib/graphql';
 export interface Props {
   locale?: 'es' | 'ca' | 'en' | 'fr';
   limit?: number;
+  verticalScroll?: boolean;
 }
 
-const { locale = 'es', limit = 3 } = Astro.props;
+const { locale = 'es', limit = 3, verticalScroll = false } = Astro.props;
 
 // Traducciones para el botón "Ver más"
 const translations = {
@@ -60,7 +61,7 @@ function cleanExcerpt(excerpt: string): string {
 }
 ---
 
-<div class="blog-scroll-container">
+<div class={`blog-scroll-container ${verticalScroll ? 'vertical-scroll-mode' : ''}`}>
   {posts.length === 0 ? (
     <div class="no-posts">
       <p>No hay artículos disponibles en este momento.</p>
@@ -70,7 +71,7 @@ function cleanExcerpt(excerpt: string): string {
       {posts.map((post, index) => (
         <article class="blog-card" data-index={index}>
           {post.featuredImage?.node?.sourceUrl && (
-            <a href={`/${locale}/blog/${post.slug}`} class="card-image-link">
+            <a href={`/${locale}/blog/${post.slug}/`} class="card-image-link">
               <div class="card-image-wrapper">
                 <img
                   src={post.featuredImage.node.sourceUrl}
@@ -90,7 +91,7 @@ function cleanExcerpt(excerpt: string): string {
             )}
 
             <h3 class="card-title">
-              <a href={`/${locale}/blog/${post.slug}`}>
+              <a href={`/${locale}/blog/${post.slug}/`}>
                 {post.title}
               </a>
             </h3>
@@ -111,7 +112,7 @@ function cleanExcerpt(excerpt: string): string {
       ))}
 
       <div class="cta-container">
-        <a href={`/${locale}/blog`} class="cta-more">
+        <a href={`/${locale}/blog/`} class="cta-more">
           {translations[locale].seeMore}
           <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -128,8 +129,14 @@ function cleanExcerpt(excerpt: string): string {
     flex-direction: column;
     gap: 3rem;
     padding: 4rem 3rem;
-    background-color: #f4f4f4;
+    background-color: #F8F8F8;
     min-height: 100vh;
+  }
+
+  /* Vertical scroll mode styles */
+  .vertical-scroll-mode {
+    padding: 2rem 3rem;
+    gap: 0;
   }
 
   .no-posts {
@@ -150,8 +157,61 @@ function cleanExcerpt(excerpt: string): string {
     transition: all 0.4s ease;
     opacity: 0;
     transform: translateY(30px);
+    min-height: 600px;
   }
 
+  /* Vertical scroll mode card styles */
+  .vertical-scroll-mode .blog-card {
+    min-height: 90vh;
+    margin-bottom: 10vh;
+    padding: 4rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 0.3;
+    transform: translateY(50px) scale(0.95);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .vertical-scroll-mode .blog-card:first-child {
+    margin-top: 5vh;
+  }
+
+  .vertical-scroll-mode .blog-card:last-of-type {
+    margin-bottom: 50vh;
+  }
+
+  .vertical-scroll-mode .blog-card.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .vertical-scroll-mode .blog-card.is-centered {
+    transform: translateY(0) scale(1.02);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  }
+
+  .vertical-scroll-mode .card-image-wrapper {
+    height: 400px;
+  }
+
+  .vertical-scroll-mode .card-content {
+    padding: 3rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .vertical-scroll-mode .cta-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+  }
+
+  /* Regular mode styles */
   .blog-card.is-visible {
     opacity: 1;
     transform: translateY(0);
@@ -160,6 +220,10 @@ function cleanExcerpt(excerpt: string): string {
   .blog-card:hover {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     transform: translateY(-4px);
+  }
+
+  .vertical-scroll-mode .blog-card:hover {
+    transform: translateY(0) scale(1.02);
   }
 
   .card-image-link {
@@ -249,7 +313,7 @@ function cleanExcerpt(excerpt: string): string {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 580px; /* Height of blog-card: 280px image + ~300px content */
+    min-height: 600px; /* Height matching blog-card for consistent spacing */
     margin-top: 0;
   }
 
@@ -289,6 +353,15 @@ function cleanExcerpt(excerpt: string): string {
       padding: 3rem 2rem;
     }
 
+    .vertical-scroll-mode .blog-card {
+      min-height: 70vh;
+      margin-bottom: 5vh;
+    }
+
+    .vertical-scroll-mode .card-image-wrapper {
+      height: 300px;
+    }
+
     .card-image-wrapper {
       height: 240px;
     }
@@ -298,7 +371,7 @@ function cleanExcerpt(excerpt: string): string {
     }
 
     .cta-container {
-      min-height: 520px; /* Slightly smaller for tablet */
+      min-height: 520px;
     }
   }
 
@@ -306,6 +379,24 @@ function cleanExcerpt(excerpt: string): string {
     .blog-scroll-container {
       gap: 2rem;
       padding: 2rem 1.5rem;
+    }
+
+    .vertical-scroll-mode .blog-card {
+      min-height: auto;
+      margin-bottom: 3rem;
+      padding: 0;
+    }
+
+    .vertical-scroll-mode .card-image-wrapper {
+      height: 240px;
+    }
+
+    .vertical-scroll-mode .card-content {
+      padding: 1.25rem;
+    }
+
+    .vertical-scroll-mode .cta-container {
+      min-height: 50vh;
     }
 
     .card-image-wrapper {
@@ -317,14 +408,17 @@ function cleanExcerpt(excerpt: string): string {
     }
 
     .cta-container {
-      min-height: 460px; /* Smaller for mobile */
+      min-height: 460px;
       display: flex;
       align-items: center;
-      justify-content: center; /* Asegurar centrado en móvil */
+      justify-content: center;
+      padding: 0 1.5rem;
     }
 
     .cta-more {
-      padding: 0.75rem 1.5rem;
+      align-self: stretch;
+      justify-content: center;
+      padding: 1rem 2rem;
       font-size: 0.9375rem;
     }
 
@@ -362,29 +456,63 @@ function cleanExcerpt(excerpt: string): string {
 <script>
   // Intersection Observer para animaciones de entrada
   document.addEventListener('DOMContentLoaded', () => {
+    const container = document.querySelector('.blog-scroll-container');
+    const isVerticalMode = container?.classList.contains('vertical-scroll-mode');
     const cards = document.querySelectorAll('.blog-card');
 
-    const observerOptions = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.1,
-    };
+    if (isVerticalMode) {
+      // Vertical scroll mode - cards appear one by one
+      const observerOptions = {
+        root: null,
+        rootMargin: '-25% 0px -25% 0px',
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      };
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const ratio = entry.intersectionRatio;
 
-    cards.forEach((card, index) => {
-      // Delay progresivo para efecto cascada
-      const delay = index * 100;
-      setTimeout(() => {
+          if (ratio > 0.5) {
+            // Card is centered
+            entry.target.classList.add('is-visible', 'is-centered');
+          } else if (ratio > 0.25) {
+            // Card is partially visible
+            entry.target.classList.add('is-visible');
+            entry.target.classList.remove('is-centered');
+          } else {
+            // Card is barely visible
+            entry.target.classList.remove('is-centered');
+          }
+        });
+      }, observerOptions);
+
+      cards.forEach(card => {
         observer.observe(card);
-      }, delay);
-    });
+      });
+    } else {
+      // Regular mode - existing fade-in animation
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1,
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      cards.forEach((card, index) => {
+        // Delay progresivo para efecto cascada
+        const delay = index * 100;
+        setTimeout(() => {
+          observer.observe(card);
+        }, delay);
+      });
+    }
   });
 </script>

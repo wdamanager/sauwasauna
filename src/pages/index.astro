@@ -40,9 +40,9 @@
         return defaultLang;
       }
 
-      // Detectar y redirigir
+      // Detectar y redirigir (con trailing slash para consistencia)
       const targetLang = detectLanguage();
-      window.location.href = `/${targetLang}`;
+      window.location.href = `/${targetLang}/`;
     </script>
   </body>
 </html>

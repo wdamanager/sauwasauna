@@ -72,6 +72,15 @@ const { postsPerPage = 6, showLoadMore = true } = Astro.props;
   }
 
   /**
+   * Get current locale from URL
+   */
+  function getCurrentLocale() {
+    const path = window.location.pathname;
+    const match = path.match(/^\/(es|ca|en|fr)\//);
+    return match ? match[1] : 'es';
+  }
+
+  /**
    * Create post card HTML
    */
   function createPostCard(post) {
@@ -79,10 +88,11 @@ const { postsPerPage = 6, showLoadMore = true } = Astro.props;
     const imageAlt = post.featuredImage?.node?.altText || post.title;
     const excerpt = post.excerpt?.replace(/<[^>]*>/g, '').substring(0, 150) || '';
     const category = post.categories?.nodes?.[0];
+    const locale = getCurrentLocale();
 
     return `
       <article class="blog-card">
-        <a href="/blog/${post.slug}" class="card-link">
+        <a href="/${locale}/blog/${post.slug}/" class="card-link">
           <div class="card-image-wrapper">
             <img
               src="${imageUrl}"
