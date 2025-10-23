@@ -60,11 +60,13 @@
 
 @layer base {
   html {
-    @apply scroll-smooth overflow-x-hidden;
+    @apply scroll-smooth;
+    /* Removed overflow-x-hidden to allow position: sticky */
   }
 
   body {
-    @apply antialiased overflow-x-hidden;
+    @apply antialiased;
+    /* Removed overflow-x-hidden to allow position: sticky */
   }
 }
 
