@@ -15,6 +15,7 @@ import SessionPhases from '../../components/SessionPhases.astro';
 import CTANewsletter from '../../components/CTANewsletter.astro';
 import Footer from '../../components/layout/Footer.astro';
 import FooterBlack from '../../components/layout/FooterBlack.astro';
+import NewsletterForm from '../../components/NewsletterForm.astro';
 
 const lang = 'es';
 
@@ -55,35 +56,8 @@ const description = 'Vive la auténtica sauna finlandesa de leña y baños de ag
         La primera experiencia de auténtica sauna finlandesa de leña y baños de agua helada en plena naturaleza.
       </h2>
 
-      <!-- CTA Text -->
-      <p class="text-cta text-lg mb-1 animate-fade-in-up animation-delay-600">Recibe acceso prioritario en nuestra apertura:</p>
-
-      <!-- Newsletter Form -->
-      <form class="newsletter-form" id="newsletter-form">
-        <!-- Email Input -->
-        <input
-          type="email"
-          name="email"
-          placeholder="Introduce tu email…"
-          required
-          class="email-input"
-        />
-
-        <!-- Privacy Checkbox -->
-        <label class="privacy-label">
-          <input type="checkbox" name="privacy" required class="privacy-checkbox" />
-          <span class="privacy-text">
-            He leído y acepto la
-            <a href="/es/politica-de-privacidad/" class="privacy-link">política de privacidad</a>
-            <span class="required-asterisk">*</span>
-          </span>
-        </label>
-
-        <!-- Submit Button -->
-        <button type="submit" class="submit-button">
-          AVISADME
-        </button>
-      </form>
+      <!-- Newsletter Form - Hero Variant -->
+      <NewsletterForm variant="hero" locale={lang} />
     </div>
   </section>
 
