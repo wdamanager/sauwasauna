@@ -16,6 +16,8 @@ import CTANewsletter from '../../components/CTANewsletter.astro';
 import Footer from '../../components/layout/Footer.astro';
 import FooterBlack from '../../components/layout/FooterBlack.astro';
 import NewsletterForm from '../../components/NewsletterForm.astro';
+import CookieBanner from '../../components/CookieBanner.astro';
+import { cookieBannerTexts } from '../../data/cookieBannerTexts';
 
 const lang = 'es';
 
@@ -76,6 +78,9 @@ const description = 'Vive la auténtica sauna finlandesa de leña y baños de ag
 
   <!-- Footer Negro (WDA-268) -->
   <FooterBlack locale={lang} />
+
+  <!-- Cookie Banner -->
+  <CookieBanner {...cookieBannerTexts[lang]} />
 </Layout>
 
 <script>

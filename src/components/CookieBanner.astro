@@ -1,0 +1,489 @@
+---
+/**
+ * CookieBanner Component
+ * WDA-118: Banner de cookies funcional con SAUWA design system
+ *
+ * Features:
+ * - SAUWA design system compliant (colors, typography, spacing)
+ * - localStorage persistence (sauwa-cookie-consent)
+ * - 10 second delay before showing banner
+ * - Slide-up/down animations with smooth transitions
+ * - Full accessibility support (ARIA, keyboard navigation)
+ * - Multilingual ready (accepts text props for all languages)
+ * - Responsive mobile-first design
+ */
+
+export interface Props {
+  title: string;
+  description: string;
+  acceptLabel: string;
+  rejectLabel: string;
+  policyLink: string;
+  policyText?: string;
+}
+
+const {
+  title,
+  description,
+  acceptLabel,
+  rejectLabel,
+  policyLink,
+  policyText = 'política de privacidad'
+} = Astro.props;
+---
+
+<div
+  id="cookie-banner"
+  class="cookie-banner"
+  role="dialog"
+  aria-labelledby="cookie-banner-title"
+  aria-describedby="cookie-banner-description"
+  aria-hidden="true"
+>
+  <div class="cookie-banner-container">
+    <div class="cookie-banner-content">
+      <!-- Text Content -->
+      <div class="cookie-banner-text">
+        <h2 id="cookie-banner-title" class="cookie-banner-title">
+          {title}
+        </h2>
+        <p id="cookie-banner-description" class="cookie-banner-description">
+          {description}
+          {policyLink && (
+            <>
+              {' '}
+              <a href={policyLink} class="cookie-banner-link" target="_blank" rel="noopener noreferrer">
+                {policyText}
+              </a>
+            </>
+          )}
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="cookie-banner-actions">
+        <button
+          id="reject-cookies"
+          type="button"
+          class="cookie-button cookie-button-secondary"
+          aria-label={rejectLabel}
+        >
+          {rejectLabel}
+        </button>
+        <button
+          id="accept-cookies"
+          type="button"
+          class="cookie-button cookie-button-primary"
+          aria-label={acceptLabel}
+        >
+          {acceptLabel}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /**
+   * Cookie Banner Styles
+   * Following SAUWA Design System
+   */
+
+  .cookie-banner {
+    /* Positioning */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+
+    /* Initial hidden state */
+    transform: translateY(100%);
+    opacity: 0;
+    visibility: hidden;
+
+    /* Transitions */
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0.4s;
+
+    /* Visual design - más transparencia */
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.75) 0%,
+      rgba(0, 0, 0, 0.70) 100%
+    );
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Show state (added via JavaScript) */
+  .cookie-banner.show {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Hide animation (added when closing) */
+  .cookie-banner.hide {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  /* Container */
+  .cookie-banner-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+
+  /* Content wrapper */
+  .cookie-banner-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+
+  /* Text section */
+  .cookie-banner-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Title - SAUWA Typography */
+  .cookie-banner-title {
+    font-family: 'Helvetica Neue', 'Inter', 'Helvetica', 'Arial', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 300;
+    line-height: 1.4;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: 0.01em;
+  }
+
+  /* Description - SAUWA Typography */
+  .cookie-banner-description {
+    font-family: 'Avenir Next', 'Nunito Sans', system-ui, sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+  }
+
+  /* Privacy policy link */
+  .cookie-banner-link {
+    color: #DB4529;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease-out;
+  }
+
+  .cookie-banner-link:hover {
+    color: #BA2515;
+  }
+
+  .cookie-banner-link:focus-visible {
+    outline: 2px solid #DB4529;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Actions container */
+  .cookie-banner-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  /* Buttons - SAUWA Design System */
+  .cookie-button {
+    /* Typography */
+    font-family: 'Avenir Next', 'Nunito Sans', system-ui, sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    letter-spacing: 0.025em;
+
+    /* Layout */
+    padding: 0.875rem 1.75rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+
+    /* Transitions */
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Interaction */
+    outline: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Primary button (Accept) - sin borde negro */
+  .cookie-button-primary {
+    background-color: #DB4529;
+    color: #ffffff;
+    box-shadow: none;
+  }
+
+  .cookie-button-primary:hover {
+    background-color: #BA2515;
+    box-shadow: none;
+    transform: translateY(-1px);
+  }
+
+  .cookie-button-primary:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  .cookie-button-primary:focus-visible {
+    outline: 2px solid #DB4529;
+    outline-offset: 2px;
+  }
+
+  /* Secondary button (Reject) */
+  .cookie-button-secondary {
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.9);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .cookie-button-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .cookie-button-secondary:active {
+    transform: translateY(0);
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .cookie-button-secondary:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 3px;
+  }
+
+  /* Tablet and up */
+  @media (min-width: 768px) {
+    .cookie-banner-container {
+      padding: 1.75rem 2rem;
+    }
+
+    .cookie-banner-content {
+      flex-direction: row;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .cookie-banner-actions {
+      flex-direction: row;
+      flex-shrink: 0;
+      width: auto;
+      gap: 1rem;
+    }
+
+    .cookie-button {
+      width: auto;
+      white-space: nowrap;
+      min-width: 140px;
+    }
+
+    .cookie-banner-title {
+      font-size: 1.25rem;
+    }
+
+    .cookie-banner-description {
+      font-size: 1rem;
+    }
+  }
+
+  /* Desktop */
+  @media (min-width: 1024px) {
+    .cookie-banner-container {
+      padding: 2rem 3rem;
+    }
+
+    .cookie-banner-content {
+      gap: 3rem;
+    }
+  }
+
+  /* Reduced motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .cookie-banner,
+    .cookie-button {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+
+    .cookie-button:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * CookieBannerController
+   * Handles localStorage persistence, timing, and animations
+   */
+  class CookieBannerController {
+    private static readonly STORAGE_KEY = 'sauwa-cookie-consent';
+    private static readonly SHOW_DELAY_MS = 10000; // 10 seconds
+    private static readonly HIDE_ANIMATION_MS = 500;
+
+    private banner: HTMLElement | null;
+    private acceptButton: HTMLElement | null;
+    private rejectButton: HTMLElement | null;
+    private showTimeout: number | null = null;
+
+    constructor() {
+      this.banner = document.getElementById('cookie-banner');
+      this.acceptButton = document.getElementById('accept-cookies');
+      this.rejectButton = document.getElementById('reject-cookies');
+
+      if (!this.banner || !this.acceptButton || !this.rejectButton) {
+        console.warn('Cookie banner elements not found');
+        return;
+      }
+
+      this.init();
+    }
+
+    private init(): void {
+      // Check if user has already made a decision
+      const consent = this.getConsent();
+
+      if (consent) {
+        // User has already decided, don't show banner
+        return;
+      }
+
+      // User hasn't decided yet, show banner after delay
+      this.scheduleShow();
+
+      // Attach event listeners
+      this.acceptButton?.addEventListener('click', () => this.handleAccept());
+      this.rejectButton?.addEventListener('click', () => this.handleReject());
+
+      // Keyboard accessibility: ESC to close (reject)
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.banner?.classList.contains('show')) {
+          this.handleReject();
+        }
+      });
+    }
+
+    private scheduleShow(): void {
+      this.showTimeout = window.setTimeout(() => {
+        this.showBanner();
+      }, CookieBannerController.SHOW_DELAY_MS);
+    }
+
+    private showBanner(): void {
+      if (!this.banner) return;
+
+      // Update ARIA
+      this.banner.setAttribute('aria-hidden', 'false');
+
+      // Trigger reflow to ensure transition works
+      this.banner.offsetHeight;
+
+      // Add show class
+      this.banner.classList.add('show');
+
+      // Focus first button for accessibility
+      this.rejectButton?.focus();
+    }
+
+    private hideBanner(callback?: () => void): void {
+      if (!this.banner) return;
+
+      // Update ARIA
+      this.banner.setAttribute('aria-hidden', 'true');
+
+      // Add hide class for animation
+      this.banner.classList.add('hide');
+      this.banner.classList.remove('show');
+
+      // Remove from DOM after animation completes
+      setTimeout(() => {
+        this.banner?.remove();
+        callback?.();
+      }, CookieBannerController.HIDE_ANIMATION_MS);
+    }
+
+    private handleAccept(): void {
+      this.setConsent('accepted');
+      this.hideBanner(() => {
+        // Trigger custom event for analytics
+        this.dispatchConsentEvent('accepted');
+      });
+    }
+
+    private handleReject(): void {
+      this.setConsent('rejected');
+      this.hideBanner(() => {
+        // Trigger custom event for analytics
+        this.dispatchConsentEvent('rejected');
+      });
+    }
+
+    private getConsent(): string | null {
+      try {
+        return localStorage.getItem(CookieBannerController.STORAGE_KEY);
+      } catch (error) {
+        console.warn('localStorage not available:', error);
+        return null;
+      }
+    }
+
+    private setConsent(value: 'accepted' | 'rejected'): void {
+      try {
+        localStorage.setItem(CookieBannerController.STORAGE_KEY, value);
+      } catch (error) {
+        console.warn('Failed to save consent to localStorage:', error);
+      }
+    }
+
+    private dispatchConsentEvent(consent: 'accepted' | 'rejected'): void {
+      // Dispatch custom event for GTM/Analytics integration
+      const event = new CustomEvent('sauwa-cookie-consent', {
+        detail: { consent },
+        bubbles: true,
+        composed: true,
+      });
+      document.dispatchEvent(event);
+
+      // Also track with GTM if available
+      if (typeof window !== 'undefined' && (window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          event: 'cookie_consent',
+          consent_status: consent,
+        });
+      }
+    }
+
+    public destroy(): void {
+      if (this.showTimeout) {
+        clearTimeout(this.showTimeout);
+      }
+    }
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      new CookieBannerController();
+    });
+  } else {
+    new CookieBannerController();
+  }
+</script>

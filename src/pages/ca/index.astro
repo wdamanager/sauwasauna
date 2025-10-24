@@ -15,6 +15,8 @@ import SessionPhases from '../../components/SessionPhases.astro';
 import CTANewsletter from '../../components/CTANewsletter.astro';
 import Footer from '../../components/layout/Footer.astro';
 import FooterBlack from '../../components/layout/FooterBlack.astro';
+import CookieBanner from '../../components/CookieBanner.astro';
+import { cookieBannerTexts } from '../../data/cookieBannerTexts';
 
 const lang = 'ca';
 
@@ -102,6 +104,9 @@ const description = 'Viu l\'autèntica sauna finlandesa de llenya i banys d\'aig
 
   <!-- Footer Negre (WDA-268) -->
   <FooterBlack locale={lang} />
+
+  <!-- Cookie Banner -->
+  <CookieBanner {...cookieBannerTexts[lang]} />
 </Layout>
 
 <script>
