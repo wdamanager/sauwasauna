@@ -148,8 +148,10 @@ const icons = {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              set:html={icons[benefit.icon as keyof typeof icons]}
-            />
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <Fragment set:html={icons[benefit.icon as keyof typeof icons]} />
+            </svg>
           </div>
           <p class="benefit-text">
             {benefit.text}
@@ -168,7 +170,7 @@ const icons = {
   .section-title {
     font-family: var(--font-helvetica, 'Inter', 'Helvetica Neue', sans-serif);
     font-size: clamp(1.75rem, 4vw, 2.5rem);
-    font-weight: 200;
+    font-weight: 300;
     letter-spacing: 0.01em;
     line-height: 1.3;
     text-align: center;
@@ -216,12 +218,13 @@ const icons = {
   .icon {
     width: 32px;
     height: 32px;
+    display: block;
   }
 
   .benefit-text {
     font-family: var(--font-avenir, 'Nunito Sans', sans-serif);
     font-size: clamp(0.95rem, 1.5vw, 1.125rem);
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.6;
     color: #333;
     margin: 0;

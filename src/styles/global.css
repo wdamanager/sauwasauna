@@ -75,32 +75,32 @@
 
   /* Headings with Helvetica Neue Ultra Light */
   .heading-display {
-    @apply font-helvetica font-thin text-white;
+    @apply font-helvetica font-light text-white;
   }
 
   .heading-primary {
-    @apply font-helvetica font-thin text-white;
+    @apply font-helvetica font-light text-white;
   }
 
   .heading-secondary {
-    @apply font-avenir font-thin text-white opacity-90;
+    @apply font-avenir font-light text-white opacity-90;
   }
 
   .heading-tertiary {
-    @apply font-avenir font-light text-white;
+    @apply font-avenir font-normal text-white;
   }
 
   /* Body text with Avenir Next */
   .text-body {
-    @apply font-avenir font-light text-white;
+    @apply font-avenir font-normal text-white;
   }
 
   .text-body-sm {
-    @apply font-avenir font-light text-white text-sm;
+    @apply font-avenir font-normal text-white text-sm;
   }
 
   .text-cta {
-    @apply font-avenir font-light text-white;
+    @apply font-avenir font-normal text-white;
   }
 
   /* Buttons */
