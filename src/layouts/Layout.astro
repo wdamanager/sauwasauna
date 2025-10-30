@@ -48,12 +48,17 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     {description && <meta property="og:description" content={description} />}
-    
+    <meta property="og:image" content={new URL('/images/sauwasauna-logo-og.jpg', Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="SAUWA - Sauna finlandesa de leña en Andorra con baños de agua fría" />
+
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={canonicalURL} />
     <meta property="twitter:title" content={title} />
     {description && <meta property="twitter:description" content={description} />}
+    <meta property="twitter:image" content={new URL('/images/sauwasauna-logo-og.jpg', Astro.site)} />
 
     <!-- Custom head content (for specific pages) -->
     <slot name="head" />
