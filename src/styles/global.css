@@ -3,7 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Font Face Declarations */
+/* ========================================
+   FONT FACE DECLARATIONS
+   Note: Original font-weight values kept for @font-face
+   but remapped via CSS overrides below (WDA-313)
+   ======================================== */
+
 @font-face {
   font-family: 'Helvetica Neue';
   src: url('/fonts/helvetica-neue-ultra-light.woff2') format('woff2'),
@@ -67,6 +72,54 @@
   body {
     @apply antialiased;
     /* Removed overflow-x-hidden to allow position: sticky */
+  }
+
+  /* ========================================
+     GLOBAL FONT-WEIGHT OVERRIDES
+     WDA-313: Aplicar cambios de font-weight globalmente
+
+     Transformaciones:
+     - font-weight: 100 → 300 (Ultra Light → Light)
+     - font-weight: 200 → 300 (Extra Light → Light)
+     - font-weight: 300 → 400 (Light → Regular)
+
+     Fecha: 2025-10-30
+     ======================================== */
+
+  /* Override inline styles con attribute selectors */
+  [style*="font-weight: 100"],
+  [style*="font-weight:100"] {
+    font-weight: 300 !important;
+  }
+
+  [style*="font-weight: 200"],
+  [style*="font-weight:200"] {
+    font-weight: 300 !important;
+  }
+
+  [style*="font-weight: 300"],
+  [style*="font-weight:300"] {
+    font-weight: 400 !important;
+  }
+
+  /* Override scoped styles en componentes */
+  h1[style*="font-weight"],
+  h2[style*="font-weight"],
+  h3[style*="font-weight"],
+  h4[style*="font-weight"],
+  h5[style*="font-weight"],
+  h6[style*="font-weight"],
+  p[style*="font-weight"],
+  span[style*="font-weight"],
+  div[style*="font-weight"] {
+    font-weight: inherit !important;
+  }
+
+  /* Mapeo global de todos los font-weights */
+  * {
+    --fw-100: 300;
+    --fw-200: 300;
+    --fw-300: 400;
   }
 }
 
@@ -326,6 +379,24 @@
 }
 
 @layer utilities {
+  /* ========================================
+     TAILWIND FONT-WEIGHT UTILITY REMAPPING
+     WDA-313: Remap Tailwind utilities globally
+     ======================================== */
+
+  /* Remap font-weight utilities to new values */
+  .font-thin {
+    font-weight: 300 !important;
+  }
+
+  .font-extralight {
+    font-weight: 300 !important;
+  }
+
+  .font-light {
+    font-weight: 400 !important;
+  }
+
   /* Custom utilities */
   .container-custom {
     @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
