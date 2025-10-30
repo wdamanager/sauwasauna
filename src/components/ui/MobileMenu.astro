@@ -91,9 +91,9 @@ const currentPath = Astro.url.pathname;
     </button>
 
     <!-- NUEVO: Logo SAUWA -->
-    <div class="sidebar-logo">
-      <img src="/images/logo/sauwa-black.svg" alt="SAUWA Sauna" />
-    </div>
+    <a href={`/${locale}/`} class="sidebar-logo-link">
+      <img src="/images/logo/sauwa-black.svg" alt="SAUWA Sauna" class="sidebar-logo" />
+    </a>
 
     <!-- Navigation Links -->
     <ul class="nav-links">
@@ -153,14 +153,16 @@ const currentPath = Astro.url.pathname;
 <style>
   /* Mobile Menu Container */
   .mobile-menu {
-    display: none;
     position: fixed;
     inset: 0;
     z-index: 1000;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .mobile-menu[data-state="open"] {
-    display: block;
+    visibility: visible;
+    pointer-events: auto;
   }
 
   /* Overlay */
@@ -228,15 +230,23 @@ const currentPath = Astro.url.pathname;
   }
 
   /* WDA-314: Logo SAUWA arriba */
-  .sidebar-logo {
+  .sidebar-logo-link {
+    display: block;
     padding: 2rem 2rem 1.5rem 0;
     border-bottom: 1px solid #e5e5e5;
     margin-bottom: 2rem;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
   }
 
-  .sidebar-logo img {
+  .sidebar-logo-link:hover {
+    opacity: 0.8;
+  }
+
+  .sidebar-logo {
     max-width: 140px;
     height: auto;
+    display: block;
   }
 
   /* Navigation Links */
