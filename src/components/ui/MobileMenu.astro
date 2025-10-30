@@ -470,8 +470,8 @@ const currentPath = Astro.url.pathname;
       }
     }) as EventListener);
 
-    // Cerrar menu al hacer clic en links de navegación
-    const navLinks = menu.querySelectorAll('.nav-link, .language-link');
+    // Cerrar menu al hacer clic en links de navegación y logo
+    const navLinks = menu.querySelectorAll('.nav-link, .language-link, .sidebar-logo-link');
     navLinks.forEach(link => {
       link.addEventListener('click', closeMenu);
     });
