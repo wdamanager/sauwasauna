@@ -178,24 +178,33 @@ try {
     }
 
     .blog-header {
-      padding: 2rem 0 1.5rem;
-      padding-top: calc(3rem + 3rem); /* 3rem base + 3rem del navbar */
+      padding: 5rem 0 2.5rem; /* WDA-314: Aumentado de 2rem a 5rem en top */
+      padding-top: calc(5rem + 3rem); /* 5rem base + 3rem del navbar */
+      min-height: 65vh; /* WDA-314: Asegurar altura mínima en mobile */
     }
 
     .container {
       padding: 0 1.5rem;
     }
 
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem; /* WDA-314: Espaciado entre elementos */
+    }
+
     /* WDA-295: Jerarquía correcta como home - h1 pequeño, h2 grande */
     .blog-title {
       font-size: 16px; /* Pequeño como home (.heading-primary) */
       letter-spacing: 3px;
+      margin-bottom: 1.5rem; /* WDA-314: Más espacio después del título */
     }
 
     .blog-subtitle {
       font-size: 32px; /* Grande como home (.heading-secondary) */
       font-weight: 300;
       line-height: 1.3;
+      margin-bottom: 2rem; /* WDA-314: Más espacio antes del breadcrumb */
     }
 
     .blog-filters {

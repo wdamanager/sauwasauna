@@ -1,0 +1,151 @@
+---
+/**
+ * HamburgerButton Component - WDA-314
+ * Botón hamburger animado para menú mobile
+ *
+ * Features:
+ * - Animación suave: 3 líneas → X
+ * - Touch-friendly: 44x44px mínimo
+ * - Accesible: aria-labels y aria-expanded
+ * - Z-index: 1001 (sobre el sidebar)
+ * - Solo visible < 768px
+ *
+ * @prop {boolean} isOpen - Estado del menú (controlado externamente)
+ */
+
+export interface Props {
+  isOpen?: boolean;
+}
+
+const { isOpen = false } = Astro.props;
+---
+
+<button
+  class="hamburger-button"
+  aria-label="Menu"
+  aria-expanded={isOpen ? "true" : "false"}
+  type="button"
+  data-hamburger
+>
+  <span class="line line-1"></span>
+  <span class="line line-2"></span>
+  <span class="line line-3"></span>
+</button>
+
+<style>
+  /* Hamburger Button Container */
+  .hamburger-button {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
+    position: relative;
+    padding: 0;
+    transition: transform 0.2s ease;
+  }
+
+  .hamburger-button:hover {
+    transform: scale(1.05);
+  }
+
+  .hamburger-button:active {
+    transform: scale(0.95);
+  }
+
+  .hamburger-button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  /* Líneas del hamburger */
+  .line {
+    width: 28px;
+    height: 2px;
+    background: currentColor;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+    border-radius: 2px;
+  }
+
+  /* Estado abierto - transformación a X */
+  .hamburger-button[aria-expanded="true"] .line-1 {
+    transform: rotate(45deg) translateY(8px);
+  }
+
+  .hamburger-button[aria-expanded="true"] .line-2 {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  .hamburger-button[aria-expanded="true"] .line-3 {
+    transform: rotate(-45deg) translateY(-8px);
+  }
+
+  /* Solo visible en mobile (< 768px) */
+  @media (min-width: 768px) {
+    .hamburger-button {
+      display: none;
+    }
+  }
+
+  /* Reducir movimiento si el usuario lo prefiere */
+  @media (prefers-reduced-motion: reduce) {
+    .hamburger-button,
+    .line {
+      transition: none;
+    }
+
+    .hamburger-button:hover,
+    .hamburger-button:active {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Hamburger Button Client-Side Logic
+   * Maneja el toggle del menú mobile y sincroniza el estado
+   */
+
+  function initHamburgerButton() {
+    const hamburger = document.querySelector('[data-hamburger]') as HTMLButtonElement;
+    if (!hamburger) return;
+
+    // Toggle menu al hacer clic
+    hamburger.addEventListener('click', () => {
+      const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+      const newState = !isExpanded;
+
+      // Actualizar aria-expanded
+      hamburger.setAttribute('aria-expanded', String(newState));
+
+      // Dispatch evento para que MobileMenu escuche
+      const event = new CustomEvent('hamburger:toggle', {
+        detail: { isOpen: newState },
+        bubbles: true,
+      });
+      document.dispatchEvent(event);
+    });
+
+    // Escuchar eventos del menu para sincronizar estado
+    document.addEventListener('mobile-menu:close', () => {
+      hamburger.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  // Initialize on DOM load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHamburgerButton);
+  } else {
+    initHamburgerButton();
+  }
+</script>

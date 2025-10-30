@@ -1,7 +1,36 @@
-/* Global styles */
+/* ========================================
+   SAUWA Global Styles
+   WDA-314: Mobile-first responsive design
+   ======================================== */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ========================================
+   CSS CUSTOM PROPERTIES
+   Design tokens for consistency
+   ======================================== */
+:root {
+  /* Breakpoints */
+  --breakpoint-mobile: 768px;
+  --breakpoint-tablet: 1024px;
+
+  /* Header Heights */
+  --header-height-mobile: 60px;
+  --header-height-desktop: 80px;
+
+  /* Mobile Menu */
+  --mobile-menu-width: 320px;
+  --mobile-menu-z-index: 1000;
+  --mobile-menu-overlay-bg: rgba(0, 0, 0, 0.5);
+
+  /* Z-index Scale */
+  --z-navbar: 50;
+  --z-mobile-menu-overlay: 999;
+  --z-mobile-menu-sidebar: 1000;
+  --z-hamburger: 1001;
+}
 
 /* ========================================
    FONT FACE DECLARATIONS
@@ -64,14 +93,21 @@
 }
 
 @layer base {
+  /* ========================================
+     WDA-314: Prevent Horizontal Overflow
+     ======================================== */
+  html,
+  body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
   html {
     @apply scroll-smooth;
-    /* Removed overflow-x-hidden to allow position: sticky */
   }
 
   body {
     @apply antialiased;
-    /* Removed overflow-x-hidden to allow position: sticky */
   }
 
   /* ========================================
@@ -355,7 +391,8 @@
     }
   }
 
-  @media (max-width: 768px) {
+  /* WDA-314: Mobile breakpoint standardized to 767px (< 768px) */
+  @media (max-width: 767px) {
     .hero-content-wrapper {
       @apply px-4 pb-8 pt-4 gap-1;
     }
@@ -395,6 +432,49 @@
 
   .font-light {
     font-weight: 400 !important;
+  }
+
+  /* ========================================
+     WDA-314: RESPONSIVE UTILITIES
+     Mobile-first visibility helpers
+     ======================================== */
+
+  /* Mobile-specific utilities (< 768px) */
+  @media (max-width: 767px) {
+    .hide-mobile {
+      display: none !important;
+    }
+
+    .show-mobile {
+      display: block !important;
+    }
+
+    .text-mobile-center {
+      text-align: center !important;
+    }
+
+    .flex-mobile-column {
+      flex-direction: column !important;
+    }
+
+    .gap-mobile-sm {
+      gap: 0.5rem !important;
+    }
+
+    .p-mobile-4 {
+      padding: 1rem !important;
+    }
+  }
+
+  /* Desktop-specific utilities (>= 768px) */
+  @media (min-width: 768px) {
+    .hide-desktop {
+      display: none !important;
+    }
+
+    .show-desktop {
+      display: block !important;
+    }
   }
 
   /* Custom utilities */

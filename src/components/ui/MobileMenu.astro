@@ -1,0 +1,411 @@
+---
+/**
+ * MobileMenu Component - WDA-314
+ * Sidebar deslizante para navegación mobile
+ *
+ * Features:
+ * - Sidebar desde la derecha con overlay oscuro
+ * - Animación slide-in suave (0.3s ease)
+ * - Ancho: 80% viewport, max 320px
+ * - Height: 100vh, z-index: 1000
+ * - Selector de idiomas integrado
+ * - Instagram al final
+ * - Cierre al clic en overlay
+ * - Bloquea scroll del body cuando abierto
+ *
+ * @prop {string} locale - Idioma actual (es/ca/en/fr)
+ */
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+}
+
+const { locale = 'es' } = Astro.props;
+
+// Contenido por idioma
+const content = {
+  es: {
+    home: 'Inicio',
+    blog: 'Blog',
+    about: 'Sobre nosotros',
+    contact: 'Contacto',
+    language: 'Idioma',
+    followUs: 'Síguenos',
+  },
+  ca: {
+    home: 'Inici',
+    blog: 'Blog',
+    about: 'Sobre nosaltres',
+    contact: 'Contacte',
+    language: 'Idioma',
+    followUs: 'Segueix-nos',
+  },
+  en: {
+    home: 'Home',
+    blog: 'Blog',
+    about: 'About us',
+    contact: 'Contact',
+    language: 'Language',
+    followUs: 'Follow us',
+  },
+  fr: {
+    home: 'Accueil',
+    blog: 'Blog',
+    about: 'À propos',
+    contact: 'Contact',
+    language: 'Langue',
+    followUs: 'Suivez-nous',
+  },
+};
+
+const localizedContent = content[locale];
+
+// Idiomas disponibles
+const languages = [
+  { code: 'es', label: 'Español' },
+  { code: 'ca', label: 'Català' },
+  { code: 'en', label: 'English' },
+  { code: 'fr', label: 'Français' },
+];
+---
+
+<div class="mobile-menu" data-state="closed" data-mobile-menu>
+  <!-- Overlay -->
+  <div class="overlay" data-overlay></div>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" aria-label="Mobile navigation">
+    <!-- Navigation Links -->
+    <ul class="nav-links">
+      <li>
+        <a href={`/${locale}/`} class="nav-link">
+          {localizedContent.home}
+        </a>
+      </li>
+      <li>
+        <a href={`/${locale}/blog/`} class="nav-link">
+          {localizedContent.blog}
+        </a>
+      </li>
+    </ul>
+
+    <!-- Language Selector -->
+    <div class="language-section">
+      <h3 class="section-heading">{localizedContent.language}</h3>
+      <div class="language-grid">
+        {languages.map((lang) => (
+          <a
+            href={`/${lang.code}/`}
+            class={`language-link ${lang.code === locale ? 'active' : ''}`}
+            aria-label={`Switch to ${lang.label}`}
+          >
+            {lang.code.toUpperCase()}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- Social Links -->
+    <div class="social-section">
+      <p class="social-label">{localizedContent.followUs}</p>
+      <a
+        href="https://www.instagram.com/sauwa.ad/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="social-link"
+        aria-label="Follow us on Instagram"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+        <span>Instagram</span>
+      </a>
+    </div>
+  </nav>
+</div>
+
+<style>
+  /* Mobile Menu Container */
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+  }
+
+  .mobile-menu[data-state="open"] {
+    display: block;
+  }
+
+  /* Overlay */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(2px);
+  }
+
+  .mobile-menu[data-state="open"] .overlay {
+    opacity: 1;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    right: -100%;
+    top: 0;
+    width: 80%;
+    max-width: 320px;
+    height: 100vh;
+    background: #FFFFFF;
+    z-index: 1000;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    padding: 6rem 2rem 2rem;
+    overflow-y: auto;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .mobile-menu[data-state="open"] .sidebar {
+    right: 0;
+  }
+
+  /* Navigation Links */
+  .nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 3rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .nav-link {
+    display: block;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: #1f2937;
+    text-decoration: none;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+  }
+
+  .nav-link:hover {
+    color: #DB4529;
+    padding-left: 0.5rem;
+  }
+
+  .nav-link:active {
+    transform: scale(0.98);
+  }
+
+  /* Section Headings */
+  .section-heading {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6b7280;
+    margin: 0 0 1rem 0;
+  }
+
+  /* Language Section */
+  .language-section {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .language-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .language-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1f2937;
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    min-height: 44px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    transition: all 0.2s ease;
+  }
+
+  .language-link:hover {
+    border-color: #DB4529;
+    color: #DB4529;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(219, 69, 41, 0.15);
+  }
+
+  .language-link.active {
+    background: #DB4529;
+    border-color: #DB4529;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  /* Social Section */
+  .social-section {
+    margin-top: auto;
+  }
+
+  .social-label {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6b7280;
+    margin: 0 0 1rem 0;
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #1f2937;
+    text-decoration: none;
+    padding: 1rem;
+    min-height: 44px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    transition: all 0.2s ease;
+  }
+
+  .social-link:hover {
+    border-color: #DB4529;
+    color: #DB4529;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(219, 69, 41, 0.15);
+  }
+
+  .social-link svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  /* Desktop: Ocultar completamente */
+  @media (min-width: 768px) {
+    .mobile-menu {
+      display: none !important;
+    }
+  }
+
+  /* Reducir movimiento si el usuario lo prefiere */
+  @media (prefers-reduced-motion: reduce) {
+    .overlay,
+    .sidebar,
+    .nav-link,
+    .language-link,
+    .social-link {
+      transition: none;
+    }
+
+    .nav-link:hover,
+    .language-link:hover,
+    .social-link:hover {
+      transform: none;
+    }
+  }
+
+  /* Small mobile adjustments */
+  @media (max-width: 360px) {
+    .sidebar {
+      width: 85%;
+      padding: 5rem 1.5rem 1.5rem;
+    }
+
+    .nav-link {
+      font-size: 18px;
+    }
+
+    .language-link {
+      font-size: 13px;
+      padding: 0.625rem 0.75rem;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * MobileMenu Client-Side Logic
+   * Maneja apertura/cierre del menú y control del scroll
+   */
+
+  function initMobileMenu() {
+    const menu = document.querySelector('[data-mobile-menu]') as HTMLElement;
+    const overlay = document.querySelector('[data-overlay]') as HTMLElement;
+
+    if (!menu || !overlay) return;
+
+    // Cerrar menu al hacer clic en overlay
+    overlay.addEventListener('click', closeMenu);
+
+    // Cerrar menu con tecla Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.getAttribute('data-state') === 'open') {
+        closeMenu();
+      }
+    });
+
+    // Escuchar evento del hamburger button
+    document.addEventListener('hamburger:toggle', ((e: CustomEvent) => {
+      const isOpen = e.detail.isOpen;
+      if (isOpen) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    }) as EventListener);
+
+    // Cerrar menu al hacer clic en links de navegación
+    const navLinks = menu.querySelectorAll('.nav-link, .language-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    function openMenu() {
+      menu.setAttribute('data-state', 'open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenu() {
+      menu.setAttribute('data-state', 'closed');
+      document.body.style.overflow = '';
+
+      // Dispatch evento para sincronizar hamburger button
+      const event = new CustomEvent('mobile-menu:close', {
+        bubbles: true,
+      });
+      document.dispatchEvent(event);
+    }
+  }
+
+  // Initialize on DOM load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobileMenu);
+  } else {
+    initMobileMenu();
+  }
+</script>

@@ -267,6 +267,13 @@ const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' }
     overflow: hidden;
   }
 
+  /* WDA-314: Asegurar espacio suficiente entre filtros y cards */
+  .category-filter::after {
+    content: '';
+    display: block;
+    height: 1rem; /* Espacio adicional después de los filtros */
+  }
+
   /* Filter Wrapper - Horizontal Carousel (sin scrollbar visible) */
   .filter-wrapper {
     display: flex;
@@ -364,8 +371,13 @@ const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' }
   /* Responsive */
   @media (max-width: 768px) {
     .category-filter {
-      margin-bottom: 2rem;
+      margin-bottom: 2.5rem; /* WDA-314: Aumentado de 2rem a 2.5rem */
       padding: 0 0.5rem;
+    }
+
+    /* WDA-314: Más espacio después de filtros en mobile */
+    .category-filter::after {
+      height: 1.5rem;
     }
 
     .filter-wrapper {
