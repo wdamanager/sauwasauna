@@ -49,6 +49,7 @@ const languages = ['ca', 'es', 'fr', 'en'];
         class="navbar-logo navbar-logo-black"
       />
       <!-- Logo blanco (se muestra cuando el navbar es transparente) -->
+      <!-- WDA-314: Usar sauwa-full-white.svg para todas las páginas -->
       <img
         src="/images/logo/sauwa-full-white.svg"
         alt="SAUWA"
@@ -131,9 +132,9 @@ const languages = ['ca', 'es', 'fr', 'en'];
     transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Altura mayor cuando navbar es transparente (para logo grande) */
+  /* Altura mayor cuando navbar es transparente (para logo blanco) */
   .navbar-scroll.transparent .navbar-container {
-    height: 8rem; /* ~128px - para acomodar logo de 6rem */
+    height: 6rem; /* WDA-314: 96px - para logo blanco más pequeño */
   }
 
   /* Altura menor en homepage cuando transparente (sin logo) */
@@ -156,10 +157,11 @@ const languages = ['ca', 'es', 'fr', 'en'];
   /* WDA-314: Mobile - Logo a la izquierda */
   @media (max-width: 767px) {
     .navbar-logo-link {
-      position: static;
-      left: auto;
-      transform: none;
+      position: static !important;
+      left: auto !important;
+      transform: none !important;
       margin-right: auto;
+      margin-left: 0;
     }
   }
 
@@ -184,7 +186,7 @@ const languages = ['ca', 'es', 'fr', 'en'];
   /* Logo blanco (cuando navbar es transparente en TOP) */
   .navbar-logo-white {
     display: none;
-    height: 6rem; /* 96px - tamaño grande para transparente */
+    height: 4rem; /* WDA-314: 64px - más pequeño y elegante */
   }
 
   /* Cuando navbar es transparente, mostrar logo blanco grande */
@@ -215,18 +217,24 @@ const languages = ['ca', 'es', 'fr', 'en'];
   @media (max-width: 767px) {
     /* Desktop elements: Instagram link (solo desktop) */
     .navbar-desktop-only {
-      display: none;
+      display: none !important;
     }
 
     /* Mobile elements: Hamburger button (solo mobile) */
     .navbar-mobile-only {
       display: flex;
       align-items: center;
+      margin-left: auto; /* Empuja hamburger a la derecha */
     }
 
     /* Ocultar selector de idiomas en mobile (está en MobileMenu) */
     .navbar-languages {
-      display: none;
+      display: none !important;
+    }
+
+    /* CRÍTICO: Ocultar Instagram icon en mobile */
+    .navbar-instagram {
+      display: none !important;
     }
   }
 
@@ -339,7 +347,7 @@ const languages = ['ca', 'es', 'fr', 'en'];
     }
 
     .navbar-scroll.transparent .navbar-container {
-      height: 6.5rem; /* ~104px - ajustado para mobile */
+      height: 5rem; /* WDA-314: 80px - más compacto para mobile */
     }
 
     .navbar-scroll.transparent.homepage-navbar .navbar-container {
@@ -351,7 +359,7 @@ const languages = ['ca', 'es', 'fr', 'en'];
     }
 
     .navbar-logo-white {
-      height: 4.5rem; /* ~72px - más pequeño en mobile */
+      height: 3rem; /* WDA-314: ~48px - más pequeño en mobile */
     }
 
     .navbar-nav {

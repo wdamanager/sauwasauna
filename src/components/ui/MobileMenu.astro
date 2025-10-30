@@ -67,6 +67,9 @@ const languages = [
   { code: 'en', label: 'English' },
   { code: 'fr', label: 'Français' },
 ];
+
+// Detectar página actual para marcar como activa
+const currentPath = Astro.url.pathname;
 ---
 
 <div class="mobile-menu" data-state="closed" data-mobile-menu>
@@ -75,15 +78,38 @@ const languages = [
 
   <!-- Sidebar -->
   <nav class="sidebar" aria-label="Mobile navigation">
+    <!-- NUEVO: Botón cerrar X -->
+    <button
+      class="close-button"
+      aria-label="Cerrar menú"
+      data-close-menu
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- NUEVO: Logo SAUWA -->
+    <div class="sidebar-logo">
+      <img src="/images/logo/sauwa-black.svg" alt="SAUWA Sauna" />
+    </div>
+
     <!-- Navigation Links -->
     <ul class="nav-links">
       <li>
-        <a href={`/${locale}/`} class="nav-link">
+        <a
+          href={`/${locale}/`}
+          class={`nav-link ${currentPath === `/${locale}/` || currentPath === `/${locale}` ? 'active' : ''}`}
+        >
           {localizedContent.home}
         </a>
       </li>
       <li>
-        <a href={`/${locale}/blog/`} class="nav-link">
+        <a
+          href={`/${locale}/blog/`}
+          class={`nav-link ${currentPath.includes('/blog') ? 'active' : ''}`}
+        >
           {localizedContent.blog}
         </a>
       </li>
@@ -144,7 +170,7 @@ const languages = [
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease-out; /* WDA-314: Animación más elegante */
     backdrop-filter: blur(2px);
   }
 
@@ -155,23 +181,62 @@ const languages = [
   /* Sidebar */
   .sidebar {
     position: fixed;
-    right: -100%;
+    right: 0;
     top: 0;
     width: 80%;
     max-width: 320px;
     height: 100vh;
     background: #FFFFFF;
     z-index: 1000;
-    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(100%); /* WDA-314: Transform en lugar de right */
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* WDA-314: ease-out-quad */
     display: flex;
     flex-direction: column;
-    padding: 6rem 2rem 2rem;
+    padding: 2rem; /* WDA-314: Padding uniforme, ajustaremos dentro */
     overflow-y: auto;
     box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
   }
 
   .mobile-menu[data-state="open"] .sidebar {
-    right: 0;
+    transform: translateX(0); /* WDA-314: Slide in suave */
+  }
+
+  /* WDA-314: Botón cerrar X */
+  .close-button {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #1a1a1a;
+    z-index: 10;
+    transition: color 0.2s ease;
+  }
+
+  .close-button:hover {
+    color: #DB4529;
+  }
+
+  .close-button:active {
+    transform: scale(0.95);
+  }
+
+  /* WDA-314: Logo SAUWA arriba */
+  .sidebar-logo {
+    padding: 2rem 2rem 1.5rem 0;
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 2rem;
+  }
+
+  .sidebar-logo img {
+    max-width: 140px;
+    height: auto;
   }
 
   /* Navigation Links */
@@ -181,7 +246,7 @@ const languages = [
     margin: 0 0 3rem 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0;
   }
 
   .nav-link {
@@ -191,14 +256,24 @@ const languages = [
     font-weight: 400;
     color: #1f2937;
     text-decoration: none;
-    padding: 1rem 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 1rem 1.5rem;
+    border-left: 3px solid transparent;
     transition: all 0.2s ease;
+    position: relative;
   }
 
   .nav-link:hover {
     color: #DB4529;
-    padding-left: 0.5rem;
+    background-color: #f8f8f8;
+    border-left-color: #DB4529;
+  }
+
+  /* WDA-314: Estado activo para el nav-link actual */
+  .nav-link.active {
+    color: #DB4529;
+    border-left-color: #DB4529;
+    background-color: #fef2f2;
+    font-weight: 500;
   }
 
   .nav-link:active {
@@ -356,8 +431,14 @@ const languages = [
   function initMobileMenu() {
     const menu = document.querySelector('[data-mobile-menu]') as HTMLElement;
     const overlay = document.querySelector('[data-overlay]') as HTMLElement;
+    const closeButton = document.querySelector('[data-close-menu]') as HTMLElement;
 
     if (!menu || !overlay) return;
+
+    // WDA-314: Cerrar menu con botón X
+    if (closeButton) {
+      closeButton.addEventListener('click', closeMenu);
+    }
 
     // Cerrar menu al hacer clic en overlay
     overlay.addEventListener('click', closeMenu);
