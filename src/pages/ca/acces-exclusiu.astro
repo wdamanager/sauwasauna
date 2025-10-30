@@ -1,0 +1,185 @@
+---
+/**
+ * WDA-320: Página "Accés Exclusiu SAUWA" - CA
+ * Partners B2B: Hotels i glampings premium
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import NavbarScroll from '../../components/NavbarScroll.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
+import ExclusiveHero from '../../components/partners/ExclusiveHero.astro';
+import CountryFlags from '../../components/partners/CountryFlags.astro';
+import SelectionProcess from '../../components/partners/SelectionProcess.astro';
+import PartnerApplicationForm from '../../components/partners/PartnerApplicationForm.astro';
+import { getPartnersContent } from '../../lib/i18n/partners';
+
+const locale = 'ca';
+const content = getPartnersContent(locale);
+
+const seoTitle = content.seoTitle;
+const seoDescription = content.seoDescription;
+---
+
+<Layout title={seoTitle} description={seoDescription} lang={locale} pageType="partners">
+  <NavbarScroll locale={locale} />
+
+  <main>
+    <ExclusiveHero
+      title={content.hero.title}
+      heading={content.hero.heading}
+      subtitle={content.hero.subtitle}
+      ctaText={content.hero.ctaText}
+      ctaHref="#formulario"
+      backgroundImage="/images/partners/exclusive-hero.jpg"
+    />
+
+    <section class="partners-intro">
+      <div class="partners-intro__container">
+        <div class="partners-intro__content">
+          <div class="partners-intro__text">
+            <h2 class="partners-intro__title">{content.intro.title}</h2>
+            <h3 class="partners-intro__heading">{content.intro.heading}</h3>
+            <p class="partners-intro__description">{content.intro.text}</p>
+          </div>
+          <div class="partners-intro__image">
+            <img
+              src={content.intro.imageSrc}
+              alt={content.intro.imageAlt}
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <CountryFlags
+      title={content.countries.title}
+      subtitle={content.countries.subtitle}
+      intro={content.countries.intro}
+      countries={content.countries.items}
+    />
+
+    <SelectionProcess
+      title={content.selection.title}
+      subtitle={content.selection.subtitle}
+      intro={content.selection.intro}
+      requirements={content.selection.requirements}
+    />
+
+    <PartnerApplicationForm
+      locale={locale}
+      title={content.form.title}
+      subtitle={content.form.subtitle}
+    />
+  </main>
+
+  <FooterBlack locale={locale} />
+</Layout>
+
+<style>
+  .partners-intro {
+    width: 100%;
+    padding: 5rem 2rem;
+    background-color: #f4f4f4;
+  }
+
+  .partners-intro__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .partners-intro__content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .partners-intro__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .partners-intro__title {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #406E51;
+    margin: 0;
+  }
+
+  .partners-intro__heading {
+    font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+    font-weight: 300;
+    font-size: 2.5rem;
+    line-height: 1.3;
+    color: #1a1a1a;
+    margin: 0;
+  }
+
+  .partners-intro__description {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: #636464;
+    margin: 0;
+  }
+
+  .partners-intro__image {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .partners-intro__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .partners-intro__image:hover img {
+    transform: scale(1.03);
+  }
+
+  @media (min-width: 768px) {
+    .partners-intro__content {
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .partners-intro {
+      padding: 3rem 1.5rem;
+    }
+
+    .partners-intro__content {
+      gap: 2rem;
+    }
+
+    .partners-intro__heading {
+      font-size: 1.75rem;
+    }
+
+    .partners-intro__description {
+      font-size: 0.9375rem;
+    }
+
+    .partners-intro__image {
+      min-height: 300px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .partners-intro__image img:hover {
+      transform: none;
+    }
+  }
+</style>

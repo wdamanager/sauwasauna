@@ -1,0 +1,798 @@
+---
+/**
+ * WDA-315: Formulario de solicitud de empleo
+ * Con validación client-side y GraphQL mutation preparada
+ */
+
+import type { CareersLocale } from '../../lib/i18n/careers';
+
+interface Props {
+  locale: CareersLocale;
+  title: string;
+  subtitle: string;
+}
+
+const { locale, title, subtitle } = Astro.props;
+---
+
+<section class="careers-form" id="formulario">
+  <div class="careers-form__container">
+    <div class="careers-form__header">
+      <h2 class="careers-form__title">{title}</h2>
+      <p class="careers-form__subtitle">{subtitle}</p>
+    </div>
+
+    <form
+      class="careers-form__form"
+      id="jobApplicationForm"
+      data-locale={locale}
+      novalidate
+    >
+      <div class="careers-form__row">
+        <div class="careers-form__field">
+          <label for="name" class="careers-form__label">
+            <span data-i18n="name"></span>
+            <span class="careers-form__required">*</span>
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            class="careers-form__input"
+            data-i18n-placeholder="namePlaceholder"
+            required
+            minlength="2"
+            autocomplete="given-name"
+          />
+          <span class="careers-form__error" data-error="name"></span>
+        </div>
+
+        <div class="careers-form__field">
+          <label for="surname" class="careers-form__label">
+            <span data-i18n="surname"></span>
+            <span class="careers-form__required">*</span>
+          </label>
+          <input
+            type="text"
+            id="surname"
+            name="surname"
+            class="careers-form__input"
+            data-i18n-placeholder="surnamePlaceholder"
+            required
+            minlength="2"
+            autocomplete="family-name"
+          />
+          <span class="careers-form__error" data-error="surname"></span>
+        </div>
+      </div>
+
+      <div class="careers-form__row">
+        <div class="careers-form__field">
+          <label for="email" class="careers-form__label">
+            <span data-i18n="email"></span>
+            <span class="careers-form__required">*</span>
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="careers-form__input"
+            data-i18n-placeholder="emailPlaceholder"
+            required
+            autocomplete="email"
+          />
+          <span class="careers-form__error" data-error="email"></span>
+        </div>
+
+        <div class="careers-form__field">
+          <label for="phone" class="careers-form__label">
+            <span data-i18n="phone"></span>
+            <span class="careers-form__required">*</span>
+          </label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            class="careers-form__input"
+            data-i18n-placeholder="phonePlaceholder"
+            required
+            autocomplete="tel"
+          />
+          <span class="careers-form__error" data-error="phone"></span>
+        </div>
+      </div>
+
+      <div class="careers-form__row">
+        <div class="careers-form__field">
+          <label for="age" class="careers-form__label">
+            <span data-i18n="age"></span>
+            <span class="careers-form__required">*</span>
+          </label>
+          <input
+            type="number"
+            id="age"
+            name="age"
+            class="careers-form__input"
+            data-i18n-placeholder="agePlaceholder"
+            required
+            min="18"
+            max="65"
+          />
+          <span class="careers-form__error" data-error="age"></span>
+        </div>
+
+        <div class="careers-form__field">
+          <label for="cv" class="careers-form__label">
+            <span data-i18n="cv"></span>
+            <span class="careers-form__required">*</span>
+          </label>
+          <input
+            type="file"
+            id="cv"
+            name="cv"
+            class="careers-form__input careers-form__input--file"
+            required
+            accept=".pdf"
+          />
+          <span class="careers-form__error" data-error="cv"></span>
+        </div>
+      </div>
+
+      <div class="careers-form__field careers-form__field--full">
+        <label for="motivation" class="careers-form__label">
+          <span data-i18n="motivation"></span>
+          <span class="careers-form__required">*</span>
+        </label>
+        <textarea
+          id="motivation"
+          name="motivation"
+          class="careers-form__textarea"
+          data-i18n-placeholder="motivationPlaceholder"
+          required
+          minlength="100"
+          maxlength="500"
+          rows="6"
+        ></textarea>
+        <div class="careers-form__char-counter">
+          <span id="charCount">0</span>/<span>500</span>
+          <span data-i18n="characterCount" class="careers-form__char-label"></span>
+        </div>
+        <span class="careers-form__error" data-error="motivation"></span>
+      </div>
+
+      <div class="careers-form__field careers-form__field--full">
+        <label class="careers-form__checkbox-label">
+          <input
+            type="checkbox"
+            id="gdpr"
+            name="gdpr"
+            class="careers-form__checkbox"
+            required
+          />
+          <span class="careers-form__checkbox-text">
+            <span data-i18n="gdpr"></span>
+            <a
+              href={`/${locale}/politica-privacidad`}
+              class="careers-form__link"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n="gdprLink"
+            ></a>
+            <span class="careers-form__required">*</span>
+          </span>
+        </label>
+        <span class="careers-form__error" data-error="gdpr"></span>
+      </div>
+
+      <button
+        type="submit"
+        class="careers-form__submit"
+        id="submitBtn"
+      >
+        <span data-i18n="submit" class="careers-form__submit-text"></span>
+        <span class="careers-form__spinner" aria-hidden="true"></span>
+      </button>
+    </form>
+
+    <div class="careers-form__message careers-form__message--success" id="successMessage">
+      <div class="careers-form__message-icon">✓</div>
+      <h3 class="careers-form__message-title" data-i18n="successTitle"></h3>
+      <p class="careers-form__message-text" data-i18n="successMessage"></p>
+    </div>
+
+    <div class="careers-form__message careers-form__message--error" id="errorMessage">
+      <div class="careers-form__message-icon">✕</div>
+      <h3 class="careers-form__message-title" data-i18n="errorTitle"></h3>
+      <p class="careers-form__message-text" data-i18n="errorMessage"></p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .careers-form {
+    width: 100%;
+    padding: 5rem 2rem;
+    background-color: #f4f4f4;
+  }
+
+  .careers-form__container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .careers-form__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .careers-form__title {
+    font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+    font-weight: 300;
+    font-size: 2.5rem;
+    line-height: 1.3;
+    color: #1a1a1a;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .careers-form__subtitle {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: #636464;
+    margin: 0;
+  }
+
+  .careers-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .careers-form__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .careers-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .careers-form__field--full {
+    grid-column: 1 / -1;
+  }
+
+  .careers-form__label {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 0.9375rem;
+    color: #1a1a1a;
+  }
+
+  .careers-form__required {
+    color: #DB4529;
+    margin-left: 0.25rem;
+  }
+
+  .careers-form__input,
+  .careers-form__textarea {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 1rem;
+    padding: 14px 18px;
+    border: 1px solid #d1d1d1;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1a1a1a;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .careers-form__input:focus,
+  .careers-form__textarea:focus {
+    outline: none;
+    border-color: #DB4529;
+    box-shadow: 0 0 0 3px rgba(219, 69, 41, 0.1);
+  }
+
+  .careers-form__input--file {
+    padding: 10px 14px;
+    cursor: pointer;
+  }
+
+  .careers-form__input.careers-form__input--error,
+  .careers-form__textarea.careers-form__textarea--error {
+    border-color: #BA2515;
+  }
+
+  .careers-form__textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .careers-form__char-counter {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 0.875rem;
+    color: #636464;
+    text-align: right;
+  }
+
+  .careers-form__char-label {
+    margin-left: 0.25rem;
+  }
+
+  .careers-form__checkbox-label {
+    display: flex;
+    align-items: start;
+    gap: 0.75rem;
+    cursor: pointer;
+  }
+
+  .careers-form__checkbox {
+    margin-top: 0.25rem;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #DB4529;
+  }
+
+  .careers-form__checkbox-text {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: #1a1a1a;
+  }
+
+  .careers-form__link {
+    color: #DB4529;
+    text-decoration: underline;
+    transition: opacity 0.3s ease;
+  }
+
+  .careers-form__link:hover {
+    opacity: 0.8;
+  }
+
+  .careers-form__error {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 0.875rem;
+    color: #BA2515;
+    display: none;
+  }
+
+  .careers-form__error--visible {
+    display: block;
+  }
+
+  .careers-form__submit {
+    width: 100%;
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 8px;
+    background: #DB4529;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .careers-form__submit:hover:not(:disabled) {
+    background: #BA2515;
+  }
+
+  .careers-form__submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .careers-form__submit:focus-visible {
+    outline: 2px solid #DB4529;
+    outline-offset: 2px;
+  }
+
+  .careers-form__spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffffff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: none;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .careers-form__submit--loading .careers-form__spinner {
+    display: block;
+  }
+
+  .careers-form__message {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 3rem 2rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+  }
+
+  .careers-form__message--visible {
+    display: flex;
+  }
+
+  .careers-form__message--success {
+    background: #e8f5e9;
+    border: 1px solid #4caf50;
+  }
+
+  .careers-form__message--error {
+    background: #ffebee;
+    border: 1px solid #f44336;
+  }
+
+  .careers-form__message-icon {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+  }
+
+  .careers-form__message--success .careers-form__message-icon {
+    background: #4caf50;
+    color: #ffffff;
+  }
+
+  .careers-form__message--error .careers-form__message-icon {
+    background: #f44336;
+    color: #ffffff;
+  }
+
+  .careers-form__message-title {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 1.5rem;
+    color: #1a1a1a;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .careers-form__message-text {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #636464;
+    margin: 0;
+  }
+
+  /* Desktop (>= 768px) */
+  @media (min-width: 768px) {
+    .careers-form__row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Mobile (< 768px) */
+  @media (max-width: 767px) {
+    .careers-form {
+      padding: 3rem 1.5rem;
+    }
+
+    .careers-form__title {
+      font-size: 1.75rem;
+    }
+
+    .careers-form__subtitle {
+      font-size: 1rem;
+    }
+
+    .careers-form__input,
+    .careers-form__textarea {
+      font-size: 16px; /* Prevent iOS zoom on focus */
+    }
+  }
+</style>
+
+<script>
+  import { getCareersContent } from '../../lib/i18n/careers';
+
+  interface FormData {
+    name: string;
+    surname: string;
+    email: string;
+    phone: string;
+    age: number;
+    cv: File | null;
+    motivation: string;
+    gdpr: boolean;
+  }
+
+  class JobApplicationForm {
+    private form: HTMLFormElement;
+    private submitBtn: HTMLButtonElement;
+    private locale: string;
+    private content: any;
+
+    constructor() {
+      this.form = document.getElementById('jobApplicationForm') as HTMLFormElement;
+      if (!this.form) return;
+
+      this.submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+      this.locale = this.form.dataset.locale || 'es';
+      this.content = getCareersContent(this.locale as any);
+
+      this.init();
+    }
+
+    private init(): void {
+      this.loadI18n();
+      this.attachEventListeners();
+      this.setupCharacterCounter();
+    }
+
+    private loadI18n(): void {
+      // Load translations
+      const labels = this.content.form.labels;
+      const validation = this.content.form.validation;
+
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        if (key && labels[key as keyof typeof labels]) {
+          el.textContent = labels[key as keyof typeof labels];
+        }
+      });
+
+      document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (key && labels[key as keyof typeof labels]) {
+          (el as HTMLInputElement).placeholder = labels[key as keyof typeof labels];
+        }
+      });
+    }
+
+    private attachEventListeners(): void {
+      // Validate on blur
+      const inputs = this.form.querySelectorAll('input, textarea');
+      inputs.forEach((input) => {
+        input.addEventListener('blur', (e) => {
+          this.validateField(e.target as HTMLInputElement);
+        });
+      });
+
+      // Form submit
+      this.form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleSubmit();
+      });
+    }
+
+    private setupCharacterCounter(): void {
+      const textarea = document.getElementById('motivation') as HTMLTextAreaElement;
+      const counter = document.getElementById('charCount');
+
+      if (textarea && counter) {
+        textarea.addEventListener('input', () => {
+          counter.textContent = textarea.value.length.toString();
+        });
+      }
+    }
+
+    private validateField(field: HTMLInputElement | HTMLTextAreaElement): boolean {
+      const validation = this.content.form.validation;
+      const errorEl = document.querySelector(`[data-error="${field.name}"]`) as HTMLElement;
+      let errorMessage = '';
+
+      // Clear previous error
+      field.classList.remove('careers-form__input--error', 'careers-form__textarea--error');
+      if (errorEl) {
+        errorEl.classList.remove('careers-form__error--visible');
+        errorEl.textContent = '';
+      }
+
+      // Required check
+      if (field.hasAttribute('required') && !field.value.trim()) {
+        errorMessage = validation.required;
+      }
+      // Email validation
+      else if (field.type === 'email' && field.value) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(field.value)) {
+          errorMessage = validation.emailInvalid;
+        }
+      }
+      // Phone validation
+      else if (field.type === 'tel' && field.value) {
+        const phoneRegex = /^[\d\s\+\-\(\)]+$/;
+        if (!phoneRegex.test(field.value) || field.value.length < 9) {
+          errorMessage = validation.phoneInvalid;
+        }
+      }
+      // Age validation
+      else if (field.name === 'age' && field.value) {
+        const age = parseInt(field.value);
+        if (age < 18 || age > 65) {
+          errorMessage = validation.ageRange;
+        }
+      }
+      // CV validation
+      else if (field.name === 'cv' && field.type === 'file') {
+        const fileInput = field as HTMLInputElement;
+        const file = fileInput.files?.[0];
+
+        if (!file) {
+          errorMessage = validation.cvRequired;
+        } else if (file.type !== 'application/pdf') {
+          errorMessage = validation.cvInvalid;
+        } else if (file.size > 5 * 1024 * 1024) {
+          errorMessage = validation.cvSize;
+        }
+      }
+      // Motivation validation
+      else if (field.name === 'motivation' && field.value) {
+        const length = field.value.length;
+        if (length < 100) {
+          errorMessage = validation.motivationMin;
+        } else if (length > 500) {
+          errorMessage = validation.motivationMax;
+        }
+      }
+      // GDPR validation
+      else if (field.name === 'gdpr' && field.type === 'checkbox') {
+        if (!(field as HTMLInputElement).checked) {
+          errorMessage = validation.gdprRequired;
+        }
+      }
+
+      // Show error if any
+      if (errorMessage) {
+        field.classList.add(
+          field.tagName === 'TEXTAREA' ? 'careers-form__textarea--error' : 'careers-form__input--error'
+        );
+        if (errorEl) {
+          errorEl.textContent = errorMessage;
+          errorEl.classList.add('careers-form__error--visible');
+        }
+        return false;
+      }
+
+      return true;
+    }
+
+    private validateForm(): boolean {
+      const inputs = this.form.querySelectorAll('input, textarea');
+      let isValid = true;
+
+      inputs.forEach((input) => {
+        if (!this.validateField(input as HTMLInputElement)) {
+          isValid = false;
+        }
+      });
+
+      return isValid;
+    }
+
+    private async handleSubmit(): Promise<void> {
+      if (!this.validateForm()) {
+        // Scroll to first error
+        const firstError = this.form.querySelector('.careers-form__error--visible');
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
+
+      // Show loading state
+      this.submitBtn.disabled = true;
+      this.submitBtn.classList.add('careers-form__submit--loading');
+
+      // Get form data
+      const formData = new FormData(this.form);
+
+      try {
+        // TODO: Implement GraphQL mutation when backend is ready
+        // For now, simulate API call
+        await this.submitToBackend(formData);
+
+        // Show success message
+        this.showMessage('success');
+        this.form.reset();
+        document.getElementById('charCount')!.textContent = '0';
+      } catch (error) {
+        console.error('Form submission error:', error);
+        this.showMessage('error');
+      } finally {
+        this.submitBtn.disabled = false;
+        this.submitBtn.classList.remove('careers-form__submit--loading');
+      }
+    }
+
+    private async submitToBackend(formData: FormData): Promise<void> {
+      // Simulate API call (replace with real GraphQL mutation)
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          console.log('Form data:', Object.fromEntries(formData));
+          resolve();
+        }, 1500);
+      });
+
+      /* GraphQL mutation example (implement when backend ready):
+      const mutation = `
+        mutation CreateJobApplication($input: JobApplicationInput!) {
+          createJobApplication(input: $input) {
+            id
+            success
+            message
+          }
+        }
+      `;
+
+      const variables = {
+        input: {
+          name: formData.get('name'),
+          surname: formData.get('surname'),
+          email: formData.get('email'),
+          phone: formData.get('phone'),
+          age: parseInt(formData.get('age') as string),
+          motivation: formData.get('motivation'),
+          locale: this.locale,
+          cv: formData.get('cv'), // Handle file upload separately
+        }
+      };
+
+      const response = await fetch('/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: mutation, variables }),
+      });
+
+      const result = await response.json();
+      if (result.errors) {
+        throw new Error(result.errors[0].message);
+      }
+      */
+    }
+
+    private showMessage(type: 'success' | 'error'): void {
+      const successMsg = document.getElementById('successMessage');
+      const errorMsg = document.getElementById('errorMessage');
+
+      // Hide form
+      this.form.style.display = 'none';
+
+      if (type === 'success' && successMsg) {
+        successMsg.classList.add('careers-form__message--visible');
+        successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (type === 'error' && errorMsg) {
+        errorMsg.classList.add('careers-form__message--visible');
+        errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }
+
+  // Initialize form
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => new JobApplicationForm());
+  } else {
+    new JobApplicationForm();
+  }
+</script>

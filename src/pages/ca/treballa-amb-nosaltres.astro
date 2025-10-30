@@ -1,0 +1,194 @@
+---
+/**
+ * WDA-315: Página "Treballa amb nosaltres" - CA
+ * Oportunitat laboral: Sauna Master certificat
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import NavbarScroll from '../../components/NavbarScroll.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
+import JobHero from '../../components/careers/JobHero.astro';
+import RequirementsList from '../../components/careers/RequirementsList.astro';
+import BenefitsGrid from '../../components/careers/BenefitsGrid.astro';
+import JobApplicationForm from '../../components/careers/JobApplicationForm.astro';
+import { getCareersContent } from '../../lib/i18n/careers';
+
+const locale = 'ca';
+const content = getCareersContent(locale);
+
+const seoTitle = content.seoTitle;
+const seoDescription = content.seoDescription;
+---
+
+<Layout title={seoTitle} description={seoDescription} lang={locale} pageType="careers">
+  <NavbarScroll locale={locale} />
+
+  <main>
+    <JobHero
+      title={content.hero.title}
+      heading={content.hero.heading}
+      subtitle={content.hero.subtitle}
+      ctaText={content.hero.ctaText}
+      ctaHref="#formulario"
+      backgroundImage="/images/careers/sauna-master-hero.jpg"
+    />
+
+    <RequirementsList
+      title={content.profile.title}
+      subtitle={content.profile.subtitle}
+      requirements={content.requirements}
+      imageSrc="/images/careers/sauna-master-profile.jpg"
+      imageAlt="Sauna Master professional realitzant cerimònia Aufguss"
+      layout="image-left"
+    />
+
+    <BenefitsGrid
+      title={content.benefits.title}
+      subtitle={content.benefits.subtitle}
+      benefits={content.benefits.items}
+      columns={3}
+    />
+
+    <section class="careers-responsibilities">
+      <div class="careers-responsibilities__container">
+        <div class="careers-responsibilities__header">
+          <h2 class="careers-responsibilities__title">{content.responsibilities.title}</h2>
+          <h3 class="careers-responsibilities__heading">{content.responsibilities.heading}</h3>
+          <p class="careers-responsibilities__intro">{content.responsibilities.intro}</p>
+        </div>
+
+        <ul class="careers-responsibilities__list">
+          {content.responsibilities.items.map((item) => (
+            <li class="careers-responsibilities__item">
+              <svg
+                class="careers-responsibilities__icon"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M5 13L9 17L19 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <JobApplicationForm
+      locale={locale}
+      title={content.form.title}
+      subtitle={content.form.subtitle}
+    />
+  </main>
+
+  <FooterBlack locale={locale} />
+</Layout>
+
+<style>
+  .careers-responsibilities {
+    width: 100%;
+    padding: 5rem 2rem;
+    background-color: #ffffff;
+  }
+
+  .careers-responsibilities__container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .careers-responsibilities__header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+  }
+
+  .careers-responsibilities__title {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #DB4529;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .careers-responsibilities__heading {
+    font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+    font-weight: 300;
+    font-size: 2.5rem;
+    line-height: 1.3;
+    color: #1a1a1a;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .careers-responsibilities__intro {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: #636464;
+    margin: 0 auto;
+    max-width: 800px;
+  }
+
+  .careers-responsibilities__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .careers-responsibilities__item {
+    display: flex;
+    align-items: start;
+    gap: 1rem;
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #1a1a1a;
+  }
+
+  .careers-responsibilities__icon {
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+    color: #406E51;
+  }
+
+  @media (max-width: 767px) {
+    .careers-responsibilities {
+      padding: 3rem 1.5rem;
+    }
+
+    .careers-responsibilities__header {
+      margin-bottom: 2.5rem;
+    }
+
+    .careers-responsibilities__heading {
+      font-size: 1.75rem;
+    }
+
+    .careers-responsibilities__intro {
+      font-size: 0.9375rem;
+    }
+
+    .careers-responsibilities__list {
+      gap: 1rem;
+    }
+
+    .careers-responsibilities__item {
+      font-size: 0.9375rem;
+    }
+  }
+</style>
