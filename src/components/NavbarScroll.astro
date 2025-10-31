@@ -11,6 +11,7 @@
 
 import HamburgerButton from './ui/HamburgerButton.astro';
 import MobileMenu from './ui/MobileMenu.astro';
+import { getLocalizedUrl, type Locale } from '../lib/i18n/routes';
 
 interface Props {
   locale: string;
@@ -21,8 +22,8 @@ const { locale } = Astro.props;
 // Idiomas disponibles
 const languages = ['ca', 'es', 'fr', 'en'];
 
-// Get current path without locale prefix to preserve it when switching languages
-const currentPath = Astro.url.pathname.substring(3); // Remove /es/ or /ca/ etc
+// Get current full path for translation
+const currentPath = Astro.url.pathname;
 ---
 
 <nav id="navbar-scroll" class="navbar-scroll" aria-label="Navigation">
@@ -30,8 +31,7 @@ const currentPath = Astro.url.pathname.substring(3); // Remove /es/ or /ca/ etc
     <!-- Selector de idiomas (izquierda) -->
     <div class="navbar-languages">
       {languages.map((lang, index) => {
-        const newPath = `/${lang}${currentPath}`;
-        const href = newPath.endsWith('/') ? newPath : `${newPath}/`;
+        const href = getLocalizedUrl(currentPath, lang as Locale);
         return (
           <>
             <a

@@ -16,6 +16,8 @@
  * @prop {string} locale - Idioma actual (es/ca/en/fr)
  */
 
+import { getLocalizedUrl, type Locale } from '../../lib/i18n/routes';
+
 export interface Props {
   locale?: 'es' | 'ca' | 'en' | 'fr';
 }
@@ -68,10 +70,8 @@ const languages = [
   { code: 'fr', label: 'Français' },
 ];
 
-// Detectar página actual para marcar como activa
+// Detectar página actual para marcar como activa y traducir rutas
 const currentPath = Astro.url.pathname;
-// Get path without locale prefix to preserve it when switching languages
-const pathWithoutLocale = currentPath.substring(3); // Remove /es/ or /ca/ etc
 ---
 
 <div class="mobile-menu" data-state="closed" data-mobile-menu>
@@ -122,8 +122,7 @@ const pathWithoutLocale = currentPath.substring(3); // Remove /es/ or /ca/ etc
       <h3 class="section-heading">{localizedContent.language}</h3>
       <div class="language-grid">
         {languages.map((lang) => {
-          const newPath = `/${lang.code}${pathWithoutLocale}`;
-          const href = newPath.endsWith('/') ? newPath : `${newPath}/`;
+          const href = getLocalizedUrl(currentPath, lang.code as Locale);
           return (
             <a
               href={href}
