@@ -8,7 +8,7 @@ export type PartnersLocale = 'es' | 'ca' | 'en' | 'fr';
 interface Country {
   code: string;
   name: string;
-  flag: string;
+  benefit: string;
 }
 
 interface SelectionRequirement {
@@ -118,12 +118,12 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       subtitle: 'Atrayendo al Turista de Bienestar Nórdico y Centroeuropeo',
       intro: 'Los mercados que representan el mayor gasto medio en entornos alpinos (suizo, austriaco, alemán, sueco, noruego y finlandés) tienen el uso de la sauna como una parte fundamental de su rutina de bienestar. Este segmento de cliente no se conforma con una cabina de calor genérica. Exigen la auténtica experiencia finlandesa (reconocida por la UNESCO) asistida por personal especializado y acreditado, lo que garantiza que la sesión no sea simplemente "pasar calor". Al incluir SAUWA, su propiedad dejará de ofrecer un "servicio de spa genérico" para ofrecer una experiencia cultural de bienestar de altísimo nivel, perfectamente alineada con las expectativas del cliente más exigente.',
       items: [
-        { code: 'CH', name: 'Suiza', flag: '🇨🇭' },
-        { code: 'AT', name: 'Austria', flag: '🇦🇹' },
-        { code: 'DE', name: 'Alemania', flag: '🇩🇪' },
-        { code: 'SE', name: 'Suecia', flag: '🇸🇪' },
-        { code: 'NO', name: 'Noruega', flag: '🇳🇴' },
-        { code: 'FI', name: 'Finlandia', flag: '🇫🇮' },
+        { code: 'CH', name: 'Suiza', benefit: 'Alto gasto medio' },
+        { code: 'AT', name: 'Austria', benefit: 'Cultura sauna tradicional' },
+        { code: 'DE', name: 'Alemania', benefit: 'Mercado premium' },
+        { code: 'SE', name: 'Suecia', benefit: 'Alto valor de gasto' },
+        { code: 'NO', name: 'Noruega', benefit: 'Turismo de lujo' },
+        { code: 'FI', name: 'Finlandia', benefit: 'Origen de la sauna' },
       ],
     },
     selection: {
@@ -216,12 +216,12 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       subtitle: 'Atraient el Turista de Benestar Nòrdic i Centreeuropeu',
       intro: 'Els mercats que representen la major despesa mitjana en entorns alpins (suís, austríac, alemany, suec, noruec i finlandès) tenen l\'ús de la sauna com una part fonamental de la seva rutina de benestar. Aquest segment de client no es conforma amb una cabina de calor genèrica. Exigeixen l\'autèntica experiència finlandesa (reconeguda per la UNESCO) assistida per personal especialitzat i acreditat, el que garanteix que la sessió no sigui simplement "passar calor". En incloure SAUWA, la teva propietat deixarà d\'oferir un "servei d\'spa genèric" per oferir una experiència cultural de benestar d\'altíssim nivell, perfectament alineada amb les expectatives del client més exigent.',
       items: [
-        { code: 'CH', name: 'Suïssa', flag: '🇨🇭' },
-        { code: 'AT', name: 'Àustria', flag: '🇦🇹' },
-        { code: 'DE', name: 'Alemanya', flag: '🇩🇪' },
-        { code: 'SE', name: 'Suècia', flag: '🇸🇪' },
-        { code: 'NO', name: 'Noruega', flag: '🇳🇴' },
-        { code: 'FI', name: 'Finlàndia', flag: '🇫🇮' },
+        { code: 'CH', name: 'Suïssa', benefit: 'Alta despesa mitjana' },
+        { code: 'AT', name: 'Àustria', benefit: 'Cultura sauna tradicional' },
+        { code: 'DE', name: 'Alemanya', benefit: 'Mercat premium' },
+        { code: 'SE', name: 'Suècia', benefit: 'Alt valor de despesa' },
+        { code: 'NO', name: 'Noruega', benefit: 'Turisme de luxe' },
+        { code: 'FI', name: 'Finlàndia', benefit: 'Origen de la sauna' },
       ],
     },
     selection: {
@@ -314,12 +314,12 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       subtitle: 'Attracting Nordic and Central European Wellness Tourists',
       intro: 'The markets representing the highest average spending in alpine environments (Swiss, Austrian, German, Swedish, Norwegian, and Finnish) have sauna use as a fundamental part of their wellness routine. This client segment does not settle for a generic heat cabin. They demand the authentic Finnish experience (recognized by UNESCO) assisted by specialized and accredited staff, ensuring the session is not simply "enduring heat". By including SAUWA, your property will stop offering a "generic spa service" to offer a very high-level cultural wellness experience, perfectly aligned with the most demanding client\'s expectations.',
       items: [
-        { code: 'CH', name: 'Switzerland', flag: '🇨🇭' },
-        { code: 'AT', name: 'Austria', flag: '🇦🇹' },
-        { code: 'DE', name: 'Germany', flag: '🇩🇪' },
-        { code: 'SE', name: 'Sweden', flag: '🇸🇪' },
-        { code: 'NO', name: 'Norway', flag: '🇳🇴' },
-        { code: 'FI', name: 'Finland', flag: '🇫🇮' },
+        { code: 'CH', name: 'Switzerland', benefit: 'High average spending' },
+        { code: 'AT', name: 'Austria', benefit: 'Traditional sauna culture' },
+        { code: 'DE', name: 'Germany', benefit: 'Premium market' },
+        { code: 'SE', name: 'Sweden', benefit: 'High spending value' },
+        { code: 'NO', name: 'Norway', benefit: 'Luxury tourism' },
+        { code: 'FI', name: 'Finland', benefit: 'Origin of sauna' },
       ],
     },
     selection: {
@@ -412,12 +412,12 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       subtitle: 'Attirer le Touriste du Bien-être Nordique et Centre-européen',
       intro: 'Les marchés représentant les dépenses moyennes les plus élevées dans les environnements alpins (suisse, autrichien, allemand, suédois, norvégien et finlandais) ont l\'utilisation du sauna comme partie fondamentale de leur routine de bien-être. Ce segment de clientèle ne se contente pas d\'une cabine de chaleur générique. Ils exigent l\'expérience finlandaise authentique (reconnue par l\'UNESCO) assistée par du personnel spécialisé et accrédité, ce qui garantit que la session n\'est pas simplement "supporter la chaleur". En incluant SAUWA, votre propriété cessera d\'offrir un "service spa générique" pour offrir une expérience culturelle de bien-être de très haut niveau, parfaitement alignée avec les attentes du client le plus exigeant.',
       items: [
-        { code: 'CH', name: 'Suisse', flag: '🇨🇭' },
-        { code: 'AT', name: 'Autriche', flag: '🇦🇹' },
-        { code: 'DE', name: 'Allemagne', flag: '🇩🇪' },
-        { code: 'SE', name: 'Suède', flag: '🇸🇪' },
-        { code: 'NO', name: 'Norvège', flag: '🇳🇴' },
-        { code: 'FI', name: 'Finlande', flag: '🇫🇮' },
+        { code: 'CH', name: 'Suisse', benefit: 'Dépense moyenne élevée' },
+        { code: 'AT', name: 'Autriche', benefit: 'Culture sauna traditionnelle' },
+        { code: 'DE', name: 'Allemagne', benefit: 'Marché premium' },
+        { code: 'SE', name: 'Suède', benefit: 'Valeur de dépense élevée' },
+        { code: 'NO', name: 'Norvège', benefit: 'Tourisme de luxe' },
+        { code: 'FI', name: 'Finlande', benefit: 'Origine du sauna' },
       ],
     },
     selection: {

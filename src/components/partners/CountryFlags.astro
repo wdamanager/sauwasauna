@@ -2,12 +2,15 @@
 /**
  * WDA-320: Grid de banderas de países nórdicos y centroeuropeos
  * Diseño elegante con hover effects
+ * Banderas SVG profesionales (no emojis)
  */
+
+import FlagIcon from './FlagIcon.astro';
 
 interface Country {
   code: string;
   name: string;
-  flag: string;
+  benefit: string;
 }
 
 interface Props {
@@ -35,10 +38,10 @@ const { title, subtitle, intro, countries } = Astro.props;
           style={`animation-delay: ${index * 0.08}s;`}
         >
           <div class="partners-countries__flag" aria-hidden="true">
-            {country.flag}
+            <FlagIcon countryCode={country.code} size={64} />
           </div>
           <h4 class="partners-countries__name">{country.name}</h4>
-          <span class="partners-countries__code">{country.code}</span>
+          <span class="partners-countries__benefit">{country.benefit}</span>
         </div>
       ))}
     </div>
@@ -130,14 +133,14 @@ const { title, subtitle, intro, countries } = Astro.props;
   }
 
   .partners-countries__flag {
-    font-size: 4rem;
-    line-height: 1;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
     transition: transform 0.3s ease;
+    display: flex;
+    justify-content: center;
   }
 
   .partners-countries__card:hover .partners-countries__flag {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 
   .partners-countries__name {
@@ -149,13 +152,12 @@ const { title, subtitle, intro, countries } = Astro.props;
     text-align: center;
   }
 
-  .partners-countries__code {
+  .partners-countries__benefit {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 300;
     font-size: 0.875rem;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: #636464;
+    color: #406E51;
+    text-align: center;
   }
 
   /* Tablet (768px - 1023px) */
@@ -209,12 +211,12 @@ const { title, subtitle, intro, countries } = Astro.props;
       padding: 2.5rem 1.5rem;
     }
 
-    .partners-countries__flag {
-      font-size: 3.5rem;
-    }
-
     .partners-countries__name {
       font-size: 1.125rem;
+    }
+
+    .partners-countries__benefit {
+      font-size: 0.8125rem;
     }
   }
 

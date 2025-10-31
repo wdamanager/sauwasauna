@@ -1,0 +1,78 @@
+---
+/**
+ * WDA-320: SVG Flag Icons Component
+ * Banderas SVG profesionales para sección de países
+ */
+
+interface Props {
+  countryCode: string;
+  size?: number;
+}
+
+const { countryCode, size = 64 } = Astro.props;
+
+// SVG paths para cada bandera (diseño rectangular limpio)
+const flags: Record<string, string> = {
+  CH: `
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" fill="#DA291C"/>
+      <path d="M14 10H18V14H22V18H18V22H14V18H10V14H14V10Z" fill="white"/>
+    </svg>
+  `,
+  AT: `
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" fill="#ED2939"/>
+      <rect y="10.67" width="32" height="10.67" fill="white"/>
+    </svg>
+  `,
+  DE: `
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="10.67" fill="#000000"/>
+      <rect y="10.67" width="32" height="10.67" fill="#DD0000"/>
+      <rect y="21.33" width="32" height="10.67" fill="#FFCE00"/>
+    </svg>
+  `,
+  SE: `
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" fill="#006AA7"/>
+      <rect y="13" width="32" height="6" fill="#FECC00"/>
+      <rect x="10" width="6" height="32" fill="#FECC00"/>
+    </svg>
+  `,
+  NO: `
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" fill="#BA0C2F"/>
+      <rect y="12" width="32" height="8" fill="white"/>
+      <rect x="8" width="8" height="32" fill="white"/>
+      <rect y="14" width="32" height="4" fill="#00205B"/>
+      <rect x="10" width="4" height="32" fill="#00205B"/>
+    </svg>
+  `,
+  FI: `
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" fill="white"/>
+      <rect y="13" width="32" height="6" fill="#003580"/>
+      <rect x="10" width="6" height="32" fill="#003580"/>
+    </svg>
+  `
+};
+---
+
+<div class="flag-icon" style={`width: ${size}px; height: ${size}px;`} set:html={flags[countryCode] || ''} />
+
+<style>
+  .flag-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .flag-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>
