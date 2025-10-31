@@ -110,7 +110,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       title: 'El Valor Distintivo de SAUWA',
       heading: 'Más que una sauna, una experiencia de bienestar premium',
       text: 'SAUWA no es solo una sauna móvil, es una experiencia de bienestar premium llave en mano, diseñada para maximizar el atractivo de ubicaciones únicas y sus entornos acuáticos de exterior durante la temporada invernal. Te ofrecemos la oportunidad de incorporar un servicio de alto valor percibido que diferencia tu propiedad y atrae a un segmento de clientes que busca experiencias inolvidables en invierno. Nos ocupamos de toda la operación, desde la logística y la instalación en entornos acuáticos idílicos, hasta la gestión de la experiencia del usuario, garantizando la máxima excelencia y seguridad.',
-      imageSrc: '/images/partners/sauwa-premium-installation.jpg',
+      imageSrc: '/images/partners-sauwa-sauna-instalaciones.webp',
       imageAlt: 'Instalación premium SAUWA en entorno natural',
     },
     countries: {
@@ -132,18 +132,18 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       intro: 'No todos los establecimientos cumplen nuestros estándares de excelencia. Evaluamos cuidadosamente cada solicitud para garantizar que la alianza beneficie a ambas partes.',
       requirements: [
         {
-          icon: '✨',
-          title: 'Excelencia en el Entorno y Limpieza',
+          icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          title: 'Excelencia en el entorno y limpieza',
           description: 'Buscamos propiedades que compartan nuestra obsesión por la excelencia. Instalaciones impecables, entornos naturales privilegiados y estándares de limpieza inmaculados son requisitos indispensables.',
         },
         {
-          icon: '🚁',
-          title: 'Accesibilidad y Viabilidad Logística',
+          icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M21 16V8C21 6.9 20.1 6 19 6H5C3.9 6 3 6.9 3 8V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16Z" stroke="currentColor" stroke-width="2"/><path d="M12 6V3M12 18V21M8 6L12 3L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          title: 'Accesibilidad y viabilidad logística',
           description: 'La instalación requiere acceso adecuado para transporte especializado y conexiones de servicios básicos (agua, electricidad). Evaluamos cada ubicación individualmente para garantizar viabilidad operativa.',
         },
         {
-          icon: '🤝',
-          title: 'Compromiso con el Servicio',
+          icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="2"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          title: 'Compromiso con el servicio',
           description: 'Buscamos partners que entiendan que SAUWA es más que una amenidad: es un diferenciador estratégico. El compromiso con la excelencia en el servicio y la promoción conjunta son esenciales para el éxito mutuo.',
         },
       ],
@@ -208,7 +208,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       title: 'El Valor Distintiu de SAUWA',
       heading: 'Més que una sauna, una experiència de benestar premium',
       text: 'SAUWA no és només una sauna mòbil, és una experiència de benestar premium claus en mà, dissenyada per maximitzar l\'atractiu d\'ubicacions úniques i els seus entorns aquàtics d\'exterior durant la temporada hivernal. T\'oferim l\'oportunitat d\'incorporar un servei d\'alt valor percebut que diferencia la teva propietat i atrau un segment de clients que cerca experiències inoblidables a l\'hivern. Ens ocupem de tota l\'operació, des de la logística i la instal·lació en entorns aquàtics idíl·lics, fins a la gestió de l\'experiència de l\'usuari, garantint la màxima excel·lència i seguretat.',
-      imageSrc: '/images/partners/sauwa-premium-installation.jpg',
+      imageSrc: '/images/partners-sauwa-sauna-instalaciones.webp',
       imageAlt: 'Instal·lació premium SAUWA en entorn natural',
     },
     countries: {
@@ -230,18 +230,18 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       intro: 'No tots els establiments compleixen els nostres estàndards d\'excel·lència. Avaluem acuradament cada sol·licitud per garantir que l\'aliança beneficiï ambdues parts.',
       requirements: [
         {
-          icon: '✨',
-          title: 'Excel·lència en l\'Entorn i Neteja',
+          icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          title: 'Excel·lència en l\'entorn i neteja',
           description: 'Busquem propietats que comparteixin la nostra obsessió per l\'excel·lència. Instal·lacions impecables, entorns naturals privilegiats i estàndards de neteja immaculats són requisits indispensables.',
         },
         {
-          icon: '🚁',
-          title: 'Accessibilitat i Viabilitat Logística',
+          icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M21 16V8C21 6.9 20.1 6 19 6H5C3.9 6 3 6.9 3 8V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16Z" stroke="currentColor" stroke-width="2"/><path d="M12 6V3M12 18V21M8 6L12 3L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          title: 'Accessibilitat i viabilitat logística',
           description: 'La instal·lació requereix accés adequat per transport especialitzat i connexions de serveis bàsics (aigua, electricitat). Avaluem cada ubicació individualment per garantir viabilitat operativa.',
         },
         {
-          icon: '🤝',
-          title: 'Compromís amb el Servei',
+          icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="2"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          title: 'Compromís amb el servei',
           description: 'Busquem partners que entenguin que SAUWA és més que una amenitat: és un diferenciador estratègic. El compromís amb l\'excel·lència en el servei i la promoció conjunta són essencials per a l\'èxit mutu.',
         },
       ],
@@ -306,7 +306,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       title: 'SAUWA\'s Distinctive Value',
       heading: 'More than a sauna, a premium wellness experience',
       text: 'SAUWA is not just a mobile sauna, it is a premium turnkey wellness experience, designed to maximize the appeal of unique locations and their outdoor aquatic environments during the winter season. We offer you the opportunity to incorporate a high perceived value service that differentiates your property and attracts a segment of clients seeking unforgettable winter experiences. We handle the entire operation, from logistics and installation in idyllic aquatic environments, to user experience management, ensuring maximum excellence and safety.',
-      imageSrc: '/images/partners/sauwa-premium-installation.jpg',
+      imageSrc: '/images/partners-sauwa-sauna-instalaciones.webp',
       imageAlt: 'SAUWA premium installation in natural environment',
     },
     countries: {
@@ -328,18 +328,18 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       intro: 'Not all establishments meet our excellence standards. We carefully evaluate each application to ensure the alliance benefits both parties.',
       requirements: [
         {
-          icon: '✨',
-          title: 'Excellence in Environment and Cleanliness',
+          icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          title: 'Excellence in environment and cleanliness',
           description: 'We seek properties that share our obsession with excellence. Impeccable facilities, privileged natural environments and immaculate cleanliness standards are indispensable requirements.',
         },
         {
-          icon: '🚁',
-          title: 'Accessibility and Logistical Viability',
+          icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M21 16V8C21 6.9 20.1 6 19 6H5C3.9 6 3 6.9 3 8V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16Z" stroke="currentColor" stroke-width="2"/><path d="M12 6V3M12 18V21M8 6L12 3L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          title: 'Accessibility and logistical viability',
           description: 'Installation requires adequate access for specialized transport and basic service connections (water, electricity). We evaluate each location individually to guarantee operational viability.',
         },
         {
-          icon: '🤝',
-          title: 'Commitment to Service',
+          icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="2"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          title: 'Commitment to service',
           description: 'We seek partners who understand that SAUWA is more than an amenity: it is a strategic differentiator. Commitment to service excellence and joint promotion are essential for mutual success.',
         },
       ],
@@ -404,7 +404,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       title: 'La Valeur Distinctive de SAUWA',
       heading: 'Plus qu\'un sauna, une expérience de bien-être premium',
       text: 'SAUWA n\'est pas seulement un sauna mobile, c\'est une expérience de bien-être premium clés en main, conçue pour maximiser l\'attrait de lieux uniques et leurs environnements aquatiques extérieurs pendant la saison hivernale. Nous vous offrons l\'opportunité d\'intégrer un service à haute valeur perçue qui différencie votre propriété et attire un segment de clients recherchant des expériences inoubliables en hiver. Nous nous occupons de toute l\'opération, de la logistique et de l\'installation dans des environnements aquatiques idylliques, à la gestion de l\'expérience utilisateur, garantissant excellence et sécurité maximales.',
-      imageSrc: '/images/partners/sauwa-premium-installation.jpg',
+      imageSrc: '/images/partners-sauwa-sauna-instalaciones.webp',
       imageAlt: 'Installation premium SAUWA en environnement naturel',
     },
     countries: {
@@ -426,18 +426,18 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       intro: 'Tous les établissements ne répondent pas à nos normes d\'excellence. Nous évaluons soigneusement chaque demande pour garantir que l\'alliance profite aux deux parties.',
       requirements: [
         {
-          icon: '✨',
-          title: 'Excellence en Environnement et Propreté',
+          icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          title: 'Excellence en environnement et propreté',
           description: 'Nous recherchons des propriétés qui partagent notre obsession pour l\'excellence. Installations impeccables, environnements naturels privilégiés et normes de propreté immaculées sont des exigences indispensables.',
         },
         {
-          icon: '🚁',
-          title: 'Accessibilité et Viabilité Logistique',
+          icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M21 16V8C21 6.9 20.1 6 19 6H5C3.9 6 3 6.9 3 8V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16Z" stroke="currentColor" stroke-width="2"/><path d="M12 6V3M12 18V21M8 6L12 3L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          title: 'Accessibilité et viabilité logistique',
           description: 'L\'installation nécessite un accès adéquat pour transport spécialisé et connexions de services de base (eau, électricité). Nous évaluons chaque emplacement individuellement pour garantir la viabilité opérationnelle.',
         },
         {
-          icon: '🤝',
-          title: 'Engagement envers le Service',
+          icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="2"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+          title: 'Engagement envers le service',
           description: 'Nous recherchons des partenaires qui comprennent que SAUWA est plus qu\'une commodité : c\'est un différenciateur stratégique. L\'engagement envers l\'excellence du service et la promotion conjointe sont essentiels pour le succès mutuel.',
         },
       ],
