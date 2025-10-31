@@ -107,7 +107,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       ctaText: 'Solicitar Evaluación',
     },
     intro: {
-      title: 'El Valor Distintivo de SAUWA',
+      title: 'El valor distintivo de SAUWA',
       heading: 'Más que una sauna, una experiencia de bienestar premium',
       text: 'SAUWA no es solo una sauna móvil, es una experiencia de bienestar premium llave en mano, diseñada para maximizar el atractivo de ubicaciones únicas y sus entornos acuáticos de exterior durante la temporada invernal. Te ofrecemos la oportunidad de incorporar un servicio de alto valor percibido que diferencia tu propiedad y atrae a un segmento de clientes que busca experiencias inolvidables en invierno. Nos ocupamos de toda la operación, desde la logística y la instalación en entornos acuáticos idílicos, hasta la gestión de la experiencia del usuario, garantizando la máxima excelencia y seguridad.',
       imageSrc: '/images/partners-sauwa-sauna-instalaciones.webp',
@@ -115,7 +115,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
     },
     countries: {
       title: 'Turismo de alto valor',
-      subtitle: 'Atrayendo al Turista de Bienestar Nórdico y Centroeuropeo',
+      subtitle: 'Atrayendo al turista de bienestar nórdico y centroeuropeo',
       intro: 'Los mercados que representan el mayor gasto medio en entornos alpinos (suizo, austriaco, alemán, sueco, noruego y finlandés) tienen el uso de la sauna como una parte fundamental de su rutina de bienestar. Este segmento de cliente no se conforma con una cabina de calor genérica. Exigen la auténtica experiencia finlandesa (reconocida por la UNESCO) asistida por personal especializado y acreditado, lo que garantiza que la sesión no sea simplemente "pasar calor". Al incluir SAUWA, su propiedad dejará de ofrecer un "servicio de spa genérico" para ofrecer una experiencia cultural de bienestar de altísimo nivel, perfectamente alineada con las expectativas del cliente más exigente.',
       items: [
         { code: 'CH', name: 'Suiza', benefit: 'Alto gasto medio' },
@@ -128,7 +128,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
     },
     selection: {
       title: 'Proceso de selección',
-      subtitle: 'Criterios de Excelencia SAUWA',
+      subtitle: 'Criterios de excelencia SAUWA',
       intro: 'No todos los establecimientos cumplen nuestros estándares de excelencia. Evaluamos cuidadosamente cada solicitud para garantizar que la alianza beneficie a ambas partes.',
       requirements: [
         {
@@ -205,7 +205,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       ctaText: 'Sol·licitar Avaluació',
     },
     intro: {
-      title: 'El Valor Distintiu de SAUWA',
+      title: 'El valor distintiu de SAUWA',
       heading: 'Més que una sauna, una experiència de benestar premium',
       text: 'SAUWA no és només una sauna mòbil, és una experiència de benestar premium claus en mà, dissenyada per maximitzar l\'atractiu d\'ubicacions úniques i els seus entorns aquàtics d\'exterior durant la temporada hivernal. T\'oferim l\'oportunitat d\'incorporar un servei d\'alt valor percebut que diferencia la teva propietat i atrau un segment de clients que cerca experiències inoblidables a l\'hivern. Ens ocupem de tota l\'operació, des de la logística i la instal·lació en entorns aquàtics idíl·lics, fins a la gestió de l\'experiència de l\'usuari, garantint la màxima excel·lència i seguretat.',
       imageSrc: '/images/partners-sauwa-sauna-instalaciones.webp',
@@ -213,7 +213,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
     },
     countries: {
       title: 'Turisme d\'alt valor',
-      subtitle: 'Atraient el Turista de Benestar Nòrdic i Centreeuropeu',
+      subtitle: 'Atraient el turista de benestar nòrdic i centreeuropeu',
       intro: 'Els mercats que representen la major despesa mitjana en entorns alpins (suís, austríac, alemany, suec, noruec i finlandès) tenen l\'ús de la sauna com una part fonamental de la seva rutina de benestar. Aquest segment de client no es conforma amb una cabina de calor genèrica. Exigeixen l\'autèntica experiència finlandesa (reconeguda per la UNESCO) assistida per personal especialitzat i acreditat, el que garanteix que la sessió no sigui simplement "passar calor". En incloure SAUWA, la teva propietat deixarà d\'oferir un "servei d\'spa genèric" per oferir una experiència cultural de benestar d\'altíssim nivell, perfectament alineada amb les expectatives del client més exigent.',
       items: [
         { code: 'CH', name: 'Suïssa', benefit: 'Alta despesa mitjana' },
@@ -226,7 +226,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
     },
     selection: {
       title: 'Procés de selecció',
-      subtitle: 'Criteris d\'Excel·lència SAUWA',
+      subtitle: 'Criteris d\'excel·lència SAUWA',
       intro: 'No tots els establiments compleixen els nostres estàndards d\'excel·lència. Avaluem acuradament cada sol·licitud per garantir que l\'aliança beneficiï ambdues parts.',
       requirements: [
         {
@@ -303,7 +303,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       ctaText: 'Request Evaluation',
     },
     intro: {
-      title: 'SAUWA\'s Distinctive Value',
+      title: 'SAUWA\'s distinctive value',
       heading: 'More than a sauna, a premium wellness experience',
       text: 'SAUWA is not just a mobile sauna, it is a premium turnkey wellness experience, designed to maximize the appeal of unique locations and their outdoor aquatic environments during the winter season. We offer you the opportunity to incorporate a high perceived value service that differentiates your property and attracts a segment of clients seeking unforgettable winter experiences. We handle the entire operation, from logistics and installation in idyllic aquatic environments, to user experience management, ensuring maximum excellence and safety.',
       imageSrc: '/images/partners-sauwa-sauna-instalaciones.webp',
@@ -311,7 +311,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
     },
     countries: {
       title: 'High-value tourism',
-      subtitle: 'Attracting Nordic and Central European Wellness Tourists',
+      subtitle: 'Attracting Nordic and Central European wellness tourists',
       intro: 'The markets representing the highest average spending in alpine environments (Swiss, Austrian, German, Swedish, Norwegian, and Finnish) have sauna use as a fundamental part of their wellness routine. This client segment does not settle for a generic heat cabin. They demand the authentic Finnish experience (recognized by UNESCO) assisted by specialized and accredited staff, ensuring the session is not simply "enduring heat". By including SAUWA, your property will stop offering a "generic spa service" to offer a very high-level cultural wellness experience, perfectly aligned with the most demanding client\'s expectations.',
       items: [
         { code: 'CH', name: 'Switzerland', benefit: 'High average spending' },
@@ -324,7 +324,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
     },
     selection: {
       title: 'Selection process',
-      subtitle: 'SAUWA Excellence Criteria',
+      subtitle: 'SAUWA excellence criteria',
       intro: 'Not all establishments meet our excellence standards. We carefully evaluate each application to ensure the alliance benefits both parties.',
       requirements: [
         {
@@ -401,7 +401,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
       ctaText: 'Demander Évaluation',
     },
     intro: {
-      title: 'La Valeur Distinctive de SAUWA',
+      title: 'La valeur distinctive de SAUWA',
       heading: 'Plus qu\'un sauna, une expérience de bien-être premium',
       text: 'SAUWA n\'est pas seulement un sauna mobile, c\'est une expérience de bien-être premium clés en main, conçue pour maximiser l\'attrait de lieux uniques et leurs environnements aquatiques extérieurs pendant la saison hivernale. Nous vous offrons l\'opportunité d\'intégrer un service à haute valeur perçue qui différencie votre propriété et attire un segment de clients recherchant des expériences inoubliables en hiver. Nous nous occupons de toute l\'opération, de la logistique et de l\'installation dans des environnements aquatiques idylliques, à la gestion de l\'expérience utilisateur, garantissant excellence et sécurité maximales.',
       imageSrc: '/images/partners-sauwa-sauna-instalaciones.webp',
@@ -409,7 +409,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
     },
     countries: {
       title: 'Tourisme à haute valeur',
-      subtitle: 'Attirer le Touriste du Bien-être Nordique et Centre-européen',
+      subtitle: 'Attirer le touriste du bien-être nordique et centre-européen',
       intro: 'Les marchés représentant les dépenses moyennes les plus élevées dans les environnements alpins (suisse, autrichien, allemand, suédois, norvégien et finlandais) ont l\'utilisation du sauna comme partie fondamentale de leur routine de bien-être. Ce segment de clientèle ne se contente pas d\'une cabine de chaleur générique. Ils exigent l\'expérience finlandaise authentique (reconnue par l\'UNESCO) assistée par du personnel spécialisé et accrédité, ce qui garantit que la session n\'est pas simplement "supporter la chaleur". En incluant SAUWA, votre propriété cessera d\'offrir un "service spa générique" pour offrir une expérience culturelle de bien-être de très haut niveau, parfaitement alignée avec les attentes du client le plus exigeant.',
       items: [
         { code: 'CH', name: 'Suisse', benefit: 'Dépense moyenne élevée' },
@@ -422,7 +422,7 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
     },
     selection: {
       title: 'Processus de sélection',
-      subtitle: 'Critères d\'Excellence SAUWA',
+      subtitle: 'Critères d\'excellence SAUWA',
       intro: 'Tous les établissements ne répondent pas à nos normes d\'excellence. Nous évaluons soigneusement chaque demande pour garantir que l\'alliance profite aux deux parties.',
       requirements: [
         {
