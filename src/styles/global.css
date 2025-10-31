@@ -525,3 +525,32 @@
     @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
   }
 }
+
+/* ========================================
+   CUSTOM SCROLLBAR - SAUWA Brand
+   Cross-browser compatible scrollbar styling
+   ======================================== */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #DB4529 #F8F8F8; /* thumb track */
+}
+
+/* Webkit browsers (Chrome, Safari, Edge, Opera) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F8F8F8; /* bg-light from GUIDELINE */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #DB4529; /* Sauwa Orange - Accent/hover */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #BA2515; /* Sauwa Red - Primary (more intense) */
+}
