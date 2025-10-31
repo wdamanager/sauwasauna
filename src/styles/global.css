@@ -93,21 +93,14 @@
 }
 
 @layer base {
-  /* ========================================
-     WDA-314: Prevent Horizontal Overflow
-     ======================================== */
-  html,
-  body {
-    overflow-x: hidden;
-    max-width: 100vw;
-  }
-
   html {
     @apply scroll-smooth;
+    /* Removed overflow-x-hidden to allow position: sticky */
   }
 
   body {
     @apply antialiased;
+    /* Removed overflow-x-hidden to allow position: sticky */
   }
 
   /* ========================================
