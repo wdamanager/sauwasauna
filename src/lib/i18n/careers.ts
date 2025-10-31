@@ -1,9 +1,31 @@
 /**
  * WDA-315: Traducciones para página "Trabaja con nosotros"
+ * WDA-325: Iconos Line Art SVG (reemplazando emojis)
  * Multiidioma: ES, CA, EN, FR
  */
 
 export type CareersLocale = 'es' | 'ca' | 'en' | 'fr';
+
+/**
+ * WDA-325: Iconos Line Art SVG paths
+ * Estilo consistente con BenefitsSection de home
+ */
+export const iconPaths = {
+  // Requirements icons
+  certification: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />',
+  firstAid: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z M9 11h6 M12 8v6" />',
+  aromatherapy: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />',
+  fitness: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />',
+  presentation: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />',
+  languages: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z M9 10a1 1 0 011-1h4a1 1 0 110 2h-4a1 1 0 01-1-1z M9 14a1 1 0 011-1h4a1 1 0 110 2h-4a1 1 0 01-1-1z" />',
+  // Benefits icons
+  money: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />',
+  education: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />',
+  mountain: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />',
+  clock: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />',
+  target: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />',
+  handshake: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />',
+};
 
 interface Requirement {
   icon: string;
@@ -104,32 +126,32 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
     },
     requirements: [
       {
-        icon: '🎓',
+        icon: 'certification',
         title: 'Certificación Aufguss Master',
         description: 'Formación oficial en ceremonias Aufguss y técnicas de waving profesional (OBLIGATORIO)',
       },
       {
-        icon: '🏥',
+        icon: 'firstAid',
         title: 'Primeros Auxilios y RCP',
         description: 'Certificación vigente en primeros auxilios y reanimación cardiopulmonar',
       },
       {
-        icon: '🌿',
+        icon: 'aromatherapy',
         title: 'Aromaterapia',
         description: 'Formación en aromaterapia y conocimientos de aceites esenciales terapéuticos',
       },
       {
-        icon: '💪',
+        icon: 'fitness',
         title: 'Excelente condición física',
         description: 'Resistencia al calor extremo y capacidad para ceremonias de alta intensidad',
       },
       {
-        icon: '🎭',
+        icon: 'presentation',
         title: 'Habilidades de showmanship',
         description: 'Oratoria, animación y capacidad para conectar con grupos multiculturales',
       },
       {
-        icon: '🌍',
+        icon: 'languages',
         title: 'Idiomas',
         description: 'Español obligatorio. Se valora inglés, alemán, catalán o francés',
       },
@@ -139,32 +161,32 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
       subtitle: '¿Qué te ofrecemos?',
       items: [
         {
-          icon: '💰',
+          icon: 'money',
           title: 'Salario competitivo',
           description: 'Remuneración acorde a certificaciones y experiencia, con bonos por rendimiento',
         },
         {
-          icon: '📚',
+          icon: 'education',
           title: 'Formación continua',
           description: 'Acceso a certificaciones internacionales y actualización de técnicas Aufguss',
         },
         {
-          icon: '🏔️',
+          icon: 'mountain',
           title: 'Entorno único',
           description: 'Trabaja en ubicaciones premium en Andorra con vistas espectaculares',
         },
         {
-          icon: '⏰',
+          icon: 'clock',
           title: 'Horarios flexibles',
           description: 'Turnos rotativos con descansos adecuados entre sesiones de alta intensidad',
         },
         {
-          icon: '🎯',
+          icon: 'target',
           title: 'Carrera profesional',
           description: 'Oportunidades de crecimiento como Senior Master o formador de nuevos talentos',
         },
         {
-          icon: '🤝',
+          icon: 'handshake',
           title: 'Equipo internacional',
           description: 'Forma parte de un equipo multicultural apasionado por el bienestar',
         },
@@ -242,32 +264,32 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
     },
     requirements: [
       {
-        icon: '🎓',
+        icon: 'certification',
         title: 'Certificació Aufguss Master',
         description: 'Formació oficial en cerimònies Aufguss i tècniques de waving professional (OBLIGATORI)',
       },
       {
-        icon: '🏥',
+        icon: 'firstAid',
         title: 'Primers Auxilis i RCP',
         description: 'Certificació vigent en primers auxilis i reanimació cardiopulmonar',
       },
       {
-        icon: '🌿',
+        icon: 'aromatherapy',
         title: 'Aromateràpia',
         description: 'Formació en aromateràpia i coneixements d\'olis essencials terapèutics',
       },
       {
-        icon: '💪',
+        icon: 'fitness',
         title: 'Excel·lent condició física',
         description: 'Resistència a la calor extrema i capacitat per cerimònies d\'alta intensitat',
       },
       {
-        icon: '🎭',
+        icon: 'presentation',
         title: 'Habilitats de showmanship',
         description: 'Oratòria, animació i capacitat per connectar amb grups multiculturals',
       },
       {
-        icon: '🌍',
+        icon: 'languages',
         title: 'Idiomes',
         description: 'Català o espanyol obligatori. Es valora anglès, alemany o francès',
       },
@@ -277,32 +299,32 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
       subtitle: 'Què t\'oferim?',
       items: [
         {
-          icon: '💰',
+          icon: 'money',
           title: 'Salari competitiu',
           description: 'Remuneració d\'acord amb certificacions i experiència, amb bonificacions per rendiment',
         },
         {
-          icon: '📚',
+          icon: 'education',
           title: 'Formació contínua',
           description: 'Accés a certificacions internacionals i actualització de tècniques Aufguss',
         },
         {
-          icon: '🏔️',
+          icon: 'mountain',
           title: 'Entorn únic',
           description: 'Treballa en ubicacions premium a Andorra amb vistes espectaculars',
         },
         {
-          icon: '⏰',
+          icon: 'clock',
           title: 'Horaris flexibles',
           description: 'Torns rotatius amb descansos adequats entre sessions d\'alta intensitat',
         },
         {
-          icon: '🎯',
+          icon: 'target',
           title: 'Carrera professional',
           description: 'Oportunitats de creixement com a Senior Master o formador de nous talents',
         },
         {
-          icon: '🤝',
+          icon: 'handshake',
           title: 'Equip internacional',
           description: 'Forma part d\'un equip multicultural apassionat pel benestar',
         },
@@ -380,32 +402,32 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
     },
     requirements: [
       {
-        icon: '🎓',
+        icon: 'certification',
         title: 'Aufguss Master Certification',
         description: 'Official training in Aufguss ceremonies and professional waving techniques (MANDATORY)',
       },
       {
-        icon: '🏥',
+        icon: 'firstAid',
         title: 'First Aid and CPR',
         description: 'Current certification in first aid and cardiopulmonary resuscitation',
       },
       {
-        icon: '🌿',
+        icon: 'aromatherapy',
         title: 'Aromatherapy',
         description: 'Training in aromatherapy and knowledge of therapeutic essential oils',
       },
       {
-        icon: '💪',
+        icon: 'fitness',
         title: 'Excellent physical condition',
         description: 'Extreme heat resistance and capacity for high-intensity ceremonies',
       },
       {
-        icon: '🎭',
+        icon: 'presentation',
         title: 'Showmanship skills',
         description: 'Public speaking, entertainment and ability to connect with multicultural groups',
       },
       {
-        icon: '🌍',
+        icon: 'languages',
         title: 'Languages',
         description: 'English mandatory. Spanish, German, Catalan or French valued',
       },
@@ -415,32 +437,32 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
       subtitle: 'What we offer you?',
       items: [
         {
-          icon: '💰',
+          icon: 'money',
           title: 'Competitive salary',
           description: 'Compensation according to certifications and experience, with performance bonuses',
         },
         {
-          icon: '📚',
+          icon: 'education',
           title: 'Continuous training',
           description: 'Access to international certifications and updated Aufguss techniques',
         },
         {
-          icon: '🏔️',
+          icon: 'mountain',
           title: 'Unique environment',
           description: 'Work at premium locations in Andorra with spectacular views',
         },
         {
-          icon: '⏰',
+          icon: 'clock',
           title: 'Flexible hours',
           description: 'Rotating shifts with adequate rest between high-intensity sessions',
         },
         {
-          icon: '🎯',
+          icon: 'target',
           title: 'Professional career',
           description: 'Growth opportunities as Senior Master or trainer for new talents',
         },
         {
-          icon: '🤝',
+          icon: 'handshake',
           title: 'International team',
           description: 'Be part of a multicultural team passionate about wellness',
         },
@@ -518,32 +540,32 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
     },
     requirements: [
       {
-        icon: '🎓',
+        icon: 'certification',
         title: 'Certification Aufguss Master',
         description: 'Formation officielle aux cérémonies Aufguss et techniques de waving professionnel (OBLIGATOIRE)',
       },
       {
-        icon: '🏥',
+        icon: 'firstAid',
         title: 'Premiers Secours et RCP',
         description: 'Certification en cours de validité en premiers secours et réanimation cardiopulmonaire',
       },
       {
-        icon: '🌿',
+        icon: 'aromatherapy',
         title: 'Aromathérapie',
         description: 'Formation en aromathérapie et connaissances des huiles essentielles thérapeutiques',
       },
       {
-        icon: '💪',
+        icon: 'fitness',
         title: 'Excellente condition physique',
         description: 'Résistance à la chaleur extrême et capacité pour cérémonies à haute intensité',
       },
       {
-        icon: '🎭',
+        icon: 'presentation',
         title: 'Compétences de showmanship',
         description: 'Oratoire, animation et capacité à connecter avec des groupes multiculturels',
       },
       {
-        icon: '🌍',
+        icon: 'languages',
         title: 'Langues',
         description: 'Français obligatoire. Anglais, allemand, espagnol ou catalan valorisés',
       },
@@ -553,32 +575,32 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
       subtitle: 'Que vous offrons-nous ?',
       items: [
         {
-          icon: '💰',
+          icon: 'money',
           title: 'Salaire compétitif',
           description: 'Rémunération selon certifications et expérience, avec bonus de performance',
         },
         {
-          icon: '📚',
+          icon: 'education',
           title: 'Formation continue',
           description: 'Accès aux certifications internationales et mise à jour des techniques Aufguss',
         },
         {
-          icon: '🏔️',
+          icon: 'mountain',
           title: 'Environnement unique',
           description: 'Travaillez dans des lieux premium en Andorre avec des vues spectaculaires',
         },
         {
-          icon: '⏰',
+          icon: 'clock',
           title: 'Horaires flexibles',
           description: 'Rotations avec repos adéquats entre sessions à haute intensité',
         },
         {
-          icon: '🎯',
+          icon: 'target',
           title: 'Carrière professionnelle',
           description: 'Opportunités d\'évolution comme Senior Master ou formateur de nouveaux talents',
         },
         {
-          icon: '🤝',
+          icon: 'handshake',
           title: 'Équipe internationale',
           description: 'Faites partie d\'une équipe multiculturelle passionnée par le bien-être',
         },

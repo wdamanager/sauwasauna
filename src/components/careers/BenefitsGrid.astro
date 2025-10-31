@@ -1,8 +1,11 @@
 ---
 /**
  * WDA-315: Grid de beneficios con iconos
+ * WDA-325: Iconos Line Art SVG
  * Responsive: 3 cols desktop, 2 tablet, 1 mobile
  */
+
+import { iconPaths } from '../../lib/i18n/careers';
 
 interface Benefit {
   icon: string;
@@ -23,8 +26,8 @@ const { title, subtitle, benefits, columns = 3 } = Astro.props;
 <section class="careers-benefits">
   <div class="careers-benefits__container">
     <div class="careers-benefits__header">
-      <h2 class="careers-benefits__title">{title}</h2>
-      <h3 class="careers-benefits__subtitle">{subtitle}</h3>
+      <h2 class="section-title-small">{title}</h2>
+      <h3 class="section-heading-large">{subtitle}</h3>
     </div>
 
     <div class={`careers-benefits__grid careers-benefits__grid--cols-${columns}`}>
@@ -34,7 +37,15 @@ const { title, subtitle, benefits, columns = 3 } = Astro.props;
           style={`animation-delay: ${index * 0.1}s;`}
         >
           <div class="careers-benefits__card-icon" aria-hidden="true">
-            {benefit.icon}
+            <svg
+              width="40"
+              height="40"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+              set:html={iconPaths[benefit.icon as keyof typeof iconPaths]}
+            />
           </div>
           <h4 class="careers-benefits__card-title">{benefit.title}</h4>
           <p class="careers-benefits__card-description">{benefit.description}</p>
@@ -61,24 +72,7 @@ const { title, subtitle, benefits, columns = 3 } = Astro.props;
     margin-bottom: 4rem;
   }
 
-  .careers-benefits__title {
-    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
-    font-weight: 300;
-    font-size: 0.875rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #DB4529;
-    margin: 0 0 0.75rem 0;
-  }
-
-  .careers-benefits__subtitle {
-    font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
-    font-weight: 300;
-    font-size: 2.5rem;
-    line-height: 1.3;
-    color: #1a1a1a;
-    margin: 0;
-  }
+  /* Title and subtitle now use global classes .section-title-small and .section-heading-large */
 
   .careers-benefits__grid {
     display: grid;
@@ -115,15 +109,20 @@ const { title, subtitle, benefits, columns = 3 } = Astro.props;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   }
 
+  /* WDA-325: Iconos Line Art SVG */
   .careers-benefits__card-icon {
     width: 48px;
     height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
     color: #DB4529;
     margin-bottom: 1.5rem;
+  }
+
+  .careers-benefits__card-icon svg {
+    width: 40px;
+    height: 40px;
   }
 
   .careers-benefits__card-title {
@@ -191,8 +190,12 @@ const { title, subtitle, benefits, columns = 3 } = Astro.props;
     .careers-benefits__card-icon {
       width: 40px;
       height: 40px;
-      font-size: 2rem;
       margin-bottom: 1rem;
+    }
+
+    .careers-benefits__card-icon svg {
+      width: 32px;
+      height: 32px;
     }
 
     .careers-benefits__card-title {

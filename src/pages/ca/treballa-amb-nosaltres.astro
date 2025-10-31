@@ -37,8 +37,8 @@ const seoDescription = content.seoDescription;
       title={content.profile.title}
       subtitle={content.profile.subtitle}
       requirements={content.requirements}
-      imageSrc="/images/careers/sauna-master-profile.jpg"
-      imageAlt="Sauna Master professional realitzant cerimònia Aufguss"
+      imageSrc="/images/interior1-sauna-finlandesa-sauwa-andorra.webp"
+      imageAlt="Interior sauna finlandesa SAUWA a Andorra"
       layout="image-left"
     />
 
@@ -52,8 +52,8 @@ const seoDescription = content.seoDescription;
     <section class="careers-responsibilities">
       <div class="careers-responsibilities__container">
         <div class="careers-responsibilities__header">
-          <h2 class="careers-responsibilities__title">{content.responsibilities.title}</h2>
-          <h3 class="careers-responsibilities__heading">{content.responsibilities.heading}</h3>
+          <h2 class="section-title-small">{content.responsibilities.title}</h2>
+          <h3 class="section-heading-large">{content.responsibilities.heading}</h3>
           <p class="careers-responsibilities__intro">{content.responsibilities.intro}</p>
         </div>
 
@@ -111,24 +111,7 @@ const seoDescription = content.seoDescription;
     margin-bottom: 3.5rem;
   }
 
-  .careers-responsibilities__title {
-    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
-    font-weight: 300;
-    font-size: 0.875rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #DB4529;
-    margin: 0 0 0.75rem 0;
-  }
-
-  .careers-responsibilities__heading {
-    font-family: 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
-    font-weight: 300;
-    font-size: 2.5rem;
-    line-height: 1.3;
-    color: #1a1a1a;
-    margin: 0 0 1.5rem 0;
-  }
+  /* Title and heading now use global classes .section-title-small and .section-heading-large */
 
   .careers-responsibilities__intro {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
@@ -140,13 +123,15 @@ const seoDescription = content.seoDescription;
     max-width: 800px;
   }
 
+  /* WDA-325: Mejor alineación en desktop */
   .careers-responsibilities__list {
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
     list-style: none;
     padding: 0;
-    margin: 0;
+    margin: 0 auto;
+    max-width: 800px; /* Centrado visual en desktop */
   }
 
   .careers-responsibilities__item {
