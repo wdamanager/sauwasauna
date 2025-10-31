@@ -70,6 +70,8 @@ const languages = [
 
 // Detectar página actual para marcar como activa
 const currentPath = Astro.url.pathname;
+// Get path without locale prefix to preserve it when switching languages
+const pathWithoutLocale = currentPath.substring(3); // Remove /es/ or /ca/ etc
 ---
 
 <div class="mobile-menu" data-state="closed" data-mobile-menu>
@@ -119,15 +121,19 @@ const currentPath = Astro.url.pathname;
     <div class="language-section">
       <h3 class="section-heading">{localizedContent.language}</h3>
       <div class="language-grid">
-        {languages.map((lang) => (
-          <a
-            href={`/${lang.code}/`}
-            class={`language-link ${lang.code === locale ? 'active' : ''}`}
-            aria-label={`Switch to ${lang.label}`}
-          >
-            {lang.code.toUpperCase()}
-          </a>
-        ))}
+        {languages.map((lang) => {
+          const newPath = `/${lang.code}${pathWithoutLocale}`;
+          const href = newPath.endsWith('/') ? newPath : `${newPath}/`;
+          return (
+            <a
+              href={href}
+              class={`language-link ${lang.code === locale ? 'active' : ''}`}
+              aria-label={`Switch to ${lang.label}`}
+            >
+              {lang.code.toUpperCase()}
+            </a>
+          );
+        })}
       </div>
     </div>
 

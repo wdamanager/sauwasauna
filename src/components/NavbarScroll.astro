@@ -20,24 +20,31 @@ const { locale } = Astro.props;
 
 // Idiomas disponibles
 const languages = ['ca', 'es', 'fr', 'en'];
+
+// Get current path without locale prefix to preserve it when switching languages
+const currentPath = Astro.url.pathname.substring(3); // Remove /es/ or /ca/ etc
 ---
 
 <nav id="navbar-scroll" class="navbar-scroll" aria-label="Navigation">
   <div class="navbar-container">
     <!-- Selector de idiomas (izquierda) -->
     <div class="navbar-languages">
-      {languages.map((lang, index) => (
-        <>
-          <a
-            href={`/${lang}/`}
-            class={`navbar-lang ${lang === locale ? 'active' : ''}`}
-            aria-label={`Switch to ${lang.toUpperCase()}`}
-          >
-            {lang.toUpperCase()}
-          </a>
-          {index < languages.length - 1 && <span class="navbar-separator">/</span>}
-        </>
-      ))}
+      {languages.map((lang, index) => {
+        const newPath = `/${lang}${currentPath}`;
+        const href = newPath.endsWith('/') ? newPath : `${newPath}/`;
+        return (
+          <>
+            <a
+              href={href}
+              class={`navbar-lang ${lang === locale ? 'active' : ''}`}
+              aria-label={`Switch to ${lang.toUpperCase()}`}
+            >
+              {lang.toUpperCase()}
+            </a>
+            {index < languages.length - 1 && <span class="navbar-separator">/</span>}
+          </>
+        );
+      })}
     </div>
 
     <!-- Logo (centro - oculto cuando navbar es transparente en homepage) -->
