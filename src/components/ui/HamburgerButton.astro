@@ -1,14 +1,14 @@
 ---
 /**
- * HamburgerButton Component - WDA-314
- * Botón hamburger animado para menú mobile
+ * HamburgerButton Component - WDA-314 / WDA-340
+ * Botón hamburger animado para menú mobile y desktop
  *
  * Features:
  * - Animación suave: 3 líneas → X
  * - Touch-friendly: 44x44px mínimo
  * - Accesible: aria-labels y aria-expanded
  * - Z-index: 1001 (sobre el sidebar)
- * - Solo visible < 768px
+ * - WDA-340: Ahora visible en desktop también (minimalista)
  *
  * @prop {boolean} isOpen - Estado del menú (controlado externamente)
  */
@@ -89,12 +89,7 @@ const { isOpen = false } = Astro.props;
     transform: rotate(-45deg) translateY(-8px);
   }
 
-  /* Solo visible en mobile (< 768px) */
-  @media (min-width: 768px) {
-    .hamburger-button {
-      display: none;
-    }
-  }
+  /* WDA-340: Ahora visible en desktop también */
 
   /* Reducir movimiento si el usuario lo prefiere */
   @media (prefers-reduced-motion: reduce) {
