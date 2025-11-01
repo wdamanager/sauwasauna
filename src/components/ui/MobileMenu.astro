@@ -179,6 +179,8 @@ const currentPath = Astro.url.pathname;
     z-index: 1000;
     visibility: hidden;
     pointer-events: none;
+    /* WDA-294: Prevent horizontal scroll when sidebar is off-screen */
+    overflow: hidden;
   }
 
   .mobile-menu[data-state="open"] {

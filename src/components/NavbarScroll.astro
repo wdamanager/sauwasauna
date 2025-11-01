@@ -100,6 +100,9 @@ const currentPath = Astro.url.pathname;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transform: translateY(-100%);
     opacity: 0;
+    /* Prevent horizontal scroll */
+    width: 100%;
+    overflow-x: hidden;
     /* Transiciones suaves y elegantes */
     transition:
       transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),

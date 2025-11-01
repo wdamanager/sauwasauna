@@ -386,6 +386,12 @@ const icons = {
   }
 
   @media (max-width: 768px) {
+    /* WDA-294: Disable horizontal animations on mobile to prevent overflow */
+    .fade-in-left,
+    .fade-in-right {
+      transform: none !important;
+    }
+
     #beneficios-imagen img {
       height: 400px;
       min-height: 400px;
