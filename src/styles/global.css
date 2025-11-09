@@ -1,69 +1,61 @@
 /* ========================================
    SAUWA Global Styles
-   WDA-314: Mobile-first responsive design
+   Sistema de diseño refactorizado - WDA-531
+
+   Orden de imports:
+   1. Tailwind base
+   2. Design tokens (variables CSS)
+   3. Utilities (clases utilitarias)
+   4. Components (componentes base)
+   5. Layouts (estructuras de página)
+   6. Tailwind components/utilities
+   7. Custom overrides
    ======================================== */
 
 @tailwind base;
+
+/* Design System - WDA-531 Refactorización */
+@import './design-tokens.css';
+@import './utilities.css';
+@import './components.css';
+@import './layouts.css';
+
 @tailwind components;
 @tailwind utilities;
 
 /* ========================================
-   CSS CUSTOM PROPERTIES
-   Design tokens for consistency
+   LEGACY VARIABLES - DEPRECATED
+   Estas variables se mantienen temporalmente para compatibilidad
+   con componentes antiguos. Usar design-tokens.css para nuevos desarrollos.
+   TODO WDA-531: Migrar todos los componentes a usar las nuevas variables
    ======================================== */
 :root {
-  /* Breakpoints */
-  --breakpoint-mobile: 768px;
-  --breakpoint-tablet: 1024px;
-
-  /* Header Heights */
-  --header-height-mobile: 60px;
-  --header-height-desktop: 80px;
-
-  /* Mobile Menu */
+  /* Mobile Menu - Específico de navegación */
   --mobile-menu-width: 320px;
   --mobile-menu-z-index: 1000;
   --mobile-menu-overlay-bg: rgba(0, 0, 0, 0.5);
-
-  /* Z-index Scale */
-  --z-navbar: 50;
   --z-mobile-menu-overlay: 999;
   --z-mobile-menu-sidebar: 1000;
   --z-hamburger: 1001;
 
-  /* ========================================
-     WDA-531: Nueva Escala Tipográfica Global
-     Medidas relativas (rem + clamp) para responsividad fluida
-     Desktop: +4-6pts | Mobile: +3-4pts (AUMENTADO AGRESIVAMENTE para máxima visibilidad)
-     ======================================== */
-
-  /* Base Body Text - AUMENTADO AGRESIVAMENTE */
-  --font-size-body: clamp(1.125rem, 1.3vw, 1.375rem); /* 18px → 22px (antes 16px → 18px) +4-6px */
-  --font-size-body-sm: clamp(1.0625rem, 1.2vw, 1.25rem); /* 17px → 20px (antes 15px → 16px) +2-4px */
-  --font-size-body-xs: clamp(1rem, 1.1vw, 1.125rem); /* 16px → 18px (antes 14px → 15px) +2-3px */
-  --font-size-body-xxs: clamp(0.9375rem, 1vw, 1rem); /* 15px → 16px (antes 13px → 14px) +2px */
-
-  /* Navigation & Menu - MÁS GRANDE */
-  --font-size-nav-link: clamp(1.375rem, 1.6vw, 1.5rem); /* 22px → 24px (antes 20px → 22px) +2px */
-  --font-size-nav-lang: clamp(1rem, 1.15vw, 1.125rem); /* 16px → 18px (antes 14px → 16px) +2px */
-  --font-size-menu-heading: clamp(1.125rem, 1.25vw, 1.25rem); /* 18px → 20px (antes 16px → 17px) +2-3px */
-
-  /* Headings & Titles - MUY PROMINENTE */
-  --font-size-heading: clamp(1.1875rem, 1.3vw, 1.3125rem); /* 19px → 21px (antes 17px → 18px) +2-3px */
-  --font-size-card-title: clamp(1.375rem, 1.7vw, 1.75rem); /* 22px → 28px (antes 20px → 24px) +2-4px */
-  --font-size-section-title: clamp(1.1875rem, 1.25vw, 1.3125rem); /* 19px → 21px (antes 17px → 18px) +2-3px */
-
-  /* Links & Actions - AUMENTADO */
-  --font-size-link: clamp(1.125rem, 1.2vw, 1.25rem); /* 18px → 20px (antes 16px → 17px) +2-3px */
-  --font-size-cta: clamp(1.125rem, 1.2vw, 1.25rem); /* 18px → 20px (antes 16px → 17px) +2-3px */
-
-  /* Labels & Badges - MAYOR LEGIBILIDAD */
-  --font-size-badge: clamp(0.9375rem, 1vw, 1rem); /* 15px → 16px (antes 13px → 14px) +2px */
-  --font-size-label: clamp(1.0625rem, 1.15vw, 1.1875rem); /* 17px → 19px (antes 15px → 16px) +2-3px */
-
-  /* Meta & Copyright - MÁS GRANDE */
-  --font-size-meta: clamp(1rem, 1.1vw, 1.125rem); /* 16px → 18px (antes 14px → 15px) +2-3px */
-  --font-size-copyright: clamp(1rem, 1.05vw, 1.0625rem); /* 16px → 17px (antes 14px → 15px) +2px */
+  /* DEPRECATED: Usar variables de design-tokens.css en su lugar */
+  /* Estas variables se mapean a las nuevas para compatibilidad */
+  --font-size-body: var(--font-scale-base);
+  --font-size-body-sm: var(--font-scale-sm);
+  --font-size-body-xs: var(--font-scale-xs);
+  --font-size-body-xxs: var(--font-scale-xxs);
+  --font-size-nav-link: var(--font-scale-lg);
+  --font-size-nav-lang: var(--font-scale-sm);
+  --font-size-menu-heading: var(--font-scale-base);
+  --font-size-heading: var(--font-scale-md);
+  --font-size-card-title: var(--font-scale-lg);
+  --font-size-section-title: var(--font-scale-sm);
+  --font-size-link: var(--font-scale-base);
+  --font-size-cta: var(--font-scale-base);
+  --font-size-badge: var(--font-scale-xs);
+  --font-size-label: var(--font-scale-sm);
+  --font-size-meta: var(--font-scale-sm);
+  --font-size-copyright: var(--font-scale-sm);
 }
 
 /* ========================================
@@ -196,55 +188,51 @@
 
 @layer components {
   /* ========================================
-     SAUWA Typography System - Global Styles
-     WDA-325: Unified section title/subtitle styles
+     LEGACY TYPOGRAPHY CLASSES - DEPRECATED
+     WDA-531: Estas clases se mantienen para compatibilidad temporal
+     Migrar a usar .section-label y .section-title de utilities.css
      ======================================== */
 
-  /* Section Titles (small, uppercase, red) */
+  /* DEPRECATED: Usar .section-label.section-label--primary en su lugar */
   .section-title-small {
-    font-family: 'Helvetica Neue', 'Inter', sans-serif;
-    font-size: 1rem;
-    font-weight: 400;
-    letter-spacing: 0.05em;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-scale-sm);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--letter-spacing-wide);
     text-transform: uppercase;
-    color: #DB4529;
-    margin: 0 0 1rem;
+    color: var(--color-primary-hover);
+    margin: 0 0 var(--spacing-4);
   }
 
-  /* Section Headings (large, main) */
+  /* DEPRECATED: Usar .section-title en su lugar */
   .section-heading-large {
-    font-family: 'Helvetica Neue', 'Inter', sans-serif;
-    font-size: clamp(1.75rem, 3vw, 2.25rem);
-    font-weight: 300;
-    line-height: 1.3;
-    color: #1a1a1a;
-    margin: 0 0 1.5rem;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-scale-xl);
+    font-weight: var(--font-weight-light);
+    line-height: var(--line-height-snug);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-5);
   }
 
-  /* ========================================
-     B2B Section Styles - Partners/Exclusive Access
-     WDA-334: B2B pages use green (#406E51) instead of orange
-     ======================================== */
-
-  /* B2B Section Titles (small, uppercase, green) */
+  /* DEPRECATED: Usar .section-label.section-label--b2b en su lugar */
   .section-title-b2b {
-    font-family: 'Helvetica Neue', 'Inter', sans-serif;
-    font-size: 1rem;
-    font-weight: 400;
-    letter-spacing: 0.05em;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-scale-sm);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--letter-spacing-wide);
     text-transform: uppercase;
-    color: #406E51;
-    margin: 0 0 1rem;
+    color: var(--color-b2b);
+    margin: 0 0 var(--spacing-4);
   }
 
-  /* B2B Section Headings (large, main) */
+  /* DEPRECATED: Usar .section-title en su lugar */
   .section-heading-b2b {
-    font-family: 'Helvetica Neue', 'Inter', sans-serif;
-    font-size: clamp(1.75rem, 3vw, 2.25rem);
-    font-weight: 300;
-    line-height: 1.3;
-    color: #1a1a1a;
-    margin: 0 0 1.5rem;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-scale-xl);
+    font-weight: var(--font-weight-light);
+    line-height: var(--line-height-snug);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-5);
   }
 
   /* Old Brand Fonts - Deprecated pero mantenidas para compatibilidad */

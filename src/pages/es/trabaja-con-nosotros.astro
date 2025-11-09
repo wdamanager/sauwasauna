@@ -49,19 +49,21 @@ const seoDescription = content.seoDescription;
       columns={3}
     />
 
-    <section class="careers-responsibilities">
-      <div class="careers-responsibilities__container">
-        <div class="careers-responsibilities__header">
-          <h2 class="section-title-small">{content.responsibilities.title}</h2>
-          <h3 class="section-heading-large">{content.responsibilities.heading}</h3>
-          <p class="careers-responsibilities__intro">{content.responsibilities.intro}</p>
-        </div>
+    <section class="section section--bg-white">
+      <div class="container container--narrow">
+        <header class="section-header section-header--center">
+          <h2 class="section-label section-label--primary">{content.responsibilities.title}</h2>
+          <h3 class="section-title section-title--center">{content.responsibilities.heading}</h3>
+          <p class="section-description section-description--center section-description--max-width">
+            {content.responsibilities.intro}
+          </p>
+        </header>
 
-        <ul class="careers-responsibilities__list">
+        <ul class="list list--icon careers-responsibilities__list">
           {content.responsibilities.items.map((item) => (
-            <li class="careers-responsibilities__item">
+            <li class="list__item">
               <svg
-                class="careers-responsibilities__icon"
+                class="list__icon"
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
@@ -77,7 +79,7 @@ const seoDescription = content.seoDescription;
                   stroke-linejoin="round"
                 />
               </svg>
-              <span>{item}</span>
+              <span class="careers-responsibilities__item-text">{item}</span>
             </li>
           ))}
         </ul>
@@ -95,85 +97,33 @@ const seoDescription = content.seoDescription;
 </Layout>
 
 <style>
-  .careers-responsibilities {
-    width: 100%;
-    padding: 5rem 2rem;
-    background-color: #ffffff;
-  }
+  /* ===================================================================
+     WDA-531: Estilos específicos de página (no globales)
+     Usa clases globales de utilities.css, components.css y layouts.css
+     Solo estilos únicos de esta página aquí
+     =================================================================== */
 
-  .careers-responsibilities__container {
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  .careers-responsibilities__header {
-    text-align: center;
-    margin-bottom: 3.5rem;
-  }
-
-  /* Title and heading now use global classes .section-title-small and .section-heading-large */
-
-  .careers-responsibilities__intro {
-    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
-    font-weight: 300;
-    font-size: 1.25rem; /* WDA-531: 20px (fue 17px) +3px */
-    line-height: 1.7;
-    color: #636464;
-    margin: 0 auto;
-    max-width: 800px;
-  }
-
-  /* WDA-325: Mejor alineación en desktop */
   .careers-responsibilities__list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    list-style: none;
-    padding: 0;
+    max-width: 800px;
     margin: 0 auto;
-    max-width: 800px; /* Centrado visual en desktop */
   }
 
-  .careers-responsibilities__item {
-    display: flex;
-    align-items: start;
-    gap: 1rem;
-    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
-    font-weight: 300;
-    font-size: 1.1875rem; /* WDA-531: 19px (fue 16px) +3px */
-    line-height: 1.7;
-    color: #1a1a1a;
+  .careers-responsibilities__item-text {
+    font-family: var(--font-family-secondary);
+    font-weight: var(--font-weight-light);
+    font-size: var(--font-scale-md);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-primary);
   }
 
-  .careers-responsibilities__icon {
-    flex-shrink: 0;
-    margin-top: 0.25rem;
-    color: #406E51;
+  /* Override color del icono para usar verde B2B */
+  .list__icon {
+    color: var(--color-b2b);
   }
 
   @media (max-width: 767px) {
-    .careers-responsibilities {
-      padding: 3rem 1.5rem;
-    }
-
-    .careers-responsibilities__header {
-      margin-bottom: 2.5rem;
-    }
-
-    .careers-responsibilities__heading {
-      font-size: 1.75rem;
-    }
-
-    .careers-responsibilities__intro {
-      font-size: 1.125rem; /* WDA-531: 18px (fue 15px) +3px */
-    }
-
-    .careers-responsibilities__list {
-      gap: 1rem;
-    }
-
-    .careers-responsibilities__item {
-      font-size: 1.125rem; /* WDA-531: 18px (fue 15px) +3px */
+    .careers-responsibilities__item-text {
+      font-size: var(--font-scale-base);
     }
   }
 </style>
