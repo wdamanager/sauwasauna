@@ -17,6 +17,7 @@ import Footer from '../../components/layout/Footer.astro';
 import FooterBlack from '../../components/layout/FooterBlack.astro';
 import CookieBanner from '../../components/CookieBanner.astro';
 import { cookieBannerTexts } from '../../data/cookieBannerTexts';
+import '../../styles/landing.css';
 
 const lang = 'ca';
 
@@ -87,6 +88,11 @@ const description = 'Viu l\'autèntica sauna finlandesa de llenya i banys d\'aig
         </button>
       </form>
     </div>
+
+    <!-- Scroll Indicator -->
+    <a href="#beneficios-imagen" class="scroll-indicator" aria-label="Descobrir beneficis">
+      <div class="scroll-icon"></div>
+    </a>
   </section>
 
   <!-- WDA-271: Nova estructura -->

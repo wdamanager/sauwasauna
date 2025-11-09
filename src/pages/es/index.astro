@@ -18,6 +18,7 @@ import FooterBlack from '../../components/layout/FooterBlack.astro';
 import NewsletterForm from '../../components/NewsletterForm.astro';
 import CookieBanner from '../../components/CookieBanner.astro';
 import { cookieBannerTexts } from '../../data/cookieBannerTexts';
+import '../../styles/landing.css';
 
 const lang = 'es';
 
@@ -61,6 +62,11 @@ const description = 'Vive la auténtica sauna finlandesa de leña y baños de ag
       <!-- Newsletter Form - Hero Variant -->
       <NewsletterForm variant="hero" locale={lang} />
     </div>
+
+    <!-- Scroll Indicator -->
+    <a href="#beneficios-imagen" class="scroll-indicator" aria-label="Descubrir beneficios">
+      <div class="scroll-icon"></div>
+    </a>
   </section>
 
   <!-- WDA-271: Nueva estructura -->

@@ -53,7 +53,7 @@ const readingTimeText = t('blog.post.readingtime').replace('{minutes}', readingT
 // Breadcrumb items
 const breadcrumbItems: BreadcrumbItem[] = [
   { label: t('blog.breadcrumb.home'), href: `/${locale}/` },
-  { label: t('blog.breadcrumb.blog'), href: `/${locale}/blog/` },
+  { label: t('blog.breadcrumb.blog'), href: `/${locale}/guia-sauwa-sauna/` },
   { label: post.title },
 ];
 ---
@@ -78,7 +78,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
     {primaryCategory && (
       <div class="hero-category">
         <a
-          href={`/${locale}/blog/?category=${primaryCategory.slug}`}
+          href={`/${locale}/guia-sauwa-sauna/?category=${primaryCategory.slug}`}
           class="category-badge"
           aria-label={`${t('blog.category.all')}: ${primaryCategory.name}`}
         >
@@ -109,9 +109,9 @@ const breadcrumbItems: BreadcrumbItem[] = [
     </div>
 
     <!-- Scroll Indicator -->
-    <div class="scroll-indicator" aria-hidden="true">
+    <a href="#post-content" class="scroll-indicator" aria-label="Scroll to article content">
       <div class="scroll-icon"></div>
-    </div>
+    </a>
   </div>
 </section>
 
@@ -289,6 +289,8 @@ const breadcrumbItems: BreadcrumbItem[] = [
     left: 50%;
     transform: translateX(-50%);
     animation: bounce 2s infinite;
+    cursor: pointer;
+    text-decoration: none;
   }
 
   .scroll-icon {

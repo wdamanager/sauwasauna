@@ -1,23 +1,24 @@
 ---
 /**
- * CategoryFilter Component
- * Radio button style category filter inspired by elefantensauna.de/blog
- * Features: smooth transitions, active states, keyboard navigation, ARIA support
+ * CategoryFilter Component - WDA-538 + WDA-537
+ * DESKTOP: Carrusel horizontal con drag scroll
+ * MOBILE: Dropdown compacto "Todas las categorías"
+ * Features: Dynamic category loading from WordPress API, only shows categories with posts
  */
 
-import type { Category, Locale } from '../../lib/types/blog';
+import type { Locale } from '../../lib/types/blog';
 
 interface Props {
-  categories: Category[];
   allCategoriesText?: string;
   locale?: Locale;
 }
 
-const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' } = Astro.props;
+const { allCategoriesText = 'Todas las categorías', locale = 'es' } = Astro.props;
 ---
 
-<div class="category-filter" role="region" aria-label="Filtrar por categoría">
-  <div class="filter-wrapper">
+<div class="category-filter" role="region" aria-label="Filtrar por categoría" data-locale={locale}>
+  <!-- DESKTOP: Carrusel horizontal (>= 768px) -->
+  <div class="filter-wrapper filter-wrapper--desktop">
     <!-- All Categories Button -->
     <button
       class="filter-button active"
@@ -27,40 +28,252 @@ const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' }
     >
       {allCategoriesText}
     </button>
+    <!-- Categories will be loaded dynamically -->
+  </div>
 
-    <!-- Category Buttons -->
-    {categories.map((category) => (
-      <button
-        class="filter-button"
-        data-category={category.slug}
-        type="button"
-        aria-pressed="false"
-      >
-        {category.name}
-        {category.count !== undefined && category.count > 0 && (
-          <span class="category-count" aria-label={`${category.count} artículos`}>
-            {category.count}
-          </span>
-        )}
-      </button>
-    ))}
+  <!-- MOBILE: Dropdown (< 768px) -->
+  <div class="filter-dropdown">
+    <button
+      class="dropdown-trigger"
+      type="button"
+      aria-haspopup="listbox"
+      aria-expanded="false"
+      aria-label="Seleccionar categoría"
+    >
+      <span class="dropdown-trigger__text">{allCategoriesText}</span>
+      <svg class="dropdown-trigger__icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <ul
+      class="dropdown-menu"
+      role="listbox"
+      aria-label="Categorías disponibles"
+    >
+      <li role="option" aria-selected="true">
+        <button
+          class="dropdown-option active"
+          data-category="all"
+          type="button"
+        >
+          {allCategoriesText}
+        </button>
+      </li>
+      <!-- Categories will be loaded dynamically -->
+    </ul>
   </div>
 </div>
 
 <script>
   /**
-   * Category Filter Client-Side Logic
-   * Handles filter state and dispatches custom events
+   * Category Filter Client-Side Logic - WDA-538 + WDA-537
+   * Handles both desktop carousel and mobile dropdown
+   * Features: Dynamic category loading from WordPress GraphQL API
    */
 
-  // Get all filter buttons
-  const filterButtons = document.querySelectorAll<HTMLButtonElement>('.filter-button');
+  // GraphQL Configuration
+  const GRAPHQL_ENDPOINT = 'https://backend.sauwasauna.com/graphql';
+  const GET_CATEGORIES_QUERY = `
+    query GetCategories($first: Int = 100, $hideEmpty: Boolean = true) {
+      categories(
+        first: $first
+        where: {
+          hideEmpty: $hideEmpty,
+          orderby: NAME,
+          order: ASC
+        }
+      ) {
+        nodes {
+          id
+          name
+          slug
+          count
+        }
+      }
+    }
+  `;
+
+  // Get elements
+  const categoryFilter = document.querySelector('.category-filter');
+  const desktopWrapper = document.querySelector<HTMLDivElement>('.filter-wrapper--desktop');
+  const dropdownMenu = document.querySelector<HTMLUListElement>('.dropdown-menu');
+  const dropdownTrigger = document.querySelector<HTMLButtonElement>('.dropdown-trigger');
+  const dropdownTriggerText = document.querySelector<HTMLSpanElement>('.dropdown-trigger__text');
 
   // State
   let activeCategory = 'all';
+  let isDropdownOpen = false;
+  let filterButtons: NodeListOf<HTMLButtonElement>;
+  let dropdownOptions: NodeListOf<HTMLButtonElement>;
 
   /**
-   * Update active button state
+   * Fetch categories from WordPress GraphQL API
+   * WDA-537: Only return categories with count > 0
+   */
+  async function fetchCategories() {
+    try {
+      const response = await fetch(GRAPHQL_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: GET_CATEGORIES_QUERY,
+          variables: {
+            first: 100,
+            hideEmpty: true
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.errors) {
+        console.error('[CategoryFilter] GraphQL errors:', result.errors);
+        return [];
+      }
+
+      // WDA-537: Filter categories with count > 0
+      const categories = result.data?.categories?.nodes || [];
+      return categories.filter(cat => cat.count > 0);
+
+    } catch (error) {
+      console.error('[CategoryFilter] Error fetching categories:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Render category buttons in desktop carousel
+   */
+  function renderDesktopCategories(categories) {
+    if (!desktopWrapper) return;
+
+    // Get Astro scoped attribute from parent
+    const astroAttr = categoryFilter?.getAttribute('data-astro-cid-qannfrx3') !== null
+      ? 'data-astro-cid-qannfrx3'
+      : null;
+
+    // Keep the "All Categories" button, append new categories after it
+    const allButton = desktopWrapper.querySelector('[data-category="all"]');
+    const fragment = document.createDocumentFragment();
+
+    categories.forEach(category => {
+      const button = document.createElement('button');
+      button.className = 'filter-button';
+      button.type = 'button';
+      button.dataset.category = category.slug;
+      button.setAttribute('aria-pressed', 'false');
+
+      // Add Astro scoped attribute for CSS
+      if (astroAttr) button.setAttribute(astroAttr, '');
+
+      // Add category name as text node
+      button.appendChild(document.createTextNode(category.name));
+
+      if (category.count > 0) {
+        // Add space before count
+        button.appendChild(document.createTextNode(' '));
+
+        const countSpan = document.createElement('span');
+        countSpan.className = 'category-count';
+        countSpan.setAttribute('aria-label', `${category.count} artículos`);
+        countSpan.textContent = category.count;
+
+        // Add Astro scoped attribute for CSS
+        if (astroAttr) countSpan.setAttribute(astroAttr, '');
+
+        button.appendChild(countSpan);
+      }
+
+      fragment.appendChild(button);
+    });
+
+    desktopWrapper.appendChild(fragment);
+  }
+
+  /**
+   * Render category options in mobile dropdown
+   */
+  function renderMobileCategories(categories) {
+    if (!dropdownMenu) return;
+
+    // Get Astro scoped attribute from parent
+    const astroAttr = categoryFilter?.getAttribute('data-astro-cid-qannfrx3') !== null
+      ? 'data-astro-cid-qannfrx3'
+      : null;
+
+    // Keep the "All Categories" option, append new categories after it
+    const fragment = document.createDocumentFragment();
+
+    categories.forEach(category => {
+      const li = document.createElement('li');
+      li.setAttribute('role', 'option');
+      li.setAttribute('aria-selected', 'false');
+
+      // Add Astro scoped attribute for CSS
+      if (astroAttr) li.setAttribute(astroAttr, '');
+
+      const button = document.createElement('button');
+      button.className = 'dropdown-option';
+      button.type = 'button';
+      button.dataset.category = category.slug;
+
+      // Add Astro scoped attribute for CSS
+      if (astroAttr) button.setAttribute(astroAttr, '');
+
+      // Add category name as text node
+      button.appendChild(document.createTextNode(category.name));
+
+      if (category.count > 0) {
+        const countSpan = document.createElement('span');
+        countSpan.className = 'dropdown-option__count';
+        countSpan.textContent = ` (${category.count})`;
+
+        // Add Astro scoped attribute for CSS
+        if (astroAttr) countSpan.setAttribute(astroAttr, '');
+
+        button.appendChild(countSpan);
+      }
+
+      li.appendChild(button);
+      fragment.appendChild(li);
+    });
+
+    dropdownMenu.appendChild(fragment);
+  }
+
+  /**
+   * Initialize category filter with dynamic categories
+   */
+  async function initCategoryFilter() {
+    // Fetch categories from API
+    const categories = await fetchCategories();
+
+    if (categories.length === 0) {
+      console.warn('[CategoryFilter] No categories with posts found');
+      return;
+    }
+
+    // Render categories
+    renderDesktopCategories(categories);
+    renderMobileCategories(categories);
+
+    // Update element references
+    filterButtons = document.querySelectorAll<HTMLButtonElement>('.filter-button');
+    dropdownOptions = document.querySelectorAll<HTMLButtonElement>('.dropdown-option');
+
+    // Initialize event listeners
+    initEventListeners();
+  }
+
+  /**
+   * Update active button state (desktop carousel)
    */
   function updateActiveState(selectedButton: HTMLButtonElement): void {
     filterButtons.forEach(button => {
@@ -71,19 +284,97 @@ const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' }
   }
 
   /**
-   * Handle category selection
+   * Update active option state (mobile dropdown)
    */
-  function handleCategoryClick(event: MouseEvent): void {
-    const button = event.currentTarget as HTMLButtonElement;
-    const category = button.dataset.category;
+  function updateDropdownActiveState(selectedOption: HTMLButtonElement): void {
+    dropdownOptions.forEach(option => {
+      const isActive = option === selectedOption;
+      option.classList.toggle('active', isActive);
 
-    if (!category || category === activeCategory) {
+      // Update parent li role="option" aria-selected
+      const parentLi = option.closest('li');
+      if (parentLi) {
+        parentLi.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      }
+    });
+
+    // Update trigger text
+    if (dropdownTriggerText) {
+      const categoryName = selectedOption.textContent?.trim() || '';
+      dropdownTriggerText.textContent = categoryName.replace(/\(\d+\)/, '').trim();
+    }
+  }
+
+  /**
+   * Toggle dropdown menu
+   */
+  function toggleDropdown(): void {
+    isDropdownOpen = !isDropdownOpen;
+
+    if (dropdownTrigger) {
+      dropdownTrigger.setAttribute('aria-expanded', isDropdownOpen ? 'true' : 'false');
+      dropdownTrigger.classList.toggle('open', isDropdownOpen);
+    }
+
+    if (dropdownMenu) {
+      dropdownMenu.classList.toggle('open', isDropdownOpen);
+
+      // Focus first option when opening
+      if (isDropdownOpen) {
+        const firstOption = dropdownMenu.querySelector<HTMLButtonElement>('.dropdown-option');
+        firstOption?.focus();
+      }
+    }
+  }
+
+  /**
+   * Close dropdown menu
+   */
+  function closeDropdown(): void {
+    if (!isDropdownOpen) return;
+
+    isDropdownOpen = false;
+
+    if (dropdownTrigger) {
+      dropdownTrigger.setAttribute('aria-expanded', 'false');
+      dropdownTrigger.classList.remove('open');
+    }
+
+    if (dropdownMenu) {
+      dropdownMenu.classList.remove('open');
+    }
+  }
+
+  /**
+   * Handle category selection (both desktop and mobile)
+   */
+  function handleCategorySelect(category: string, element: HTMLElement): void {
+    if (category === activeCategory) {
+      closeDropdown();
       return;
     }
 
     // Update state
     activeCategory = category;
-    updateActiveState(button);
+
+    // Update desktop buttons
+    const desktopButton = Array.from(filterButtons).find(
+      btn => btn.dataset.category === category
+    );
+    if (desktopButton) {
+      updateActiveState(desktopButton);
+    }
+
+    // Update mobile dropdown
+    const mobileOption = Array.from(dropdownOptions).find(
+      opt => opt.dataset.category === category
+    );
+    if (mobileOption) {
+      updateDropdownActiveState(mobileOption);
+    }
+
+    // Close dropdown
+    closeDropdown();
 
     // Dispatch custom event for BlogGrid to listen
     const filterEvent = new CustomEvent('blog:filter', {
@@ -94,9 +385,31 @@ const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' }
   }
 
   /**
-   * Handle keyboard navigation
+   * Handle desktop carousel click
    */
-  function handleKeyDown(event: KeyboardEvent): void {
+  function handleDesktopClick(event: MouseEvent): void {
+    const button = event.currentTarget as HTMLButtonElement;
+    const category = button.dataset.category;
+    if (!category) return;
+
+    handleCategorySelect(category, button);
+  }
+
+  /**
+   * Handle mobile dropdown click
+   */
+  function handleDropdownOptionClick(event: MouseEvent): void {
+    const button = event.currentTarget as HTMLButtonElement;
+    const category = button.dataset.category;
+    if (!category) return;
+
+    handleCategorySelect(category, button);
+  }
+
+  /**
+   * Handle keyboard navigation (desktop carousel)
+   */
+  function handleDesktopKeyDown(event: KeyboardEvent): void {
     const button = event.currentTarget as HTMLButtonElement;
     const buttons = Array.from(filterButtons);
     const currentIndex = buttons.indexOf(button);
@@ -130,15 +443,107 @@ const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' }
   }
 
   /**
+   * Handle keyboard navigation (mobile dropdown)
+   */
+  function handleDropdownKeyDown(event: KeyboardEvent): void {
+    const options = Array.from(dropdownOptions);
+    const currentIndex = options.indexOf(document.activeElement as HTMLButtonElement);
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        if (currentIndex < options.length - 1) {
+          options[currentIndex + 1].focus();
+        }
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        if (currentIndex > 0) {
+          options[currentIndex - 1].focus();
+        } else {
+          dropdownTrigger?.focus();
+          closeDropdown();
+        }
+        break;
+      case 'Home':
+        event.preventDefault();
+        options[0].focus();
+        break;
+      case 'End':
+        event.preventDefault();
+        options[options.length - 1].focus();
+        break;
+      case 'Escape':
+        event.preventDefault();
+        dropdownTrigger?.focus();
+        closeDropdown();
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        const button = event.currentTarget as HTMLButtonElement;
+        button.click();
+        break;
+    }
+  }
+
+  /**
+   * Handle dropdown trigger keyboard
+   */
+  function handleTriggerKeyDown(event: KeyboardEvent): void {
+    switch (event.key) {
+      case 'ArrowDown':
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        if (!isDropdownOpen) {
+          toggleDropdown();
+        }
+        break;
+      case 'Escape':
+        event.preventDefault();
+        closeDropdown();
+        break;
+    }
+  }
+
+  /**
+   * Close dropdown on outside click
+   */
+  function handleOutsideClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const dropdown = document.querySelector('.filter-dropdown');
+
+    if (dropdown && !dropdown.contains(target)) {
+      closeDropdown();
+    }
+  }
+
+  /**
    * Initialize event listeners
    */
-  function init(): void {
+  function initEventListeners(): void {
+    // Desktop carousel listeners
     filterButtons.forEach(button => {
-      button.addEventListener('click', handleCategoryClick);
-      button.addEventListener('keydown', handleKeyDown);
+      button.addEventListener('click', handleDesktopClick);
+      button.addEventListener('keydown', handleDesktopKeyDown);
     });
 
-    // Initialize drag functionality
+    // Mobile dropdown listeners
+    if (dropdownTrigger) {
+      dropdownTrigger.addEventListener('click', toggleDropdown);
+      dropdownTrigger.addEventListener('keydown', handleTriggerKeyDown);
+    }
+
+    dropdownOptions.forEach(option => {
+      option.addEventListener('click', handleDropdownOptionClick);
+      option.addEventListener('keydown', handleDropdownKeyDown);
+    });
+
+    // Outside click listener
+    document.addEventListener('click', handleOutsideClick);
+
+    // Initialize drag functionality for desktop
     initDragScroll();
 
     // Check URL for category parameter
@@ -146,30 +551,22 @@ const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' }
     const categoryParam = urlParams.get('category');
 
     if (categoryParam) {
-      // Find and activate the corresponding button
+      // Find and activate the corresponding elements
       const targetButton = Array.from(filterButtons).find(
         btn => btn.dataset.category === categoryParam
       );
 
       if (targetButton) {
-        activeCategory = categoryParam;
-        updateActiveState(targetButton as HTMLButtonElement);
-
-        // Dispatch filter event to load posts
-        const filterEvent = new CustomEvent('blog:filter', {
-          detail: { category: categoryParam },
-          bubbles: true,
-        });
-        document.dispatchEvent(filterEvent);
+        handleCategorySelect(categoryParam, targetButton);
       }
     }
   }
 
   /**
-   * Drag Scroll Functionality (estilo DATA)
+   * Drag Scroll Functionality (desktop carousel only)
    */
   function initDragScroll(): void {
-    const slider = document.querySelector('.filter-wrapper') as HTMLElement;
+    const slider = document.querySelector('.filter-wrapper--desktop') as HTMLElement;
     if (!slider) return;
 
     let isDown = false;
@@ -251,42 +648,52 @@ const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' }
     });
   }
 
-  // Initialize on DOM load
+  // Initialize on DOM load - WDA-538 + WDA-537
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', initCategoryFilter);
   } else {
-    init();
+    initCategoryFilter();
   }
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    document.removeEventListener('click', handleOutsideClick);
+  });
 </script>
 
 <style>
-  /* Container */
+  /* ==========================================================================
+     CONTAINER - WDA-538
+     ========================================================================== */
   .category-filter {
     margin-bottom: 3rem;
     width: 100%;
-    overflow: hidden;
+    overflow: visible; /* WDA-538: Allow dropdown menu to extend beyond container */
+    position: relative;
   }
 
-  /* WDA-314: Asegurar espacio suficiente entre filtros y cards */
+  /* WDA-314: Espacio suficiente entre filtros y cards */
   .category-filter::after {
     content: '';
     display: block;
-    height: 1rem; /* Espacio adicional después de los filtros */
+    height: 1rem;
   }
 
-  /* Filter Wrapper - Horizontal Carousel (sin scrollbar visible) */
+  /* ==========================================================================
+     DESKTOP CAROUSEL (>= 768px) - Mantener diseño actual
+     ========================================================================== */
   .filter-wrapper {
     display: flex;
-    gap: 0.75rem;
+    gap: var(--spacing-3);
     justify-content: flex-start;
     align-items: center;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 1rem 2rem;
+    padding: var(--spacing-4) var(--spacing-6);
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     cursor: grab;
     user-select: none;
     -webkit-user-select: none;
@@ -299,67 +706,65 @@ const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' }
     scroll-behavior: auto;
   }
 
-  /* Hide scrollbar for Chrome, Safari and Opera */
   .filter-wrapper::-webkit-scrollbar {
     display: none;
   }
 
-  /* Filter Button - Radio Style */
+  /* Filter Button - Radio Style (Desktop) */
   .filter-button {
-    font-family: 'Avenir Next', sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    color: #636464;
-    background: #ffffff;
-    border: 2px solid #e5e5e5;
-    border-radius: 4px; /* GUIDELINE standard radius */
-    padding: 0.75rem 1.5rem; /* Increased from 0.625rem to 0.75rem for 44px min-height */
-    min-height: 44px; /* WCAG 2.5.5 compliant touch target */
+    font-family: var(--font-family-secondary);
+    font-size: var(--font-scale-sm);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-secondary);
+    background: var(--color-bg-white);
+    border: var(--border-width-base) solid #e5e5e5;
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-3) var(--spacing-5);
+    min-height: 44px;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all var(--transition-base);
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--spacing-2);
     white-space: nowrap;
     position: relative;
-    flex-shrink: 0; /* Prevent buttons from shrinking in carousel */
+    flex-shrink: 0;
   }
 
   .filter-button:hover {
-    border-color: #DB4529;
-    color: #DB4529;
+    border-color: var(--color-primary-hover);
+    color: var(--color-primary-hover);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(219, 69, 41, 0.15);
   }
 
   .filter-button:focus-visible {
-    outline: 3px solid #BA2515;
+    outline: 3px solid var(--color-primary);
     outline-offset: 2px;
-    border-color: #BA2515;
+    border-color: var(--color-primary);
   }
 
-  /* Active State */
   .filter-button.active {
-    background: #DB4529;
-    border-color: #DB4529;
-    color: #ffffff;
-    font-weight: 500;
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    color: var(--color-bg-white);
+    font-weight: var(--font-weight-medium);
   }
 
   .filter-button.active:hover {
-    background: #DB4529;
-    border-color: #DB4529;
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(219, 69, 41, 0.25);
   }
 
   /* Category Count Badge */
   .category-count {
-    font-size: 14px; /* Increased from 12px to 14px minimum */
-    font-weight: 600;
+    font-size: var(--font-scale-sm);
+    font-weight: var(--font-weight-semibold);
     background: rgba(255, 255, 255, 0.2);
-    padding: 0.125rem 0.5rem;
-    border-radius: 4px; /* GUIDELINE standard radius */
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
     min-width: 24px;
     text-align: center;
   }
@@ -368,64 +773,220 @@ const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' }
     background: rgba(255, 255, 255, 0.25);
   }
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    .category-filter {
-      margin-bottom: 2.5rem; /* WDA-314: Aumentado de 2rem a 2.5rem */
-      padding: 0 0.5rem;
+  /* ==========================================================================
+     MOBILE DROPDOWN (< 768px) - WDA-538 New Design
+     ========================================================================== */
+  .filter-dropdown {
+    display: none; /* Hidden on desktop */
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 var(--container-padding-mobile);
+  }
+
+  /* Dropdown Trigger Button */
+  .dropdown-trigger {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-bg-white);
+    border: var(--border-width-base) solid #e5e5e5;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family-secondary);
+    font-size: var(--font-scale-sm);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    text-align: left;
+  }
+
+  .dropdown-trigger:hover {
+    border-color: var(--color-primary-hover);
+    color: var(--color-primary-hover);
+  }
+
+  .dropdown-trigger:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+    border-color: var(--color-primary);
+  }
+
+  .dropdown-trigger.open {
+    border-color: var(--color-primary-hover);
+    color: var(--color-primary-hover);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .dropdown-trigger__text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dropdown-trigger__icon {
+    flex-shrink: 0;
+    transition: transform var(--transition-base);
+  }
+
+  .dropdown-trigger.open .dropdown-trigger__icon {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown Menu */
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: var(--container-padding-mobile);
+    right: var(--container-padding-mobile);
+    max-height: 0;
+    overflow: hidden;
+    background: var(--color-bg-white);
+    border: var(--border-width-base) solid var(--color-primary-hover);
+    border-top: none;
+    border-bottom-left-radius: var(--radius-sm);
+    border-bottom-right-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+    z-index: var(--z-dropdown);
+  }
+
+  .dropdown-menu.open {
+    max-height: 400px;
+    overflow-y: auto;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .dropdown-menu li {
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .dropdown-menu li:last-child {
+    border-bottom: none;
+  }
+
+  /* Dropdown Options */
+  .dropdown-option {
+    width: 100%;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4) var(--spacing-4);
+    background: transparent;
+    border: none;
+    font-family: var(--font-family-secondary);
+    font-size: var(--font-scale-sm);
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+  }
+
+  .dropdown-option:hover {
+    background: rgba(219, 69, 41, 0.05);
+    color: var(--color-primary-hover);
+  }
+
+  .dropdown-option:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+    background: rgba(219, 69, 41, 0.05);
+    z-index: 1;
+  }
+
+  .dropdown-option.active {
+    background: var(--color-primary-hover);
+    color: var(--color-bg-white);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .dropdown-option.active:hover {
+    background: var(--color-primary);
+  }
+
+  .dropdown-option__count {
+    font-size: var(--font-scale-xs);
+    color: inherit;
+    opacity: 0.7;
+  }
+
+  .dropdown-option.active .dropdown-option__count {
+    opacity: 0.9;
+  }
+
+  /* ==========================================================================
+     RESPONSIVE - WDA-538
+     ========================================================================== */
+
+  /* Desktop: Show carousel, hide dropdown */
+  @media (min-width: 768px) {
+    .filter-wrapper--desktop {
+      display: flex;
     }
 
-    /* WDA-314: Más espacio después de filtros en mobile */
+    .filter-dropdown {
+      display: none;
+    }
+  }
+
+  /* Mobile: Hide carousel, show dropdown */
+  @media (max-width: 767px) {
+    .category-filter {
+      margin-bottom: 1.5rem; /* WDA-538: Reducir espacio al 50% */
+    }
+
     .category-filter::after {
-      height: 1.5rem;
+      height: 0.5rem; /* WDA-538: Reducir espacio post-filtros */
     }
 
-    .filter-wrapper {
-      gap: 0.5rem;
-      padding: 0.5rem 0.5rem;
+    .filter-wrapper--desktop {
+      display: none;
     }
 
-    .filter-button {
-      font-size: 14px; /* Increased from 13px to 14px minimum */
-      padding: 0.75rem 1.25rem; /* Maintain 44px min-height on mobile */
-      min-height: 44px; /* Ensure touch target on mobile */
+    .filter-dropdown {
+      display: block;
     }
   }
 
-  @media (max-width: 640px) {
-    .category-filter {
-      padding: 0;
-    }
-
-    .filter-wrapper {
-      padding: 0.5rem 1rem;
-    }
-  }
-
-  /* Ultra-small screens support */
+  /* Ultra-small screens */
   @media (max-width: 360px) {
-    .filter-button {
-      font-size: 14px;
-      padding: 0.625rem 1rem;
-      min-height: 44px;
-    }
-
-    .category-count {
-      font-size: 14px;
-      padding: 0.125rem 0.375rem;
+    .dropdown-trigger,
+    .dropdown-option {
+      font-size: var(--font-scale-xs);
+      padding: var(--spacing-2) var(--spacing-3);
     }
   }
 
-  /* Reduced motion for accessibility */
+  /* ==========================================================================
+     ACCESSIBILITY
+     ========================================================================== */
+
+  /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
-    .filter-button {
+    .filter-button,
+    .dropdown-trigger,
+    .dropdown-menu,
+    .dropdown-option,
+    .dropdown-trigger__icon {
       transition: none;
     }
 
-    .filter-button:hover {
-      transform: none;
-    }
-
+    .filter-button:hover,
     .filter-button.active:hover {
       transform: none;
     }
@@ -433,23 +994,27 @@ const { categories, allCategoriesText = 'Todas las categorías', locale = 'es' }
 
   /* High contrast mode */
   @media (prefers-contrast: high) {
-    .filter-button {
+    .filter-button,
+    .dropdown-trigger,
+    .dropdown-option {
       border-width: 3px;
     }
 
-    .filter-button.active {
-      border-width: 3px;
-      font-weight: 700;
+    .filter-button.active,
+    .dropdown-option.active {
+      font-weight: var(--font-weight-bold);
     }
   }
 
   /* Loading state (for future use) */
-  .filter-button.loading {
+  .filter-button.loading,
+  .dropdown-option.loading {
     pointer-events: none;
     opacity: 0.6;
   }
 
-  .filter-button.loading::after {
+  .filter-button.loading::after,
+  .dropdown-option.loading::after {
     content: '';
     position: absolute;
     top: 50%;

@@ -143,7 +143,7 @@ const {
     return `
       <article class="blog-card" data-post-id="${post.id}">
         <div class="card-wrapper">
-          <a href="/${locale}/blog/${post.slug}/" class="card-link" aria-label="${readMoreText}: ${post.title}">
+          <a href="/${locale}/guia-sauwa-sauna/${post.slug}/" class="card-link" aria-label="${readMoreText}: ${post.title}">
             <div class="card-image-wrapper">
               <img
                 src="${imageUrl}"
@@ -158,13 +158,13 @@ const {
           </a>
           <div class="card-content">
             ${category ? `
-              <a href="/${locale}/blog/?category=${categorySlug}" class="card-category-link" onclick="event.stopPropagation()">
+              <a href="/${locale}/guia-sauwa-sauna/?category=${categorySlug}" class="card-category-link" onclick="event.stopPropagation()">
                 <span class="card-category" aria-label="Categoría: ${category.name}">
                   ${category.name}
                 </span>
               </a>
             ` : ''}
-            <a href="/${locale}/blog/${post.slug}/" class="card-link-title">
+            <a href="/${locale}/guia-sauwa-sauna/${post.slug}/" class="card-link-title">
               <h3 class="card-title">${post.title}</h3>
             </a>
             <p class="card-excerpt">${excerpt}</p>
@@ -172,7 +172,7 @@ const {
               <time class="card-date" datetime="${post.date}">
                 ${formattedDate}
               </time>
-              <a href="/${locale}/blog/${post.slug}/" class="card-read-more-link">
+              <a href="/${locale}/guia-sauwa-sauna/${post.slug}/" class="card-read-more-link">
                 <span class="card-read-more" aria-hidden="true">
                   ${readMoreText}
                   <svg class="arrow-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">

@@ -28,7 +28,7 @@ const { locale = 'es' } = Astro.props;
 const content = {
   es: {
     home: 'Inicio',
-    blog: 'Blog',
+    blog: 'Guía',
     careers: 'Trabaja con nosotros',
     partners: 'Acceso exclusivo',
     language: 'Idioma',
@@ -36,7 +36,7 @@ const content = {
   },
   ca: {
     home: 'Inici',
-    blog: 'Blog',
+    blog: 'Guia',
     careers: 'Treballa amb nosaltres',
     partners: 'Accés exclusiu',
     language: 'Idioma',
@@ -44,7 +44,7 @@ const content = {
   },
   en: {
     home: 'Home',
-    blog: 'Blog',
+    blog: 'Guide',
     careers: 'Work with us',
     partners: 'Exclusive access',
     language: 'Language',
@@ -52,7 +52,7 @@ const content = {
   },
   fr: {
     home: 'Accueil',
-    blog: 'Blog',
+    blog: 'Guide',
     careers: 'Travailler avec nous',
     partners: 'Accès exclusif',
     language: 'Langue',
@@ -109,8 +109,8 @@ const currentPath = Astro.url.pathname;
       </li>
       <li>
         <a
-          href={`/${locale}/blog/`}
-          class={`nav-link ${currentPath.includes('/blog') ? 'active' : ''}`}
+          href={`/${locale}/guia-sauwa-sauna/`}
+          class={`nav-link ${currentPath.includes('/guia-sauwa-sauna') ? 'active' : ''}`}
         >
           {localizedContent.blog}
         </a>

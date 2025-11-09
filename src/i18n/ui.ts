@@ -12,7 +12,7 @@ export const ui = {
     // Navigation
     'nav.experience': 'Experiencia',
     'nav.benefits': 'Beneficios',
-    'nav.blog': 'Blog',
+    'nav.blog': 'Guía',
     'nav.contact': 'Contacto',
 
     // SEO
@@ -62,11 +62,11 @@ export const ui = {
     'footer.copyright': '© {year} SAUWA - PCR Europe, S.L. Todos los derechos reservados.',
 
     // Blog
-    'blog.title': 'Blog',
+    'blog.title': 'Guía SAUWA',
     'blog.subtitle': 'Descubre el bienestar nórdico',
-    'blog.description': 'Artículos sobre sauna, bienestar y la experiencia finlandesa en Andorra',
+    'blog.description': 'Guía completa sobre sauna, bienestar y la experiencia finlandesa en Andorra',
     'blog.breadcrumb.home': 'Inicio',
-    'blog.breadcrumb.blog': 'Blog',
+    'blog.breadcrumb.blog': 'Guía',
     'blog.category.all': 'Todas las categorías',
     'blog.readmore': 'Leer más',
     'blog.loadmore': 'Cargar más artículos',
@@ -88,7 +88,7 @@ export const ui = {
     // Navigation
     'nav.experience': 'Experiència',
     'nav.benefits': 'Beneficis',
-    'nav.blog': 'Blog',
+    'nav.blog': 'Guia',
     'nav.contact': 'Contacte',
 
     // SEO
@@ -138,11 +138,11 @@ export const ui = {
     'footer.copyright': '© {year} SAUWA - PCR Europe, S.L. Tots els drets reservats.',
 
     // Blog
-    'blog.title': 'Blog',
+    'blog.title': 'Guia SAUWA',
     'blog.subtitle': 'Descobreix el benestar nòrdic',
-    'blog.description': 'Articles sobre sauna, benestar i l\'experiència finlandesa a Andorra',
+    'blog.description': 'Guia completa sobre sauna, benestar i l\'experiència finlandesa a Andorra',
     'blog.breadcrumb.home': 'Inici',
-    'blog.breadcrumb.blog': 'Blog',
+    'blog.breadcrumb.blog': 'Guia',
     'blog.category.all': 'Totes les categories',
     'blog.readmore': 'Llegir més',
     'blog.loadmore': 'Carregar més articles',
@@ -164,7 +164,7 @@ export const ui = {
     // Navigation
     'nav.experience': 'Experience',
     'nav.benefits': 'Benefits',
-    'nav.blog': 'Blog',
+    'nav.blog': 'Guide',
     'nav.contact': 'Contact',
 
     // SEO
@@ -214,11 +214,11 @@ export const ui = {
     'footer.copyright': '© {year} SAUWA - PCR Europe, S.L. All rights reserved.',
 
     // Blog
-    'blog.title': 'Blog',
+    'blog.title': 'SAUWA Guide',
     'blog.subtitle': 'Discover Nordic wellness',
-    'blog.description': 'Articles about sauna, wellness, and the Finnish experience in Andorra',
+    'blog.description': 'Complete guide about sauna, wellness, and the Finnish experience in Andorra',
     'blog.breadcrumb.home': 'Home',
-    'blog.breadcrumb.blog': 'Blog',
+    'blog.breadcrumb.blog': 'Guide',
     'blog.category.all': 'All categories',
     'blog.readmore': 'Read more',
     'blog.loadmore': 'Load more articles',
@@ -240,7 +240,7 @@ export const ui = {
     // Navigation
     'nav.experience': 'Expérience',
     'nav.benefits': 'Bénéfices',
-    'nav.blog': 'Blog',
+    'nav.blog': 'Guide',
     'nav.contact': 'Contact',
 
     // SEO
@@ -290,11 +290,11 @@ export const ui = {
     'footer.copyright': '© {year} SAUWA - PCR Europe, S.L. Tous droits réservés.',
 
     // Blog
-    'blog.title': 'Blog',
+    'blog.title': 'Guide SAUWA',
     'blog.subtitle': 'Découvrez le bien-être nordique',
-    'blog.description': 'Articles sur le sauna, le bien-être et l\'expérience finlandaise en Andorre',
+    'blog.description': 'Guide complet sur le sauna, le bien-être et l\'expérience finlandaise en Andorre',
     'blog.breadcrumb.home': 'Accueil',
-    'blog.breadcrumb.blog': 'Blog',
+    'blog.breadcrumb.blog': 'Guide',
     'blog.category.all': 'Toutes les catégories',
     'blog.readmore': 'Lire plus',
     'blog.loadmore': 'Charger plus d\'articles',

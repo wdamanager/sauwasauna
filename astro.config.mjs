@@ -7,6 +7,13 @@ export default defineConfig({
   output: 'static',
   site: 'https://sauwasauna.com',
   trailingSlash: 'always',
+  redirects: {
+    // WDA-536: Redirect /blog → /guia-sauwa-sauna para todos los idiomas
+    '/es/blog/': '/es/guia-sauwa-sauna/',
+    '/ca/blog/': '/ca/guia-sauwa-sauna/',
+    '/en/blog/': '/en/guia-sauwa-sauna/',
+    '/fr/blog/': '/fr/guia-sauwa-sauna/',
+  },
   build: {
     inlineStylesheets: 'auto',
     format: 'directory',

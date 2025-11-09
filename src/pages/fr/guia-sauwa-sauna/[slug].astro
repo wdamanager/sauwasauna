@@ -1,6 +1,6 @@
 ---
 /**
- * Dynamic Blog Post Page - Catalan (CA)
+ * Dynamic Blog Post Page - French (FR)
  * Individual blog post page with hero image and full content
  */
 
@@ -12,7 +12,7 @@ import BlogPostContent from '../../../components/blog/BlogPostContent.astro';
 import { getBlogPosts, getPostBySlug } from '../../../lib/blog-queries';
 import type { BlogPost } from '../../../lib/types/blog';
 
-const locale = 'ca';
+const locale = 'fr';
 
 export const getStaticPaths: GetStaticPaths = async () => {
   try {
@@ -21,7 +21,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     const posts = response.posts.nodes;
 
     if (!posts || posts.length === 0) {
-      console.warn('[CA Blog Post] No posts found');
+      console.warn('[FR Blog Post] No posts found');
       return [];
     }
 
@@ -31,7 +31,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
         try {
           const fullPost = await getPostBySlug(post.slug);
           if (!fullPost) {
-            console.warn(`[CA Blog Post] Could not fetch full content for: ${post.slug}`);
+            console.warn(`[FR Blog Post] Could not fetch full content for: ${post.slug}`);
             return null;
           }
           return {
@@ -39,7 +39,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
             props: { post: fullPost },
           };
         } catch (error) {
-          console.error(`[CA Blog Post] Error fetching post ${post.slug}:`, error);
+          console.error(`[FR Blog Post] Error fetching post ${post.slug}:`, error);
           return null;
         }
       })
@@ -47,7 +47,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
     return paths.filter((path) => path !== null);
   } catch (error) {
-    console.error('[CA Blog Post] Error fetching posts for static paths:', error);
+    console.error('[FR Blog Post] Error fetching posts for static paths:', error);
     return [];
   }
 };
@@ -115,11 +115,11 @@ const structuredData = {
     {featuredImageUrl && <meta name="twitter:image" content={featuredImageUrl} />}
 
     <!-- hreflang tags for multilingual -->
-    <link rel="alternate" hreflang="es" href={`https://sauwasauna.com/es/blog/${slug}/`} />
-    <link rel="alternate" hreflang="ca" href={`https://sauwasauna.com/ca/blog/${slug}/`} />
-    <link rel="alternate" hreflang="en" href={`https://sauwasauna.com/en/blog/${slug}/`} />
-    <link rel="alternate" hreflang="fr" href={`https://sauwasauna.com/fr/blog/${slug}/`} />
-    <link rel="alternate" hreflang="x-default" href={`https://sauwasauna.com/es/blog/${slug}/`} />
+    <link rel="alternate" hreflang="es" href={`https://sauwasauna.com/es/guia-sauwa-sauna/${slug}/`} />
+    <link rel="alternate" hreflang="ca" href={`https://sauwasauna.com/ca/guia-sauwa-sauna/${slug}/`} />
+    <link rel="alternate" hreflang="en" href={`https://sauwasauna.com/en/guia-sauwa-sauna/${slug}/`} />
+    <link rel="alternate" hreflang="fr" href={`https://sauwasauna.com/fr/guia-sauwa-sauna/${slug}/`} />
+    <link rel="alternate" hreflang="x-default" href={`https://sauwasauna.com/es/guia-sauwa-sauna/${slug}/`} />
   </Fragment>
 
   <!-- Main Content -->

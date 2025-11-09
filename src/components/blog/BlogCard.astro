@@ -24,7 +24,7 @@ const imageAlt = post.featuredImage?.node?.altText || post.title;
 const excerpt = truncateText(post.excerpt, 150);
 const category = post.categories?.nodes?.[0];
 const formattedDate = formatDate(post.date, locale);
-const postUrl = `/${locale}/blog/${post.slug}/`;
+const postUrl = `/${locale}/guia-sauwa-sauna/${post.slug}/`;
 ---
 
 <article class="blog-card" data-post-id={post.id}>

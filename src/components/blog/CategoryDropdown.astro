@@ -1,0 +1,298 @@
+---
+/**
+ * CategoryDropdown Component
+ * Mobile-friendly dropdown selector for blog categories
+ * Fetches categories dynamically from WordPress GraphQL
+ */
+
+import type { Category, Locale } from '../../lib/types/blog';
+
+interface Props {
+  allCategoriesText?: string;
+  locale?: Locale;
+}
+
+const {
+  allCategoriesText = 'Todas las categorías',
+  locale = 'es'
+} = Astro.props;
+
+// Import the GraphQL client and queries
+import { createClient, QUERIES } from '../../lib/wordpress';
+
+// Fetch categories from WordPress
+let categories: Category[] = [];
+let error: string | null = null;
+
+try {
+  const client = createClient();
+  const response = await client.query(QUERIES.GET_CATEGORIES, {
+    first: 50, // Limit to 50 categories (reasonable for dropdown)
+    hideEmpty: true // Only categories with posts
+  });
+
+  if (response?.categories?.nodes) {
+    categories = response.categories.nodes;
+  }
+} catch (e) {
+  console.error('Error fetching categories:', e);
+  error = 'No se pudieron cargar las categorías';
+}
+---
+
+<div class="category-dropdown" role="region" aria-label="Filtrar por categoría">
+  {error ? (
+    <p class="error-message">{error}</p>
+  ) : categories.length > 0 ? (
+    <div class="dropdown-wrapper">
+      <label for="category-select" class="visually-hidden">
+        Seleccionar categoría
+      </label>
+      <select
+        id="category-select"
+        class="category-select"
+        aria-label="Filtrar artículos por categoría"
+      >
+        <option value="all" selected>
+          {allCategoriesText}
+        </option>
+        {categories.map((category) => (
+          <option value={category.slug}>
+            {category.name}
+            {category.count > 0 && ` (${category.count})`}
+          </option>
+        ))}
+      </select>
+      <svg
+        class="dropdown-icon"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </div>
+  ) : (
+    <p class="no-categories">No hay categorías disponibles</p>
+  )}
+</div>
+
+<script>
+  /**
+   * Category Dropdown Client-Side Logic
+   * Handles dropdown state and dispatches filter events
+   */
+
+  const dropdown = document.querySelector<HTMLSelectElement>('#category-select');
+
+  if (dropdown) {
+    // State
+    let activeCategory = 'all';
+
+    /**
+     * Handle category selection
+     */
+    function handleCategoryChange(event: Event): void {
+      const select = event.target as HTMLSelectElement;
+      const category = select.value;
+
+      if (category === activeCategory) {
+        return;
+      }
+
+      // Update state
+      activeCategory = category;
+
+      // Dispatch custom event for BlogGrid to listen
+      const filterEvent = new CustomEvent('blog:filter', {
+        detail: { category },
+        bubbles: true,
+      });
+      document.dispatchEvent(filterEvent);
+
+      // Update URL parameter
+      const url = new URL(window.location.href);
+      if (category === 'all') {
+        url.searchParams.delete('category');
+      } else {
+        url.searchParams.set('category', category);
+      }
+      window.history.pushState({}, '', url.toString());
+    }
+
+    /**
+     * Initialize event listeners
+     */
+    function init(): void {
+      dropdown.addEventListener('change', handleCategoryChange);
+
+      // Check URL for category parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const categoryParam = urlParams.get('category');
+
+      if (categoryParam && dropdown) {
+        // Set the dropdown value
+        dropdown.value = categoryParam;
+        activeCategory = categoryParam;
+
+        // Dispatch filter event to load posts
+        const filterEvent = new CustomEvent('blog:filter', {
+          detail: { category: categoryParam },
+          bubbles: true,
+        });
+        document.dispatchEvent(filterEvent);
+      }
+    }
+
+    // Initialize on DOM load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  }
+</script>
+
+<style>
+  /* Container */
+  .category-dropdown {
+    margin-bottom: 2rem;
+    width: 100%;
+  }
+
+  /* Dropdown Wrapper */
+  .dropdown-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  /* Select Element */
+  .category-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 16px; /* Prevent zoom on iOS */
+    color: #636464;
+    background-color: #ffffff;
+    border: 2px solid #e5e5e5;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    min-height: 44px; /* WCAG 2.5.5 touch target */
+  }
+
+  .category-select:hover {
+    border-color: #DB4529;
+  }
+
+  .category-select:focus {
+    outline: none;
+    border-color: #BA2515;
+    box-shadow: 0 0 0 3px rgba(219, 69, 41, 0.1);
+  }
+
+  /* Dropdown Icon */
+  .dropdown-icon {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #636464;
+    pointer-events: none;
+    transition: color 0.25s ease;
+  }
+
+  .category-select:hover + .dropdown-icon,
+  .category-select:focus + .dropdown-icon {
+    color: #DB4529;
+  }
+
+  /* Error & Empty States */
+  .error-message,
+  .no-categories {
+    padding: 1rem;
+    text-align: center;
+    color: #636464;
+    font-size: 14px;
+  }
+
+  .error-message {
+    color: #DB4529;
+    background-color: rgba(219, 69, 41, 0.05);
+    border-radius: 4px;
+  }
+
+  /* Visually Hidden Label */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Desktop - Hide by default */
+  @media (min-width: 769px) {
+    .category-dropdown {
+      display: none;
+    }
+  }
+
+  /* Mobile - Show dropdown */
+  @media (max-width: 768px) {
+    .category-dropdown {
+      display: block;
+      padding: 0 1rem;
+    }
+
+    .dropdown-wrapper {
+      max-width: 100%;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .category-select,
+    .dropdown-icon {
+      transition: none;
+    }
+  }
+
+  /* High contrast mode */
+  @media (prefers-contrast: high) {
+    .category-select {
+      border-width: 3px;
+    }
+  }
+
+  /* Dark mode support (if needed) */
+  @media (prefers-color-scheme: dark) {
+    .category-select {
+      background-color: #1a1a1a;
+      color: #f0f0f0;
+      border-color: #333;
+    }
+
+    .category-select:hover {
+      border-color: #DB4529;
+    }
+
+    .dropdown-icon {
+      color: #f0f0f0;
+    }
+  }
+</style>

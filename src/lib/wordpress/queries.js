@@ -67,4 +67,29 @@ export const QUERIES = {
       }
     }
   `,
+
+  /**
+   * Get all categories with post count
+   * Only returns categories that have at least one post
+   * Ordered alphabetically by name
+   */
+  GET_CATEGORIES: `
+    query GetCategories($first: Int = 100, $hideEmpty: Boolean = true) {
+      categories(
+        first: $first
+        where: {
+          hideEmpty: $hideEmpty,
+          orderby: NAME,
+          order: ASC
+        }
+      ) {
+        nodes {
+          id
+          name
+          slug
+          count
+        }
+      }
+    }
+  `,
 };
