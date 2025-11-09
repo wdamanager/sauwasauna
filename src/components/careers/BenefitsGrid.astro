@@ -128,7 +128,7 @@ const { title, subtitle, benefits, columns = 3 } = Astro.props;
   .careers-benefits__card-title {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 400;
-    font-size: 1.25rem;
+    font-size: var(--font-size-card-title);
     color: #1a1a1a;
     margin: 0 0 1rem 0;
   }
@@ -136,7 +136,7 @@ const { title, subtitle, benefits, columns = 3 } = Astro.props;
   .careers-benefits__card-description {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 300;
-    font-size: 0.9375rem;
+    font-size: var(--font-size-body-sm);
     line-height: 1.6;
     color: #636464;
     margin: 0;
@@ -199,11 +199,11 @@ const { title, subtitle, benefits, columns = 3 } = Astro.props;
     }
 
     .careers-benefits__card-title {
-      font-size: 1.125rem;
+      font-size: var(--font-size-heading);
     }
 
     .careers-benefits__card-description {
-      font-size: 0.875rem;
+      font-size: var(--font-size-body-xs);
     }
   }
 

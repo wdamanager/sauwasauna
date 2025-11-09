@@ -70,7 +70,7 @@ const { title, subtitle, intro, countries } = Astro.props;
   .partners-countries__intro {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 300;
-    font-size: 1.0625rem;
+    font-size: var(--font-size-body);
     line-height: 1.7;
     color: #636464;
     margin: 0 auto;
@@ -129,7 +129,7 @@ const { title, subtitle, intro, countries } = Astro.props;
   .partners-countries__name {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 400;
-    font-size: 1.25rem;
+    font-size: var(--font-size-card-title);
     color: #1a1a1a;
     margin: 0 0 0.5rem 0;
     text-align: center;
@@ -138,7 +138,7 @@ const { title, subtitle, intro, countries } = Astro.props;
   .partners-countries__benefit {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 300;
-    font-size: 0.875rem;
+    font-size: var(--font-size-badge);
     color: #406E51;
     text-align: center;
   }
@@ -182,7 +182,7 @@ const { title, subtitle, intro, countries } = Astro.props;
     }
 
     .partners-countries__intro {
-      font-size: 0.9375rem;
+      font-size: var(--font-size-body-sm);
     }
 
     .partners-countries__grid {
@@ -195,11 +195,11 @@ const { title, subtitle, intro, countries } = Astro.props;
     }
 
     .partners-countries__name {
-      font-size: 1.125rem;
+      font-size: var(--font-size-heading);
     }
 
     .partners-countries__benefit {
-      font-size: 0.8125rem;
+      font-size: var(--font-size-badge);
     }
   }
 

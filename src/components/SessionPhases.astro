@@ -357,7 +357,7 @@ const content = phasesContent[locale];
   /* Título de fase */
   .phase-title {
     font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
-    font-size: clamp(1.25rem, 1.5vw, 1.625rem);
+    font-size: clamp(1.375rem, 1.6vw, 1.75rem); /* WDA-531: 22px → 28px (fue 20px → 26px) */
     font-weight: 500;
     letter-spacing: 0.3px;
     color: #FFFFFF;
@@ -370,7 +370,7 @@ const content = phasesContent[locale];
   /* Descripción de fase */
   .phase-description {
     font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
-    font-size: 16px;
+    font-size: 1.125rem; /* WDA-531: 18px (fue 16px) */
     font-weight: 400;
     line-height: 1.7;
     color: rgba(255, 255, 255, 0.9);
@@ -390,7 +390,7 @@ const content = phasesContent[locale];
     }
 
     .phase-title {
-      font-size: 1.625rem;
+      font-size: 1.75rem; /* WDA-531: 28px (fue 26px) */
     }
   }
 

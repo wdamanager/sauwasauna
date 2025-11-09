@@ -193,7 +193,7 @@ const content = footerContent[locale];
   }
 
   .footer-tagline {
-    font-size: 15px;
+    font-size: var(--font-size-body-sm); /* WDA-531: 14px→15px responsive */
     font-weight: 300;
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.7);
@@ -211,7 +211,7 @@ const content = footerContent[locale];
   /* Headings */
   .footer-heading {
     font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
-    font-size: 16px;
+    font-size: var(--font-size-heading); /* WDA-531: 16px→17px responsive */
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -222,7 +222,7 @@ const content = footerContent[locale];
 
   /* Links */
   .footer-link {
-    font-size: 15px;
+    font-size: var(--font-size-body-sm); /* WDA-531: 14px→15px responsive */
     font-weight: 300;
     color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
@@ -264,7 +264,7 @@ const content = footerContent[locale];
   }
 
   .social-label {
-    font-size: 14px;
+    font-size: var(--font-size-label); /* WDA-531: 14px→15px responsive */
     font-weight: 400;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -322,7 +322,7 @@ const content = footerContent[locale];
   }
 
   .copyright-text {
-    font-size: 13px;
+    font-size: var(--font-size-copyright); /* WDA-531: 12px→13px responsive */
     font-weight: 300;
     color: rgba(255, 255, 255, 0.7);
     margin: 0;
@@ -336,7 +336,7 @@ const content = footerContent[locale];
   }
 
   .legal-link {
-    font-size: 13px;
+    font-size: var(--font-size-meta); /* WDA-531: 13px→14px responsive */
     font-weight: 300;
     color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
@@ -349,7 +349,7 @@ const content = footerContent[locale];
 
   .legal-separator {
     color: rgba(255, 255, 255, 0.3);
-    font-size: 13px;
+    font-size: var(--font-size-meta); /* WDA-531: 13px→14px responsive */
   }
 
   /* Tablet (768px - 1023px) */

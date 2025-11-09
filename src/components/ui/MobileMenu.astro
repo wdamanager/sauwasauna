@@ -285,7 +285,7 @@ const currentPath = Astro.url.pathname;
   .nav-link {
     display: block;
     font-family: 'Avenir Next', sans-serif;
-    font-size: 20px;
+    font-size: var(--font-size-nav-link); /* WDA-531: 19px→21px responsive */
     font-weight: 400;
     color: #1f2937;
     text-decoration: none;
@@ -316,7 +316,7 @@ const currentPath = Astro.url.pathname;
   /* Section Headings */
   .section-heading {
     font-family: 'Avenir Next', sans-serif;
-    font-size: 14px;
+    font-size: var(--font-size-menu-heading); /* WDA-531: 14px→15px responsive */
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -342,7 +342,7 @@ const currentPath = Astro.url.pathname;
     align-items: center;
     justify-content: center;
     font-family: 'Avenir Next', sans-serif;
-    font-size: 14px;
+    font-size: var(--font-size-label); /* WDA-531: 14px→15px responsive */
     font-weight: 500;
     color: #1f2937;
     text-decoration: none;
@@ -375,7 +375,7 @@ const currentPath = Astro.url.pathname;
 
   .social-label {
     font-family: 'Avenir Next', sans-serif;
-    font-size: 14px;
+    font-size: var(--font-size-menu-heading); /* WDA-531: 14px→15px responsive */
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -388,7 +388,7 @@ const currentPath = Astro.url.pathname;
     align-items: center;
     gap: 1rem;
     font-family: 'Avenir Next', sans-serif;
-    font-size: 16px;
+    font-size: var(--font-size-heading); /* WDA-531: 16px→17px responsive */
     font-weight: 500;
     color: #1f2937;
     text-decoration: none;
@@ -455,14 +455,7 @@ const currentPath = Astro.url.pathname;
       padding: 5rem 1.5rem 1.5rem;
     }
 
-    .nav-link {
-      font-size: 18px;
-    }
-
-    .language-link {
-      font-size: 13px;
-      padding: 0.625rem 0.75rem;
-    }
+    /* WDA-531: Font sizes ahora usan clamp() - no need responsive overrides */
   }
 </style>
 

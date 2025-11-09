@@ -1,0 +1,190 @@
+/* ==========================================================================
+   WDA-531 HOTFIX - Solución Temporal para Aplicar Cambios Globalmente
+
+   IMPORTANTE: Este archivo es una SOLUCIÓN TEMPORAL mientras se implementa
+   la refactorización completa del sistema CSS documentada en
+   /docs/PLAN-REFACTORIZACION-CSS.md
+
+   Fecha: 2025-11-09
+   Autor: Claude (Context Management Agent)
+
+   INSTRUCCIONES:
+   1. Importar este archivo en global.css DESPUÉS de todos los demás estilos
+   2. Estos estilos usan !important para sobrescribir estilos inline
+   3. ELIMINAR este archivo una vez completada la refactorización
+   ========================================================================== */
+
+/* ==========================================================================
+   OVERRIDE DE TÍTULOS DE SECCIÓN - Aplicación Global
+   ========================================================================== */
+
+/* Títulos pequeños (labels) - TODAS las variantes */
+.section-title-small,
+.section-title-b2b,
+.partners-intro__title,
+.partners-selection__title,
+.careers-responsibilities__header h2,
+[class*="__title"][style*="font-size"],
+[class*="-title"][style*="text-transform: uppercase"] {
+  font-size: var(--font-size-section-title) !important;
+  /* Ya incrementado en global.css: 1.1875rem → 1.3125rem (19px → 21px) */
+}
+
+/* Encabezados grandes (headings) - TODAS las páginas */
+.section-heading-large,
+.section-heading-b2b,
+.partners-intro__heading,
+.partners-selection__subtitle,
+.careers-responsibilities__header h3,
+.title-main,
+.title-commercial,
+[class*="__heading"][style*="font-size"],
+[class*="-heading"][style*="font-size"] {
+  font-size: var(--font-size-card-title) !important;
+  /* Ya incrementado en global.css: clamp(1.375rem, 1.7vw, 1.75rem) */
+}
+
+/* Descripciones y texto introductorio */
+.partners-intro__description,
+.partners-selection__intro,
+.careers-responsibilities__intro,
+.section-description,
+[class*="__description"][style*="font-size"],
+[class*="__intro"][style*="font-size"] {
+  font-size: var(--font-size-body) !important;
+  /* Ya incrementado en global.css: clamp(1.125rem, 1.3vw, 1.375rem) */
+}
+
+/* Items de lista y elementos repetitivos */
+.careers-responsibilities__item,
+.partners-selection__item-description,
+[class*="__item"][style*="font-size"],
+ul li[style*="font-size"] {
+  font-size: var(--font-size-heading) !important;
+  /* Ya incrementado en global.css: clamp(1.1875rem, 1.3vw, 1.3125rem) */
+}
+
+/* ==========================================================================
+   OVERRIDE ESPECÍFICO PARA MÓVILES
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  /* Ajustes móviles para headings */
+  .section-heading-large,
+  .section-heading-b2b,
+  .partners-intro__heading,
+  .careers-responsibilities__heading,
+  [class*="__heading"] {
+    font-size: clamp(1.75rem, 4vw, 2rem) !important;
+    /* Incrementado para móvil */
+  }
+
+  /* Ajustes móviles para descripciones */
+  .partners-intro__description,
+  .careers-responsibilities__intro,
+  [class*="__description"],
+  [class*="__intro"] {
+    font-size: var(--font-size-body-sm) !important;
+    /* Ya incrementado: clamp(1.0625rem, 1.2vw, 1.25rem) */
+  }
+
+  /* Ajustes móviles para items */
+  .careers-responsibilities__item,
+  [class*="__item"] {
+    font-size: var(--font-size-body-sm) !important;
+  }
+}
+
+/* ==========================================================================
+   CORRECCIONES ADICIONALES DE ESPECIFICIDAD
+   ========================================================================== */
+
+/* Forzar aplicación en elementos con estilos inline */
+[style*="font-size: 1rem"],
+[style*="font-size:1rem"] {
+  font-size: var(--font-size-section-title) !important;
+}
+
+[style*="font-size: 1.0625rem"],
+[style*="font-size:1.0625rem"] {
+  font-size: var(--font-size-section-title) !important;
+}
+
+[style*="font-size: 1.25rem"],
+[style*="font-size:1.25rem"] {
+  font-size: var(--font-size-body) !important;
+}
+
+[style*="font-size: 1.125rem"],
+[style*="font-size:1.125rem"] {
+  font-size: var(--font-size-body-sm) !important;
+}
+
+[style*="font-size: 2.75rem"],
+[style*="font-size:2.75rem"] {
+  font-size: var(--font-size-card-title) !important;
+}
+
+[style*="font-size: 2rem"],
+[style*="font-size:2rem"] {
+  font-size: clamp(1.75rem, 4vw, 2rem) !important;
+}
+
+/* ==========================================================================
+   APLICACIÓN GLOBAL POR ESTRUCTURA
+   ========================================================================== */
+
+/* Cualquier sección con estructura título + heading + descripción */
+section header h2:first-child,
+section > div > h2:first-child,
+.section-header > h2:first-child {
+  font-size: var(--font-size-section-title) !important;
+}
+
+section header h3,
+section > div > h3,
+.section-header > h3 {
+  font-size: var(--font-size-card-title) !important;
+}
+
+section header p,
+section > div > p:first-of-type,
+.section-header > p {
+  font-size: var(--font-size-body) !important;
+}
+
+/* ==========================================================================
+   DEBUG: Marcar elementos afectados (ELIMINAR EN PRODUCCIÓN)
+   ========================================================================== */
+
+/* Descomentar para visualizar elementos afectados durante desarrollo
+[class*="__title"],
+[class*="__heading"],
+[class*="__description"],
+[class*="__intro"],
+[class*="__item"] {
+  outline: 2px dashed red !important;
+  outline-offset: 2px !important;
+}
+*/
+
+/* ==========================================================================
+   NOTAS DE IMPLEMENTACIÓN
+
+   1. Este archivo debe importarse AL FINAL de global.css:
+      @import './wda531-hotfix.css';
+
+   2. Monitorear en las siguientes páginas:
+      - /es/acceso-exclusivo
+      - /es/trabaja-con-nosotros
+      - /ca/acceso-exclusivo
+      - /ca/trabaja-con-nosotros
+      - /en/exclusive-access
+      - /en/work-with-us
+      - /fr/acces-exclusif
+      - /fr/travaillez-avec-nous
+
+   3. Una vez verificado que funciona, programar refactorización completa
+
+   4. Este archivo es DEUDA TÉCNICA y debe eliminarse lo antes posible
+   ========================================================================== */

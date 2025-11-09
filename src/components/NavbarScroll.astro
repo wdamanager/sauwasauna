@@ -249,7 +249,7 @@ const currentPath = Astro.url.pathname;
   .navbar-lang {
     color: #1f2937; /* text-gray-800 */
     text-decoration: none;
-    font-size: 0.875rem; /* text-sm */
+    font-size: var(--font-size-nav-lang); /* WDA-531: 13px→15px responsive */
     font-weight: 500;
     opacity: 0.7;
     transition:
@@ -273,7 +273,7 @@ const currentPath = Astro.url.pathname;
 
   .navbar-separator {
     color: #9ca3af; /* text-gray-400 */
-    font-size: 0.875rem;
+    font-size: var(--font-size-nav-lang); /* WDA-531: matched with lang selector */
     transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -385,13 +385,7 @@ const currentPath = Astro.url.pathname;
       gap: 1rem;
     }
 
-    .navbar-lang {
-      font-size: 0.75rem; /* text-xs */
-    }
-
-    .navbar-separator {
-      font-size: 0.75rem;
-    }
+    /* WDA-531: Font sizes ahora usan clamp() - no need responsive overrides */
   }
 
   /* Accesibilidad - Reduced Motion */

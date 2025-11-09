@@ -245,7 +245,7 @@ const icons = {
 
   .intro-text {
     font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
-    font-size: clamp(0.95rem, 1.2vw, 1.125rem);
+    font-size: clamp(1.0625rem, 1.3vw, 1.25rem); /* WDA-531: 17px → 20px (fue 15px → 18px) */
     font-weight: 400;
     line-height: 1.7;
     color: #444;
@@ -290,7 +290,7 @@ const icons = {
 
   .benefit-title {
     font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
-    font-size: 1.125rem;
+    font-size: 1.25rem; /* WDA-531: 20px (fue 18px) */
     font-weight: 400;
     color: #1a1a1a;
     margin: 0 0 0.5rem;
@@ -298,7 +298,7 @@ const icons = {
 
   .benefit-text {
     font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
-    font-size: 0.95rem;
+    font-size: 1.0625rem; /* WDA-531: 17px (fue 15.2px) */
     font-weight: 400;
     line-height: 1.6;
     color: #555;
@@ -308,7 +308,7 @@ const icons = {
   /* New paragraph styling */
   .new-paragraph {
     font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
-    font-size: clamp(1rem, 1.3vw, 1.25rem);
+    font-size: clamp(1.0625rem, 1.4vw, 1.375rem); /* WDA-531: 17px → 22px (fue 16px → 20px) */
     font-weight: 400;
     line-height: 1.7;
     color: #333;
@@ -356,15 +356,15 @@ const icons = {
     transition: transform 0.3s ease;
   }
 
-  /* Primary CTA: Outline style (existing green outline) */
+  /* Primary CTA: Outline style (naranja corporativo) */
   .cta-primary {
-    color: #406E51;
+    color: #DB4529;
     background-color: transparent;
-    border: 1px solid #406E51;
+    border: 1px solid #DB4529;
   }
 
   .cta-primary:hover {
-    background-color: #406E51;
+    background-color: #DB4529;
     color: #FFFFFF;
   }
 
@@ -372,16 +372,16 @@ const icons = {
     transform: translateX(4px);
   }
 
-  /* Secondary CTA: Inverted filled style (green filled, hover to outline) */
+  /* Secondary CTA: Inverted filled style (naranja filled, hover to outline) */
   .cta-secondary {
     color: #FFFFFF;
-    background-color: #406E51;
-    border: 1px solid #406E51;
+    background-color: #DB4529;
+    border: 1px solid #DB4529;
   }
 
   .cta-secondary:hover {
     background-color: transparent;
-    color: #406E51;
+    color: #DB4529;
   }
 
   @media (max-width: 1024px) {

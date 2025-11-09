@@ -276,7 +276,7 @@ const { locale, title, subtitle } = Astro.props;
   .partners-form__subtitle {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 300;
-    font-size: 1.25rem;
+    font-size: var(--font-size-body);
     line-height: 1.6;
     color: #636464;
     margin: 0;
@@ -307,7 +307,7 @@ const { locale, title, subtitle } = Astro.props;
   .partners-form__label {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 400;
-    font-size: 1rem;
+    font-size: var(--font-size-label);
     color: #1a1a1a;
     display: flex;
     align-items: center;
@@ -335,7 +335,7 @@ const { locale, title, subtitle } = Astro.props;
   .partners-form__textarea {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 300;
-    font-size: 1.0625rem;
+    font-size: var(--font-size-body);
     padding: 16px 20px;
     border: 2px solid #d1d1d1;
     border-radius: 8px;
@@ -375,7 +375,7 @@ const { locale, title, subtitle } = Astro.props;
   .partners-form__char-counter {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 300;
-    font-size: 0.9375rem;
+    font-size: var(--font-size-meta);
     color: #636464;
     text-align: right;
   }
@@ -402,7 +402,7 @@ const { locale, title, subtitle } = Astro.props;
   .partners-form__checkbox-text {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 300;
-    font-size: 1rem;
+    font-size: var(--font-size-body-sm);
     line-height: 1.6;
     color: #1a1a1a;
   }
@@ -420,7 +420,7 @@ const { locale, title, subtitle } = Astro.props;
   .partners-form__error {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 300;
-    font-size: 0.9375rem;
+    font-size: var(--font-size-meta);
     color: #BA2515;
     display: none;
   }
@@ -433,7 +433,7 @@ const { locale, title, subtitle } = Astro.props;
     width: 100%;
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 400;
-    font-size: 1.0625rem;
+    font-size: var(--font-size-body);
     letter-spacing: 0.05em;
     text-transform: uppercase;
     padding: 20px 32px;
@@ -542,7 +542,7 @@ const { locale, title, subtitle } = Astro.props;
   .partners-form__message-text {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 300;
-    font-size: 1.0625rem;
+    font-size: var(--font-size-body);
     line-height: 1.6;
     color: #636464;
     margin: 0;
@@ -567,7 +567,7 @@ const { locale, title, subtitle } = Astro.props;
     }
 
     .partners-form__subtitle {
-      font-size: 1.0625rem;
+      font-size: var(--font-size-body);
     }
 
     .partners-form__input,

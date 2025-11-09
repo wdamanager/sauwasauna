@@ -83,7 +83,7 @@ const { title, heading, subtitle, ctaText, ctaHref, backgroundImage } = Astro.pr
   .careers-job-hero__title-seo {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 400;
-    font-size: 18px;
+    font-size: var(--font-size-heading);
     letter-spacing: 2px;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.9);
@@ -103,7 +103,7 @@ const { title, heading, subtitle, ctaText, ctaHref, backgroundImage } = Astro.pr
   .careers-job-hero__subtitle {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 300;
-    font-size: 1.25rem;
+    font-size: var(--font-size-body);
     line-height: 1.6;
     color: rgba(255, 255, 255, 0.9);
     margin: 0;
@@ -137,7 +137,7 @@ const { title, heading, subtitle, ctaText, ctaHref, backgroundImage } = Astro.pr
   .careers-job-hero__cta-text {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 400;
-    font-size: 0.875rem;
+    font-size: var(--font-size-body-xs);
     letter-spacing: 0.05em;
     text-transform: uppercase;
   }
@@ -172,7 +172,7 @@ const { title, heading, subtitle, ctaText, ctaHref, backgroundImage } = Astro.pr
     }
 
     .careers-job-hero__title-seo {
-      font-size: 16px;
+      font-size: var(--font-size-heading);
       letter-spacing: 3px;
       margin-bottom: 0;
     }
@@ -185,7 +185,7 @@ const { title, heading, subtitle, ctaText, ctaHref, backgroundImage } = Astro.pr
     }
 
     .careers-job-hero__subtitle {
-      font-size: 1rem;
+      font-size: var(--font-size-body);
     }
 
     .careers-job-hero__cta {
@@ -196,7 +196,7 @@ const { title, heading, subtitle, ctaText, ctaHref, backgroundImage } = Astro.pr
   /* Tablet (768px - 1023px) */
   @media (min-width: 768px) and (max-width: 1023px) {
     .careers-job-hero__title-seo {
-      font-size: 16px;
+      font-size: var(--font-size-heading);
     }
 
     .careers-job-hero__heading {
@@ -204,14 +204,14 @@ const { title, heading, subtitle, ctaText, ctaHref, backgroundImage } = Astro.pr
     }
 
     .careers-job-hero__subtitle {
-      font-size: 1.125rem;
+      font-size: var(--font-size-body);
     }
   }
 
   /* Small mobile (<= 640px) */
   @media (max-width: 640px) {
     .careers-job-hero__title-seo {
-      font-size: 14px;
+      font-size: var(--font-size-body-xs);
       letter-spacing: 2px;
     }
 
