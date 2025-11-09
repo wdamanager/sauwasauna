@@ -188,3 +188,54 @@ section > div > p:first-of-type,
 
    4. Este archivo es DEUDA TÉCNICA y debe eliminarse lo antes posible
    ========================================================================== */
+
+/* ==========================================================================
+   FIX SCROLL HORIZONTAL - Global (Mobile Only)
+
+   IMPORTANTE: overflow-x: hidden en desktop ROMPE position: sticky
+   Solo aplicamos overflow-x: hidden en mobile (<768px) para prevenir scroll horizontal
+   Desktop permite sticky scroll funcionando correctamente
+   ========================================================================== */
+
+/* Desktop: permitir sticky scroll (sin overflow-x hidden) */
+html {
+  max-width: 100vw;
+}
+
+body {
+  max-width: 100vw;
+  position: relative;
+}
+
+/* Fix para elementos de bloque que puedan causar overflow */
+main,
+section,
+article {
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+/* Mobile: prevenir scroll horizontal SOLO en mobile */
+@media (max-width: 767px) {
+  html {
+    overflow-x: hidden;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  main,
+  section,
+  article {
+    overflow-x: hidden;
+  }
+}
+
+/* Asegurar que imágenes y media no causen overflow */
+img,
+video,
+picture {
+  max-width: 100%;
+  height: auto;
+}

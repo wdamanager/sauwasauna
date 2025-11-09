@@ -13,13 +13,13 @@ const { locale = 'es' } = Astro.props;
 // Benefits content by language
 const content = {
   es: {
-    seoTitle: 'DIARIO SAUWA SAUNA',
+    seoTitle: 'GUÍA SAUWA SAUNA',
     heading: 'Aprende más sobre sauna, baños fríos y recuperación',
     newParagraph: 'En la calidez de la leña encendida y en el impacto del agua helada, descubrimos la fuerza del contraste: donde el cuerpo se renueva, la mente se calma y el alma se conecta con lo esencial.',
     intro: 'Descubre los beneficios científicos del contraste térmico, rituales nórdicos auténticos y consejos prácticos para maximizar tu experiencia.',
-    ctaPrimary: 'Explorar el diario',
-    ctaPrimaryLink: '/es/blog/',
-    ctaSecondary: 'ACCESO PRIORITARIO',
+    ctaPrimary: 'Explorar la guía',
+    ctaPrimaryLink: '/es/guia-sauwa-sauna/',
+    ctaSecondary: 'SUSCRÍBETE',
     ctaSecondaryLink: '#cta-newsletter',
     benefits: [
       {
@@ -50,13 +50,13 @@ const content = {
     ],
   },
   ca: {
-    seoTitle: 'DIARI SAUWA SAUNA',
+    seoTitle: 'GUIA SAUWA SAUNA',
     heading: 'Aprèn més sobre sauna, banys freds i recuperació',
     newParagraph: 'En la calidesa de la llenya encesa i en l\'impacte de l\'aigua gelada, descobrim la força del contrast: on el cos es renova, la ment es calma i l\'ànima es connecta amb l\'essencial.',
     intro: 'Descobreix els beneficis científics del contrast tèrmic, rituals nòrdics autèntics i consells pràctics per maximitzar la teva experiència.',
-    ctaPrimary: 'Explorar el diari',
-    ctaPrimaryLink: '/ca/blog/',
-    ctaSecondary: 'ACCÉS PRIORITARI',
+    ctaPrimary: 'Explorar la guia',
+    ctaPrimaryLink: '/ca/guia-sauwa-sauna/',
+    ctaSecondary: 'SUBSCRIU-TE',
     ctaSecondaryLink: '#cta-newsletter',
     benefits: [
       {
@@ -87,13 +87,13 @@ const content = {
     ],
   },
   en: {
-    seoTitle: 'SAUWA SAUNA JOURNAL',
+    seoTitle: 'SAUWA SAUNA GUIDE',
     heading: 'Learn more about sauna, cold baths and recovery',
     newParagraph: 'In the warmth of burning wood and the impact of icy water, we discover the power of contrast: where the body renews, the mind calms, and the soul connects with the essential.',
     intro: 'Discover the scientific benefits of thermal contrast, authentic Nordic rituals and practical tips to maximize your experience.',
-    ctaPrimary: 'Explore the journal',
-    ctaPrimaryLink: '/en/blog/',
-    ctaSecondary: 'PRIORITY ACCESS',
+    ctaPrimary: 'Explore the guide',
+    ctaPrimaryLink: '/en/guia-sauwa-sauna/',
+    ctaSecondary: 'SUBSCRIBE',
     ctaSecondaryLink: '#cta-newsletter',
     benefits: [
       {
@@ -124,13 +124,13 @@ const content = {
     ],
   },
   fr: {
-    seoTitle: 'JOURNAL SAUWA SAUNA',
+    seoTitle: 'GUIDE SAUWA SAUNA',
     heading: 'Apprenez-en plus sur le sauna, les bains froids et la récupération',
     newParagraph: 'Dans la chaleur du bois qui brûle et l\'impact de l\'eau glacée, nous découvrons la force du contraste : où le corps se renouvelle, l\'esprit s\'apaise et l\'âme se connecte à l\'essentiel.',
     intro: 'Découvrez les bienfaits scientifiques du contraste thermique, les rituels nordiques authentiques et des conseils pratiques pour maximiser votre expérience.',
-    ctaPrimary: 'Explorer le journal',
-    ctaPrimaryLink: '/fr/blog/',
-    ctaSecondary: 'ACCÈS PRIORITAIRE',
+    ctaPrimary: 'Explorer le guide',
+    ctaPrimaryLink: '/fr/guia-sauwa-sauna/',
+    ctaSecondary: 'S\'ABONNER',
     ctaSecondaryLink: '#cta-newsletter',
     benefits: [
       {
@@ -219,9 +219,9 @@ const icons = {
 
 <style>
   .benefits-content {
-    padding: 4rem 3rem;
     max-width: 100%;
-    background-color: #f4f4f4;
+    width: 100%; /* Ensure full width */
+    padding: 4rem 3rem; /* Desktop padding moved from sticky-content */
   }
 
   .seo-title {
@@ -386,7 +386,7 @@ const icons = {
 
   @media (max-width: 1024px) {
     .benefits-content {
-      padding: 3rem 2rem;
+      padding: 3rem 2rem; /* Tablet padding */
     }
 
     .benefit-item {
@@ -406,8 +406,8 @@ const icons = {
 
   @media (max-width: 768px) {
     .benefits-content {
-      padding: 1.25rem var(--container-padding-mobile); /* WDA-294: Reducido margen superior a 20px */
-      margin-bottom: 2rem; /* WDA-294: Separación de los posts */
+      padding: 2rem var(--container-padding-mobile); /* Mobile padding consistent */
+      margin-bottom: 0; /* Remove margin to prevent sticky break */
     }
 
     /* Centrar títulos y texto en mobile */
@@ -507,5 +507,27 @@ const icons = {
     fadeElements.forEach((element) => {
       observer.observe(element);
     });
+
+    // WDA-540: Smooth scroll to newsletter section
+    const ctaSecondaryLink = document.querySelector('.cta-secondary');
+    if (ctaSecondaryLink) {
+      ctaSecondaryLink.addEventListener('click', (e) => {
+        const href = ctaSecondaryLink.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          e.preventDefault();
+          const targetId = href.substring(1);
+          const targetElement = document.getElementById(targetId);
+
+          if (targetElement) {
+            // Smooth scroll to the target element
+            targetElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+              inline: 'nearest'
+            });
+          }
+        }
+      });
+    }
   });
 </script>

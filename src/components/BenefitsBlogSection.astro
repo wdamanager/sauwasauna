@@ -33,7 +33,7 @@ const { locale = 'es', class: className = '' } = Astro.props;
 
     <!-- Columna derecha - Scroll -->
     <div class="scroll-column">
-      <BlogScrollCards locale={locale} limit={3} verticalScroll={false} />
+      <BlogScrollCards locale={locale} limit={3} />
     </div>
   </div>
 </section>
@@ -42,7 +42,6 @@ const { locale = 'es', class: className = '' } = Astro.props;
   .benefits-blog-section {
     position: relative;
     background-color: #FFFFFF;
-    min-height: 100vh;
   }
 
   .sticky-grid {
@@ -59,20 +58,19 @@ const { locale = 'es', class: className = '' } = Astro.props;
 
   .sticky-content {
     position: sticky;
-    top: 80px;
-    height: calc(100vh - 80px);
+    top: 0;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
-    z-index: 10;
+    padding: 0;
+    overflow: visible;
   }
 
   /* Columna derecha - Scroll */
   .scroll-column {
     position: relative;
     background-color: #f4f4f4;
-    scroll-behavior: smooth;
   }
 
   /* Responsive Design */
@@ -82,14 +80,10 @@ const { locale = 'es', class: className = '' } = Astro.props;
       min-height: auto;
     }
 
-    .sticky-column {
-      position: relative;
-    }
-
     .sticky-content {
       position: relative;
       height: auto;
-      min-height: auto;
+      padding: 0;
     }
 
     .scroll-column {
@@ -102,14 +96,8 @@ const { locale = 'es', class: className = '' } = Astro.props;
       padding: 0;
     }
 
-    /* WDA-294: Ajustes mobile */
-    .sticky-column {
-      margin-bottom: 2rem; /* Separación de los posts del blog */
-    }
-
     .sticky-content {
-      z-index: 1; /* Prevenir overlap de botones sobre cards */
-      padding: 0; /* Remover padding en mobile */
+      padding: 0;
     }
   }
 

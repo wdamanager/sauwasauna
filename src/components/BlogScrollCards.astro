@@ -71,7 +71,7 @@ function cleanExcerpt(excerpt: string): string {
       {posts.map((post, index) => (
         <article class="blog-card" data-index={index}>
           {post.featuredImage?.node?.sourceUrl && (
-            <a href={`/${locale}/blog/${post.slug}/`} class="card-image-link">
+            <a href={`/${locale}/guia-sauwa-sauna/${post.slug}/`} class="card-image-link">
               <div class="card-image-wrapper">
                 <img
                   src={post.featuredImage.node.sourceUrl}
@@ -91,7 +91,7 @@ function cleanExcerpt(excerpt: string): string {
             )}
 
             <h3 class="card-title">
-              <a href={`/${locale}/blog/${post.slug}/`}>
+              <a href={`/${locale}/guia-sauwa-sauna/${post.slug}/`}>
                 {post.title}
               </a>
             </h3>
@@ -112,7 +112,7 @@ function cleanExcerpt(excerpt: string): string {
       ))}
 
       <div class="cta-container">
-        <a href={`/${locale}/blog/`} class="cta-more">
+        <a href={`/${locale}/guia-sauwa-sauna/`} class="cta-more">
           {translations[locale].seeMore}
           <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -127,10 +127,10 @@ function cleanExcerpt(excerpt: string): string {
   .blog-scroll-container {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 4rem; /* Increased gap for better sticky scroll effect */
     padding: 4rem 3rem;
-    background-color: #f4f4f4;
-    min-height: 100vh;
+    background-color: transparent; /* Parent .scroll-column handles #f4f4f4 background */
+    min-height: 150vh; /* Increased to ensure enough scroll height for sticky effect */
   }
 
   /* Vertical scroll mode styles */
