@@ -3,23 +3,24 @@
    Sistema de diseño refactorizado - WDA-531
 
    Orden de imports:
-   1. Tailwind base
-   2. Design tokens (variables CSS)
-   3. Utilities (clases utilitarias)
-   4. Components (componentes base)
-   5. Layouts (estructuras de página)
-   6. Tailwind components/utilities
-   7. Custom overrides
+   1. Design tokens (variables CSS) - PRIMERO
+   2. Utilities (clases utilitarias)
+   3. Components (componentes base)
+   4. Layouts (estructuras de página)
+   5. Hotfix temporal
+   6. Tailwind base/components/utilities
    ======================================== */
 
-@tailwind base;
-
 /* Design System - WDA-531 Refactorización */
+/* IMPORTANTE: @import DEBE estar ANTES de cualquier otra declaración */
 @import './design-tokens.css';
 @import './utilities.css';
 @import './components.css';
 @import './layouts.css';
+@import './wda531-hotfix.css';
 
+/* Tailwind Directives - DESPUÉS de los imports */
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -584,10 +585,3 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #BA2515; /* Sauwa Red - Primary (more intense) */
 }
-
-/* ========================================
-   WDA-531 HOTFIX TEMPORAL
-   IMPORTANTE: Eliminar después de refactorización completa
-   Ver /docs/PLAN-REFACTORIZACION-CSS.md
-   ======================================== */
-@import './wda531-hotfix.css';
