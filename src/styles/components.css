@@ -209,7 +209,7 @@
 /* Card title */
 .card__title {
   font-family: var(--font-family-primary);
-  font-size: var(--font-scale-lg);
+  font-size: var(--font-scale-xl); /* WDA-531: Aumentado de lg a xl (28-40px) */
   font-weight: var(--font-weight-regular);
   color: var(--color-text-primary);
   margin: 0 0 var(--spacing-2);
@@ -218,7 +218,7 @@
 /* Card description */
 .card__description {
   font-family: var(--font-family-secondary);
-  font-size: var(--font-scale-base);
+  font-size: var(--font-scale-md); /* WDA-531: Aumentado de base a md para mejor legibilidad */
   color: var(--color-text-secondary);
   line-height: var(--line-height-relaxed);
 }

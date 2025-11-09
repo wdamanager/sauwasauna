@@ -38,6 +38,22 @@
   color: var(--color-text-primary);
 }
 
+/* Aliases para unificar clases duplicadas - WDA-531 */
+.seo-title,
+.title-seo,
+.section-title-small,
+.section-heading-small {
+  /* Todas estas clases mapean a .section-label */
+  font-family: var(--font-family-primary);
+  font-size: var(--font-scale-sm);
+  font-weight: var(--font-weight-regular);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  line-height: var(--line-height-normal);
+  margin: 0 0 var(--spacing-4);
+  color: var(--color-primary-hover);
+}
+
 /* ==========================================================================
    TIPOGRAFÍA - Section Titles (headings principales)
    ========================================================================== */
@@ -71,6 +87,19 @@
 
 .section-title--left {
   text-align: left;
+}
+
+/* Aliases para unificar clases duplicadas - WDA-531 */
+.title-commercial,
+.title-main,
+.section-title-large {
+  /* Todas estas clases mapean a .section-title */
+  font-family: var(--font-family-primary);
+  font-size: var(--font-scale-xl);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-snug);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-5);
 }
 
 /* ==========================================================================
