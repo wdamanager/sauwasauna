@@ -450,7 +450,7 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
   .cta-container {
     max-width: 1280px;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 0 var(--container-padding); /* Desktop: 24px */
   }
 
   .cta-wrapper {
@@ -689,6 +689,10 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
       padding: 3rem 0;
     }
 
+    .cta-container {
+      padding: 0 var(--container-padding-mobile); /* WDA-535: 20px unificado */
+    }
+
     .title-commercial {
       font-size: 2rem;
     }
@@ -701,7 +705,7 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
 
     .disclaimer-text {
       font-size: 0.8125rem;
-      padding: 0 1rem;
+      padding: 0 var(--container-padding-mobile); /* WDA-535: 20px unificado */
     }
   }
 </style>
