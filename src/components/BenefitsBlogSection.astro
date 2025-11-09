@@ -101,6 +101,11 @@ const { locale = 'es', class: className = '' } = Astro.props;
     .benefits-blog-section {
       padding: 0;
     }
+
+    /* WDA-294: Eliminar z-index en mobile para prevenir overlap de botones sobre cards */
+    .sticky-content {
+      z-index: 1;
+    }
   }
 
   /* Print styles */
