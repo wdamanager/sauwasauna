@@ -23,16 +23,16 @@ const { title, subtitle, intro, requirements } = Astro.props;
 <section class="partners-selection">
   <div class="partners-selection__container">
     <div class="partners-selection__header">
-      <h2 class="section-title-b2b">{title}</h2>
-      <h3 class="section-heading-b2b">{subtitle}</h3>
-      <p class="partners-selection__intro">{intro}</p>
+      <h2 class="section-label section-label--b2b">{title}</h2>
+      <h3 class="section-title">{subtitle}</h3>
+      <p class="section-description">{intro}</p>
     </div>
 
     <div class="partners-selection__list">
       {requirements.map((req, index) => (
         <div
           class="partners-selection__item"
-          style={`animation-delay: ${index * 0.15}s;`}
+          data-index={index}
         >
           <div class="partners-selection__item-icon-wrapper">
             <div class="partners-selection__item-icon" aria-hidden="true" set:html={req.icon} />
@@ -82,20 +82,10 @@ const { title, subtitle, intro, requirements } = Astro.props;
 
   .partners-selection__header {
     text-align: center;
-    margin-bottom: 4rem;
+    margin-bottom: var(--spacing-10); /* WDA-531: 4rem usando variable */
   }
 
-  /* Title and subtitle now use global classes .section-title-b2b and .section-heading-b2b */
-
-  .partners-selection__intro {
-    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
-    font-weight: 300;
-    font-size: var(--font-size-body);
-    line-height: 1.7;
-    color: #636464;
-    margin: 0 auto;
-    max-width: 800px;
-  }
+  /* WDA-531: Ahora usa clases globales .section-label y .section-title */
 
   .partners-selection__list {
     display: flex;
@@ -116,6 +106,14 @@ const { title, subtitle, intro, requirements } = Astro.props;
     opacity: 0;
     animation: slideInRight 0.6s ease-out forwards;
   }
+
+  /* WDA-531: Animation delays sin inline styles */
+  .partners-selection__item[data-index="0"] { animation-delay: 0s; }
+  .partners-selection__item[data-index="1"] { animation-delay: 0.15s; }
+  .partners-selection__item[data-index="2"] { animation-delay: 0.3s; }
+  .partners-selection__item[data-index="3"] { animation-delay: 0.45s; }
+  .partners-selection__item[data-index="4"] { animation-delay: 0.6s; }
+  .partners-selection__item[data-index="5"] { animation-delay: 0.75s; }
 
   @keyframes slideInRight {
     from {
@@ -198,19 +196,11 @@ const { title, subtitle, intro, requirements } = Astro.props;
   /* Mobile (< 768px) */
   @media (max-width: 767px) {
     .partners-selection {
-      padding: 3rem 1.5rem;
+      padding: 3rem var(--container-padding-mobile); /* WDA-294: Unificado a 20px */
     }
 
     .partners-selection__header {
-      margin-bottom: 2.5rem;
-    }
-
-    .partners-selection__subtitle {
-      font-size: 1.75rem;
-    }
-
-    .partners-selection__intro {
-      font-size: var(--font-size-body-sm);
+      margin-bottom: var(--spacing-8); /* WDA-531: 2.5rem usando variable */
     }
 
     .partners-selection__list {

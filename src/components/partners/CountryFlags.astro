@@ -26,16 +26,16 @@ const { title, subtitle, intro, countries } = Astro.props;
 <section class="partners-countries">
   <div class="partners-countries__container">
     <div class="partners-countries__header">
-      <h2 class="section-title-b2b">{title}</h2>
-      <h3 class="section-heading-b2b">{subtitle}</h3>
-      <p class="partners-countries__intro">{intro}</p>
+      <h2 class="section-label section-label--b2b">{title}</h2>
+      <h3 class="section-title">{subtitle}</h3>
+      <p class="section-description">{intro}</p>
     </div>
 
     <div class="partners-countries__grid">
       {countries.map((country, index) => (
         <div
           class="partners-countries__card"
-          style={`animation-delay: ${index * 0.08}s;`}
+          data-index={index}
         >
           <div class="partners-countries__flag" aria-hidden="true">
             <FlagIcon countryCode={country.code} size={64} />
@@ -62,20 +62,10 @@ const { title, subtitle, intro, countries } = Astro.props;
 
   .partners-countries__header {
     text-align: center;
-    margin-bottom: 4rem;
+    margin-bottom: var(--spacing-10); /* WDA-531: 4rem usando variable */
   }
 
-  /* Title and subtitle now use global classes .section-title-b2b and .section-heading-b2b */
-
-  .partners-countries__intro {
-    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
-    font-weight: 300;
-    font-size: var(--font-size-body);
-    line-height: 1.7;
-    color: #636464;
-    margin: 0 auto;
-    max-width: 900px;
-  }
+  /* WDA-531: Usa clases globales .section-label, .section-title, .section-description */
 
   .partners-countries__grid {
     display: grid;
@@ -96,6 +86,17 @@ const { title, subtitle, intro, countries } = Astro.props;
     opacity: 0;
     animation: fadeInScale 0.5s ease-out forwards;
   }
+
+  /* WDA-531: Animation delays sin inline styles */
+  .partners-countries__card[data-index="0"] { animation-delay: 0s; }
+  .partners-countries__card[data-index="1"] { animation-delay: 0.08s; }
+  .partners-countries__card[data-index="2"] { animation-delay: 0.16s; }
+  .partners-countries__card[data-index="3"] { animation-delay: 0.24s; }
+  .partners-countries__card[data-index="4"] { animation-delay: 0.32s; }
+  .partners-countries__card[data-index="5"] { animation-delay: 0.4s; }
+  .partners-countries__card[data-index="6"] { animation-delay: 0.48s; }
+  .partners-countries__card[data-index="7"] { animation-delay: 0.56s; }
+  .partners-countries__card[data-index="8"] { animation-delay: 0.64s; }
 
   @keyframes fadeInScale {
     from {
@@ -170,19 +171,11 @@ const { title, subtitle, intro, countries } = Astro.props;
   /* Mobile (< 768px) */
   @media (max-width: 767px) {
     .partners-countries {
-      padding: 3rem 1.5rem;
+      padding: 3rem var(--container-padding-mobile); /* WDA-294: Unificado a 20px */
     }
 
     .partners-countries__header {
-      margin-bottom: 2.5rem;
-    }
-
-    .partners-countries__subtitle {
-      font-size: 1.75rem;
-    }
-
-    .partners-countries__intro {
-      font-size: var(--font-size-body-sm);
+      margin-bottom: var(--spacing-8); /* WDA-531: 2.5rem usando variable */
     }
 
     .partners-countries__grid {

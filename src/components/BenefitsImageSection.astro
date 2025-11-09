@@ -223,6 +223,11 @@ const icons = {
 </section>
 
 <style>
+  /* WDA-294: Color de fondo para cubrir gap del grid en desktop */
+  #beneficios-imagen {
+    background-color: #f4f4f4;
+  }
+
   /* Animaciones fade-in */
   .fade-in-left,
   .fade-in-right {
@@ -392,6 +397,11 @@ const icons = {
       transform: none !important;
     }
 
+    /* WDA-294: Remover gap del grid en mobile */
+    #beneficios-imagen .grid {
+      gap: 0;
+    }
+
     #beneficios-imagen img {
       height: 400px;
       min-height: 400px;
@@ -403,6 +413,7 @@ const icons = {
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: 0; /* WDA-294: Sin gap en mobile */
     }
 
     .intro-text {

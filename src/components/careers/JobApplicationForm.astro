@@ -495,7 +495,7 @@ const { locale, title, subtitle } = Astro.props;
   /* Mobile (< 768px) */
   @media (max-width: 767px) {
     .careers-form {
-      padding: 3rem 1.5rem;
+      padding: 3rem var(--container-padding-mobile); /* WDA-294: Unificado a 20px */
     }
 
     .careers-form__title {
@@ -509,6 +509,14 @@ const { locale, title, subtitle } = Astro.props;
     .careers-form__input,
     .careers-form__textarea {
       font-size: 16px; /* Prevent iOS zoom on focus */
+      max-width: 100%; /* WDA-294: Prevenir overflow de campos */
+      box-sizing: border-box; /* WDA-294: Incluir padding en width */
+    }
+
+    /* WDA-294: Fix específico para campos number y file */
+    .careers-form__input[type="number"],
+    .careers-form__input--file {
+      width: 100%;
     }
   }
 </style>
