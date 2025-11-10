@@ -139,11 +139,13 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
           title: 'Excelencia en entorno y estética',
           description: 'Buscamos hoteles que cuiden el diseño y la atmósfera: espacios armónicos, entornos naturales privilegiados y atención al detalle para fusionarse con nuestro ritual nórdico.',
         },
+        /* OCULTO TEMPORALMENTE
         {
           icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M21 16V8C21 6.9 20.1 6 19 6H5C3.9 6 3 6.9 3 8V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16Z" stroke="currentColor" stroke-width="2"/><path d="M12 6V3M12 18V21M8 6L12 3L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
           title: 'Viabilidad logística',
           description: 'La viabilidad del sitio depende crucialmente de un acceso con capacidad para maniobrar e introducir la sauna. Cada ubicación se evalúa individualmente para garantizar que cumpla con todos los requisitos logísticos y operativos.',
         },
+        */
         {
           icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="2"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
           title: 'Compromiso con la experiencia',
@@ -239,11 +241,13 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
           title: 'Excel·lència en entorn i estètica',
           description: 'Busquem hotels que cuidin el disseny i l\'atmosfera: espais harmònics, entorns naturals privilegiats i atenció al detall per fusionar-se amb el nostre ritual nòrdic.',
         },
+        /* OCULTO TEMPORALMENTE
         {
           icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M21 16V8C21 6.9 20.1 6 19 6H5C3.9 6 3 6.9 3 8V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16Z" stroke="currentColor" stroke-width="2"/><path d="M12 6V3M12 18V21M8 6L12 3L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
           title: 'Viabilitat logística',
           description: 'La viabilitat del lloc depèn críticament d\'un accés amb capacitat per maniobrar i introduir la sauna. Cada ubicació s\'avalua individualment per garantir que compleixi amb tots els requisits logístics i operatius.',
         },
+        */
         {
           icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="2"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
           title: 'Compromís amb l\'experiència',
@@ -339,11 +343,13 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
           title: 'Excellence in environment and aesthetics',
           description: 'We seek hotels that care for design and atmosphere: harmonious spaces, privileged natural environments, and attention to detail to blend with our Nordic ritual.',
         },
+        /* OCULTO TEMPORALMENTE
         {
           icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M21 16V8C21 6.9 20.1 6 19 6H5C3.9 6 3 6.9 3 8V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16Z" stroke="currentColor" stroke-width="2"/><path d="M12 6V3M12 18V21M8 6L12 3L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
           title: 'Logistical viability',
           description: 'Site viability critically depends on access with capacity to maneuver and introduce the sauna. Each location is evaluated individually to ensure it meets all logistical and operational requirements.',
         },
+        */
         {
           icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="2"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
           title: 'Commitment to experience',
@@ -439,11 +445,13 @@ export const partnersContent: Record<PartnersLocale, PartnersContent> = {
           title: 'Excellence en environnement et esthétique',
           description: 'Nous recherchons des hôtels qui soignent le design et l\'atmosphère : espaces harmonieux, environnements naturels privilégiés et attention aux détails pour fusionner avec notre rituel nordique.',
         },
+        /* OCULTO TEMPORALMENTE
         {
           icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M21 16V8C21 6.9 20.1 6 19 6H5C3.9 6 3 6.9 3 8V16C3 17.1 3.9 18 5 18H19C20.1 18 21 17.1 21 16Z" stroke="currentColor" stroke-width="2"/><path d="M12 6V3M12 18V21M8 6L12 3L16 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
           title: 'Viabilité logistique',
           description: 'La viabilité du site dépend de manière critique d\'un accès avec capacité pour manœuvrer et introduire le sauna. Chaque emplacement est évalué individuellement pour garantir qu\'il répond à toutes les exigences logistiques et opérationnelles.',
         },
+        */
         {
           icon: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32"><path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="2"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
           title: 'Engagement envers l\'expérience',

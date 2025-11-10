@@ -116,7 +116,7 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
     seoDescription: 'Únete a SAUWA como Sauna Master certificado/a en Andorra. Formación completa, carrera profesional única en bienestar nórdico.',
     hero: {
       title: 'Trabaja con nosotros',
-      heading: 'OPORTUNIDAD ÚNICA: SAUNA MASTER ACREDITADO SAUWA® EN ANDORRA',
+      heading: 'SAUNA MASTER ACREDITADO SAUWA® EN ANDORRA',
       subtitle: 'Únete a nuestro equipo y conviértete en experto en bienestar nórdico',
       ctaText: 'Aplicar ahora',
     },
@@ -239,7 +239,7 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
     seoDescription: 'Uneix-te a SAUWA com a Sauna Master certificat/da a Andorra. Formació completa, carrera professional única en benestar nòrdic.',
     hero: {
       title: 'Treballa amb nosaltres',
-      heading: 'OPORTUNITAT ÚNICA: SAUNA MASTER ACREDITAT SAUWA® A ANDORRA',
+      heading: 'SAUNA MASTER ACREDITAT SAUWA® A ANDORRA',
       subtitle: 'Uneix-te al nostre equip i converteix-te en expert en benestar nòrdic',
       ctaText: 'Aplicar ara',
     },
@@ -362,7 +362,7 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
     seoDescription: 'Join SAUWA as a certified Sauna Master in Andorra. Complete training, unique professional career in Nordic wellness.',
     hero: {
       title: 'Work with us',
-      heading: 'UNIQUE OPPORTUNITY: CERTIFIED SAUWA® SAUNA MASTER IN ANDORRA',
+      heading: 'CERTIFIED SAUWA® SAUNA MASTER IN ANDORRA',
       subtitle: 'Join our team and become an expert in Nordic wellness',
       ctaText: 'Apply now',
     },
@@ -485,7 +485,7 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
     seoDescription: 'Rejoignez SAUWA en tant que Sauna Master certifié/e en Andorre. Formation complète, carrière professionnelle unique en bien-être nordique.',
     hero: {
       title: 'Travailler avec nous',
-      heading: 'OPPORTUNITÉ UNIQUE : SAUNA MASTER ACCRÉDITÉ SAUWA® EN ANDORRE',
+      heading: 'SAUNA MASTER ACCRÉDITÉ SAUWA® EN ANDORRE',
       subtitle: 'Rejoignez notre équipe et devenez expert en bien-être nordique',
       ctaText: 'Postuler maintenant',
     },

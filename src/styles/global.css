@@ -127,15 +127,9 @@
 
   body {
     @apply antialiased;
-    /* Removed overflow-x-hidden to allow position: sticky */
-  }
-
-  /* WDA-294: Prevent horizontal scroll on mobile */
-  @media (max-width: 767px) {
-    body {
-      overflow-x: hidden;
-      max-width: 100vw;
-    }
+    /* WDA-XXX: Prevent horizontal scroll on all viewports */
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   /* ========================================

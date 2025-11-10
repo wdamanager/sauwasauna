@@ -23,7 +23,9 @@ const { class: className = '' } = Astro.props;
     muted
     playsinline
     preload="auto"
+    disablepictureinpicture
     aria-label="SAUWA Finnish sauna experience - background video"
+    style="pointer-events: none;"
   >
     <source src="/images/hero/desktop/sauwa-hero-desktop.webm" type="video/webm" />
     Your browser does not support the video tag.
@@ -37,7 +39,9 @@ const { class: className = '' } = Astro.props;
     muted
     playsinline
     preload="auto"
+    disablepictureinpicture
     aria-label="SAUWA Finnish sauna experience - background video"
+    style="pointer-events: none;"
   >
     <source src="/images/hero/mobile/sauwa-hero-mobile.webm" type="video/webm" />
     Your browser does not support the video tag.
@@ -57,6 +61,23 @@ const { class: className = '' } = Astro.props;
   .hero-slider > div {
     z-index: 10;
   }
+
+  /* Hide video controls in all browsers (Safari/Mac fix) */
+  video::-webkit-media-controls {
+    display: none !important;
+  }
+  video::-webkit-media-controls-enclosure {
+    display: none !important;
+  }
+  video::-webkit-media-controls-panel {
+    display: none !important;
+  }
+  video::-webkit-media-controls-play-button {
+    display: none !important;
+  }
+  video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+  }
 </style>
 
 <script>
@@ -74,12 +95,19 @@ const { class: className = '' } = Astro.props;
 
     private init() {
       this.videos.forEach((video) => {
+        // Force muted and remove controls (Safari/Mac fix)
+        video.muted = true;
+        video.controls = false;
+        video.setAttribute('muted', '');
+        video.removeAttribute('controls');
+
         // Ensure video plays if autoplay is blocked
         video.play().catch((error) => {
           console.warn('Video autoplay was prevented:', error);
 
           // Attempt to play on user interaction
           const playOnInteraction = () => {
+            video.muted = true; // Ensure muted before play
             video.play();
             document.removeEventListener('click', playOnInteraction);
             document.removeEventListener('touchstart', playOnInteraction);

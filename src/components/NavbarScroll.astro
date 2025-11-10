@@ -425,26 +425,33 @@ const currentPath = Astro.url.pathname;
 
     let ticking = false;
     let lastScrollY = window.scrollY;
-    const threshold = 100;
+    const threshold = 1; // Cambio inmediato al primer pixel de scroll
     const scrollDelta = 5; // Mínimo scroll para detectar dirección
 
     if (isHomepage) {
       // Homepage: Navbar transparente en TOP, aparece al scrollear UP, se oculta al scrollear DOWN
-      // Inicialmente visible y transparente en el TOP
-      navbar.classList.add('visible');
-      navbar.classList.add('transparent');
       navbar.classList.add('homepage-navbar');
+
+      // Set initial state based on current scroll position
+      if (window.scrollY === 0) {
+        navbar.classList.add('visible');
+        navbar.classList.add('transparent');
+      } else {
+        // Si no estamos en TOP al cargar, mantener oculto
+        navbar.classList.remove('visible');
+        navbar.classList.remove('transparent');
+      }
 
       function updateHomepageNavbar() {
         const scrollY = window.scrollY;
         const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
 
-        if (scrollY < threshold) {
-          // En el top: MOSTRAR navbar TRANSPARENTE con logo blanco
+        if (scrollY === 0) {
+          // Exactamente en el top (0px): MOSTRAR navbar TRANSPARENTE (sin logo visible)
           navbar.classList.add('visible');
           navbar.classList.add('transparent');
-        } else if (scrollDirection === 'down') {
-          // Scrolleando hacia abajo: OCULTAR navbar (usuario quiere ver contenido)
+        } else if (scrollY > 0 && scrollDirection === 'down') {
+          // Cualquier scroll hacia abajo: OCULTAR navbar inmediatamente
           navbar.classList.remove('visible');
           navbar.classList.remove('transparent');
         } else if (scrollDirection === 'up') {
@@ -474,30 +481,31 @@ const currentPath = Astro.url.pathname;
 
     } else {
       // Páginas no-home: navbar transparente en TOP, aparece al scrollear UP, se oculta al scrollear DOWN
-      navbar.classList.add('visible');
-      navbar.classList.add('transparent'); // Inicialmente transparente en TOP
+
+      // Set initial state based on current scroll position
+      if (window.scrollY === 0) {
+        navbar.classList.add('visible');
+        navbar.classList.add('transparent');
+      } else {
+        // Si no estamos en TOP al cargar, mantener oculto
+        navbar.classList.remove('visible');
+        navbar.classList.remove('transparent');
+      }
 
       function updateNonHomepageNavbar() {
         const scrollY = window.scrollY;
         const scrollDirection = scrollY > lastScrollY ? 'down' : 'up';
-        const scrollDifference = Math.abs(scrollY - lastScrollY);
 
-        // Solo actuar si hay un scroll significativo
-        if (scrollDifference < scrollDelta) {
-          lastScrollY = scrollY;
-          return;
-        }
-
-        if (scrollY < threshold) {
-          // En el top: navbar transparente con logo blanco grande SIEMPRE VISIBLE
+        if (scrollY === 0) {
+          // Exactamente en el top (0px): navbar transparente con logo blanco visible
           navbar.classList.add('transparent');
           navbar.classList.add('visible');
-        } else if (scrollDirection === 'down') {
-          // Scrolleando hacia abajo: OCULTAR navbar (usuario quiere ver contenido)
+        } else if (scrollY > 0 && scrollDirection === 'down') {
+          // Cualquier scroll hacia abajo: OCULTAR navbar inmediatamente
           navbar.classList.remove('visible');
           navbar.classList.remove('transparent');
         } else if (scrollDirection === 'up') {
-          // Scrolleando hacia arriba: MOSTRAR navbar blanco con logo negro (usuario quiere navegar)
+          // Scrolleando hacia arriba: MOSTRAR navbar blanco con logo negro
           navbar.classList.remove('transparent');
           navbar.classList.add('visible');
         }
@@ -513,11 +521,6 @@ const currentPath = Astro.url.pathname;
           });
           ticking = true;
         }
-      }
-
-      // Set initial state
-      if (window.scrollY < threshold) {
-        navbar.classList.add('transparent');
       }
 
       window.addEventListener('scroll', onNonHomeScroll, { passive: true });

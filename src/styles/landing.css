@@ -2,8 +2,10 @@
 
 /* Hero Section Layout */
 .hero-section {
-  @apply relative w-full h-screen overflow-hidden flex items-center justify-center;
+  @apply relative w-full overflow-hidden flex items-center justify-center;
   position: relative !important;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile browsers */
 }
 
 .hero-section :global(.hero-slider) {
@@ -264,11 +266,30 @@
 
 @media (max-width: 768px) {
   .hero-content-wrapper {
-    @apply px-4 pb-8 pt-4 gap-1;
+    @apply px-4 pb-4 pt-2 gap-0.5;
   }
   .logo {
-    @apply h-32 mb-0.5;
+    @apply h-28 mb-0;
   }
+
+  /* Reducir H1 en mobile */
+  .hero-section .heading-primary {
+    font-size: 1.125rem !important; /* text-lg */
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Reducir texto H2 en mobile para que quepa scroll-icon */
+  .hero-section .heading-secondary {
+    font-size: 1.25rem !important; /* Reducir más: text-xl */
+    line-height: 1.35 !important;
+    margin-bottom: 1.5rem !important; /* Reducir aún más */
+  }
+
+  /* Mover scroll-icon más arriba en mobile */
+  .hero-section .scroll-indicator {
+    bottom: 1rem !important;
+  }
+
   .language-selector,
   .instagram-link {
     @apply top-4;

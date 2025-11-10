@@ -31,10 +31,11 @@ const description = 'Viu l\'autèntica sauna finlandesa de llenya i banys d\'aig
   <!-- Navbar Scroll -->
   <NavbarScroll locale={lang} />
 
-  <!-- Ambient Audio - Autoplay fire crackling sound (plays once) -->
+  <!-- Ambient Audio - DESACTIVADO TEMPORALMENTE
   <audio autoplay muted id="ambient-audio">
     <source src="/audio/fire-crackling.mp3" type="audio/mpeg" />
   </audio>
+  -->
 
   <!-- Hero Section - Full Screen with opcion-2 style -->
   <section class="hero-section">
@@ -115,6 +116,7 @@ const description = 'Viu l\'autèntica sauna finlandesa de llenya i banys d\'aig
   <CookieBanner {...cookieBannerTexts[lang]} />
 </Layout>
 
+<!-- SCRIPT AUDIO DESACTIVADO TEMPORALMENTE
 <script>
   // Handle ambient audio with user interaction for browsers that require it
   document.addEventListener('DOMContentLoaded', () => {
@@ -144,3 +146,4 @@ const description = 'Viu l\'autèntica sauna finlandesa de llenya i banys d\'aig
     }
   });
 </script>
+-->
