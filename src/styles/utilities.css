@@ -694,6 +694,140 @@
 }
 
 /* ==========================================================================
+   LEGAL PAGES - Clases específicas para páginas legales
+   WDA-556: Refactorización CSS duplicado
+   ========================================================================== */
+
+.legal-page {
+  min-height: 100vh;
+  padding: 8rem var(--spacing-4) var(--spacing-8);
+  background-color: var(--color-bg-white);
+  font-family: var(--font-family-secondary);
+}
+
+.legal-container {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: var(--line-height-relaxed);
+}
+
+.legal-page h1 {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-scale-3xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-4);
+  font-weight: var(--font-weight-light);
+}
+
+.legal-page .update-date {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-8);
+  font-size: var(--font-scale-sm);
+}
+
+.legal-page section {
+  margin-bottom: var(--spacing-8);
+}
+
+.legal-page h2 {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-scale-lg);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-4);
+  font-weight: var(--font-weight-medium);
+}
+
+.legal-page p {
+  margin-bottom: var(--spacing-4);
+  color: var(--color-text-primary);
+  font-size: var(--font-scale-base);
+}
+
+.legal-page ul {
+  margin-left: var(--spacing-6);
+  margin-bottom: var(--spacing-4);
+}
+
+.legal-page li {
+  margin-bottom: var(--spacing-2);
+  color: var(--color-text-primary);
+}
+
+.legal-page a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  transition: var(--transition-base);
+}
+
+.legal-page a:hover {
+  opacity: var(--opacity-hover);
+}
+
+/* Loading & Error states */
+.legal-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: var(--spacing-4);
+}
+
+.legal-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--color-bg-light);
+  border-top-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.legal-error {
+  text-align: center;
+  padding: var(--spacing-8);
+  color: var(--color-error);
+}
+
+.legal-error button {
+  margin-top: var(--spacing-4);
+  padding: var(--spacing-3) var(--spacing-6);
+  background-color: var(--color-primary);
+  color: var(--color-bg-white);
+  border: none;
+  border-radius: var(--radius-base);
+  cursor: pointer;
+  font-family: var(--font-family-primary);
+  transition: var(--transition-base);
+}
+
+.legal-error button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Responsive mobile */
+@media (max-width: 767px) {
+  .legal-page {
+    padding: 6rem var(--spacing-4) var(--spacing-6);
+  }
+
+  .legal-page h1 {
+    font-size: var(--font-scale-2xl);
+  }
+
+  .legal-page h2 {
+    font-size: var(--font-scale-md);
+  }
+
+  .legal-page p {
+    font-size: var(--font-scale-sm);
+  }
+}
+
+/* ==========================================================================
    ACCESSIBILITY
    ========================================================================== */
 

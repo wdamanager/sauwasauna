@@ -1,9 +1,4 @@
 ---
-/**
- * Política de Privacidad ES - SAUWA
- * WDA-556: Carga dinámica desde WordPress con Polylang
- */
-
 import Layout from '../../layouts/Layout.astro';
 import NavbarNoHero from '../../components/NavbarNoHero.astro';
 import FooterBlack from '../../components/layout/FooterBlack.astro';
@@ -12,27 +7,24 @@ import LegalPageClient from '../../components/legal/LegalPageClient.astro';
 import { LEGAL_PAGE_IDS } from '../../lib/wordpress/polylang-client.js';
 import { getHreflangPaths } from '../../lib/wordpress/legal-slugs.js';
 
-const lang = 'es';
-const title = 'Política de Privacidad | SAUWA';
-const description = 'Política de privacidad de SAUWA. Información sobre el tratamiento de datos personales conforme al RGPD y LOPDGDD.';
+const lang = 'en';
+const title = 'Privacy Policy | SAUWA';
+const description = 'SAUWA privacy policy. Information on personal data processing according to GDPR.';
 ---
 
 <Layout title={title} description={description} lang={lang} navbar="none">
   <HreflangMeta customPaths={getHreflangPaths('POLITICA_PRIVACIDAD')} slot="head" />
-
   <NavbarNoHero locale={lang} />
-
   <main class="legal-page">
     <LegalPageClient
       pageId={LEGAL_PAGE_IDS.POLITICA_PRIVACIDAD}
       pageType="politica-privacidad"
-      lang="ES"
-      loadingText="Cargando contenido..."
-      errorTitle="Error al cargar el contenido"
-      errorMessage="No se pudo cargar la política de privacidad. Por favor, intenta nuevamente."
-      retryText="Reintentar"
+      lang="EN"
+      loadingText="Loading content..."
+      errorTitle="Error loading content"
+      errorMessage="Could not load privacy policy. Please try again."
+      retryText="Retry"
     />
   </main>
-
   <FooterBlack locale={lang} />
 </Layout>

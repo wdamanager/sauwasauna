@@ -92,4 +92,55 @@ export const QUERIES = {
       }
     }
   `,
+
+  /**
+   * Get legal page by ID with Polylang translation support
+   * WDA-556: Using 'page' instead of 'post' (legal pages are WordPress Pages)
+   */
+  GET_LEGAL_PAGE_TRANSLATED: `
+    query GetLegalPageTranslated($id: ID!, $lang: LanguageCodeEnum!) {
+      page(id: $id, idType: DATABASE_ID) {
+        id
+        title
+        content
+        date
+        modified
+        language {
+          code
+          locale
+          name
+        }
+        translation(language: $lang) {
+          id
+          title
+          content
+          modified
+          language {
+            code
+            locale
+          }
+          seo {
+            title
+            metaDesc
+            canonical
+            metaRobotsNoindex
+          }
+        }
+        translations {
+          id
+          slug
+          language {
+            code
+            locale
+          }
+        }
+        seo {
+          title
+          metaDesc
+          canonical
+          metaRobotsNoindex
+        }
+      }
+    }
+  `,
 };

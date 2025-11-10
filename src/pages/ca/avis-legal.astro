@@ -1,9 +1,4 @@
 ---
-/**
- * Aviso Legal ES - SAUWA
- * WDA-556: Carga dinámica desde WordPress con Polylang
- */
-
 import Layout from '../../layouts/Layout.astro';
 import NavbarNoHero from '../../components/NavbarNoHero.astro';
 import FooterBlack from '../../components/layout/FooterBlack.astro';
@@ -12,27 +7,24 @@ import LegalPageClient from '../../components/legal/LegalPageClient.astro';
 import { LEGAL_PAGE_IDS } from '../../lib/wordpress/polylang-client.js';
 import { getHreflangPaths } from '../../lib/wordpress/legal-slugs.js';
 
-const lang = 'es';
-const title = 'Aviso Legal | SAUWA';
-const description = 'Aviso legal de SAUWA (PCR Europe, S.L.). Condiciones de uso, propiedad intelectual y responsabilidad del sitio web.';
+const lang = 'ca';
+const title = 'Avís Legal | SAUWA';
+const description = 'Avís legal de SAUWA (PCR Europe, S.L.). Condicions d\'ús i propietat intel·lectual.';
 ---
 
 <Layout title={title} description={description} lang={lang} navbar="none">
   <HreflangMeta customPaths={getHreflangPaths('AVISO_LEGAL')} slot="head" />
-
   <NavbarNoHero locale={lang} />
-
   <main class="legal-page">
     <LegalPageClient
       pageId={LEGAL_PAGE_IDS.AVISO_LEGAL}
       pageType="aviso-legal"
-      lang="ES"
-      loadingText="Cargando contenido..."
-      errorTitle="Error al cargar el contenido"
-      errorMessage="No se pudo cargar el aviso legal. Por favor, intenta nuevamente."
-      retryText="Reintentar"
+      lang="CA"
+      loadingText="Carregant contingut..."
+      errorTitle="Error en carregar el contingut"
+      errorMessage="No s'ha pogut carregar l'avís legal. Si us plau, torna-ho a intentar."
+      retryText="Tornar a intentar"
     />
   </main>
-
   <FooterBlack locale={lang} />
 </Layout>

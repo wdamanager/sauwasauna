@@ -45,26 +45,26 @@ export const ROUTE_TRANSLATIONS: Record<string, Record<Locale, string>> = {
     fr: '/blog/',
   },
 
-  // Legal pages (same slug for all languages)
+  // Legal pages - WDA-556: Translated slugs per language
   'aviso-legal': {
     es: '/aviso-legal/',
-    ca: '/aviso-legal/',
-    en: '/aviso-legal/',
-    fr: '/aviso-legal/',
+    ca: '/avis-legal/',
+    en: '/legal-notice/',
+    fr: '/mentions-legales/',
   },
 
   'politica-cookies': {
     es: '/politica-de-cookies/',
     ca: '/politica-de-cookies/',
-    en: '/politica-de-cookies/',
-    fr: '/politica-de-cookies/',
+    en: '/cookie-policy/',
+    fr: '/politique-cookies/',
   },
 
   'politica-privacidad': {
     es: '/politica-de-privacidad/',
-    ca: '/politica-de-privacidad/',
-    en: '/politica-de-privacidad/',
-    fr: '/politica-de-privacidad/',
+    ca: '/politica-de-privacitat/',
+    en: '/privacy-policy/',
+    fr: '/politique-de-confidentialite/',
   },
 };
 
@@ -96,10 +96,23 @@ export const SLUG_TO_ROUTE: Record<string, string> = {
   // Blog
   '/blog/': 'blog',
 
-  // Legal
+  // Legal - WDA-556: All translated slugs
+  // Aviso Legal
   '/aviso-legal/': 'aviso-legal',
+  '/avis-legal/': 'aviso-legal',
+  '/legal-notice/': 'aviso-legal',
+  '/mentions-legales/': 'aviso-legal',
+
+  // Política de Cookies
   '/politica-de-cookies/': 'politica-cookies',
+  '/cookie-policy/': 'politica-cookies',
+  '/politique-cookies/': 'politica-cookies',
+
+  // Política de Privacidad
   '/politica-de-privacidad/': 'politica-privacidad',
+  '/politica-de-privacitat/': 'politica-privacidad',
+  '/privacy-policy/': 'politica-privacidad',
+  '/politique-de-confidentialite/': 'politica-privacidad',
 };
 
 /**

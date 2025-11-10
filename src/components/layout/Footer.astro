@@ -5,6 +5,7 @@
  */
 
 import { getTranslation } from '../../i18n/utils';
+import { getAllLegalUrls } from '../../lib/wordpress/legal-slugs.js';
 
 export interface Props {
   locale: 'es' | 'ca' | 'en' | 'fr';
@@ -14,12 +15,8 @@ const { locale } = Astro.props;
 const t = getTranslation(locale);
 const currentYear = new Date().getFullYear();
 
-// Legal pages URLs
-const legalUrls = {
-  privacy: `/${locale}/politica-de-privacidad/`,
-  terms: `/${locale}/aviso-legal/`,
-  cookies: `/${locale}/politica-de-cookies/`,
-};
+// Legal pages URLs - Usando el sistema centralizado de mapeo
+const legalUrls = getAllLegalUrls(locale);
 
 // Navigation links
 const navLinks = [
@@ -79,10 +76,10 @@ const navLinks = [
 
 <style>
   .footer {
-    background: var(--color-accent);
-    color: var(--color-white);
+    background: var(--color-bg-dark);
+    color: var(--color-bg-white);
     padding: 4rem 2rem 2rem;
-    font-family: var(--font-avenir);
+    font-family: var(--font-family-secondary);
   }
   .footer-container {
     max-width: 1200px;
@@ -115,7 +112,7 @@ const navLinks = [
     font-weight: 500;
     font-size: var(--font-size-heading); /* WDA-531: 16px→17px responsive */
     margin: 0 0 1rem 0;
-    color: var(--color-white);
+    color: var(--color-bg-white);
   }
   .sr-only {
     position: absolute;
@@ -143,7 +140,7 @@ const navLinks = [
     transition: all 0.2s ease;
   }
   .footer-link:hover {
-    color: var(--color-white);
+    color: var(--color-bg-white);
     transform: translateX(2px);
   }
   .footer-social {
@@ -152,7 +149,7 @@ const navLinks = [
     gap: 1rem;
   }
   .social-link {
-    color: var(--color-white);
+    color: var(--color-bg-white);
     opacity: 0.8;
     transition: all 0.2s ease;
     width: 24px;

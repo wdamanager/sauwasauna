@@ -10,9 +10,10 @@ interface Props {
   description?: string;
   lang?: string;
   pageType?: string;
+  navbar?: 'default' | 'none'; // 'default' = NavbarScroll, 'none' = page provides its own navbar
 }
 
-const { title, description = '', lang = 'es', pageType = 'page' } = Astro.props;
+const { title, description = '', lang = 'es', pageType = 'page', navbar = 'default' } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const gtmId = import.meta.env.PUBLIC_GTM_ID;
 ---
@@ -75,8 +76,8 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID;
     <!-- Google Tag Manager NoScript -->
     <GoogleTagManagerNoScript gtmId={gtmId} />
 
-    <!-- Navbar Scroll (aparece al hacer scroll down) -->
-    <NavbarScroll locale={lang} />
+    <!-- Navbar Scroll (aparece al hacer scroll down) - Only if navbar prop is 'default' -->
+    {navbar === 'default' && <NavbarScroll locale={lang} />}
 
     <slot />
 

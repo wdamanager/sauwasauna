@@ -9,6 +9,8 @@
  * Multiidioma (es/ca/en/fr)
  */
 
+import { getLegalUrl } from '../../lib/wordpress/legal-slugs.js';
+
 export interface Props {
   locale?: 'es' | 'ca' | 'en' | 'fr';
 }
@@ -31,9 +33,9 @@ const footerContent = {
 
     // Legal links (copyright section) - SIN Términos y Condiciones
     legal: [
-      { href: `/es/politica-privacidad/`, label: 'Política de Privacidad' },
-      { href: `/es/politica-cookies/`, label: 'Política de Cookies' },
-      { href: `/es/aviso-legal/`, label: 'Aviso Legal' },
+      { href: getLegalUrl('POLITICA_PRIVACIDAD', 'es'), label: 'Política de Privacidad' },
+      { href: getLegalUrl('POLITICA_COOKIES', 'es'), label: 'Política de Cookies' },
+      { href: getLegalUrl('AVISO_LEGAL', 'es'), label: 'Aviso Legal' },
     ],
 
     copyright: `© ${currentYear} SAUWA - PCR Europe, S.L. Todos los derechos reservados.`
@@ -46,9 +48,9 @@ const footerContent = {
       social: 'Segueix-nos'
     },
     legal: [
-      { href: `/ca/politica-privacitat/`, label: 'Política de Privacitat' },
-      { href: `/ca/politica-cookies/`, label: 'Política de Cookies' },
-      { href: `/ca/avis-legal/`, label: 'Avís Legal' },
+      { href: getLegalUrl('POLITICA_PRIVACIDAD', 'ca'), label: 'Política de Privacitat' },
+      { href: getLegalUrl('POLITICA_COOKIES', 'ca'), label: 'Política de Cookies' },
+      { href: getLegalUrl('AVISO_LEGAL', 'ca'), label: 'Avís Legal' },
     ],
     copyright: `© ${currentYear} SAUWA - PCR Europe, S.L. Tots els drets reservats.`
   },
@@ -60,9 +62,9 @@ const footerContent = {
       social: 'Follow us'
     },
     legal: [
-      { href: `/en/privacy-policy/`, label: 'Privacy Policy' },
-      { href: `/en/cookie-policy/`, label: 'Cookie Policy' },
-      { href: `/en/legal-notice/`, label: 'Legal Notice' },
+      { href: getLegalUrl('POLITICA_PRIVACIDAD', 'en'), label: 'Privacy Policy' },
+      { href: getLegalUrl('POLITICA_COOKIES', 'en'), label: 'Cookie Policy' },
+      { href: getLegalUrl('AVISO_LEGAL', 'en'), label: 'Legal Notice' },
     ],
     copyright: `© ${currentYear} SAUWA - PCR Europe, S.L. All rights reserved.`
   },
@@ -74,9 +76,9 @@ const footerContent = {
       social: 'Suivez-nous'
     },
     legal: [
-      { href: `/fr/politique-confidentialite/`, label: 'Politique de Confidentialité' },
-      { href: `/fr/politique-cookies/`, label: 'Politique de Cookies' },
-      { href: `/fr/mentions-legales/`, label: 'Mentions Légales' },
+      { href: getLegalUrl('POLITICA_PRIVACIDAD', 'fr'), label: 'Politique de Confidentialité' },
+      { href: getLegalUrl('POLITICA_COOKIES', 'fr'), label: 'Politique de Cookies' },
+      { href: getLegalUrl('AVISO_LEGAL', 'fr'), label: 'Mentions Légales' },
     ],
     copyright: `© ${currentYear} SAUWA - PCR Europe, S.L. Tous droits réservés.`
   }

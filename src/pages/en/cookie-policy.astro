@@ -1,9 +1,4 @@
 ---
-/**
- * Política de Cookies ES - SAUWA
- * WDA-556: Carga dinámica desde WordPress con Polylang
- */
-
 import Layout from '../../layouts/Layout.astro';
 import NavbarNoHero from '../../components/NavbarNoHero.astro';
 import FooterBlack from '../../components/layout/FooterBlack.astro';
@@ -12,27 +7,24 @@ import LegalPageClient from '../../components/legal/LegalPageClient.astro';
 import { LEGAL_PAGE_IDS } from '../../lib/wordpress/polylang-client.js';
 import { getHreflangPaths } from '../../lib/wordpress/legal-slugs.js';
 
-const lang = 'es';
-const title = 'Política de Cookies | SAUWA';
-const description = 'Política de cookies de SAUWA. Información sobre el uso de cookies, tipos y gestión de preferencias conforme a la normativa vigente.';
+const lang = 'en';
+const title = 'Cookie Policy | SAUWA';
+const description = 'SAUWA cookie policy. Information on cookie usage, types and preference management.';
 ---
 
 <Layout title={title} description={description} lang={lang} navbar="none">
   <HreflangMeta customPaths={getHreflangPaths('POLITICA_COOKIES')} slot="head" />
-
   <NavbarNoHero locale={lang} />
-
   <main class="legal-page">
     <LegalPageClient
       pageId={LEGAL_PAGE_IDS.POLITICA_COOKIES}
       pageType="politica-cookies"
-      lang="ES"
-      loadingText="Cargando contenido..."
-      errorTitle="Error al cargar el contenido"
-      errorMessage="No se pudo cargar la política de cookies. Por favor, intenta nuevamente."
-      retryText="Reintentar"
+      lang="EN"
+      loadingText="Loading content..."
+      errorTitle="Error loading content"
+      errorMessage="Could not load cookie policy. Please try again."
+      retryText="Retry"
     />
   </main>
-
   <FooterBlack locale={lang} />
 </Layout>

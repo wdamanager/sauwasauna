@@ -15,6 +15,8 @@
  * - GDPR consent required
  */
 
+import { getLegalUrl } from '../lib/wordpress/legal-slugs.js';
+
 export interface Props {
   variant: 'hero' | 'cta';
   locale?: 'es' | 'ca' | 'en' | 'fr';
@@ -31,7 +33,7 @@ const translations = {
       emailPlaceholder: 'Introduce tu email…',
       gdprLabel: 'He leído y acepto la',
       privacyLink: 'política de privacidad',
-      privacyUrl: '/es/politica-de-privacidad/',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'es'),
       buttonText: 'AVISADME',
       successMessage: '¡Gracias! Te hemos añadido a la lista prioritaria.',
       errorMessage: 'Error al enviar. Por favor, inténtalo de nuevo.',
@@ -46,7 +48,7 @@ const translations = {
       emailPlaceholder: 'Tu email',
       gdprLabel: 'He leído y acepto la',
       privacyLink: 'política de privacidad',
-      privacyUrl: '/es/politica-de-privacidad/',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'es'),
       buttonText: 'APUNTARME',
       disclaimer: 'Recibe acceso prioritario en nuestra apertura y descuentos exclusivos',
       successMessage: '¡Gracias! Te hemos añadido a la lista prioritaria',
@@ -63,7 +65,7 @@ const translations = {
       emailPlaceholder: 'Introdueix el teu email…',
       gdprLabel: 'He llegit i accepto la',
       privacyLink: 'política de privacitat',
-      privacyUrl: '/ca/politica-de-privacidad/',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'ca'),
       buttonText: 'AVISAR-ME',
       successMessage: 'Gràcies! T\'hem afegit a la llista prioritària.',
       errorMessage: 'Error en enviar. Si us plau, torna-ho a intentar.',
@@ -78,7 +80,7 @@ const translations = {
       emailPlaceholder: 'El teu email',
       gdprLabel: 'He llegit i accepto la',
       privacyLink: 'política de privacitat',
-      privacyUrl: '/ca/politica-de-privacidad/',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'ca'),
       buttonText: 'APUNTAR-ME',
       disclaimer: 'Rep accés prioritari en la nostra obertura i descomptes exclusius',
       successMessage: 'Gràcies! T\'hem afegit a la llista prioritària',
@@ -95,7 +97,7 @@ const translations = {
       emailPlaceholder: 'Enter your email…',
       gdprLabel: 'I have read and accept the',
       privacyLink: 'privacy policy',
-      privacyUrl: '/en/politica-de-privacidad/',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'en'),
       buttonText: 'NOTIFY ME',
       successMessage: 'Thank you! We\'ve added you to the priority list.',
       errorMessage: 'Error sending. Please try again.',
@@ -110,7 +112,7 @@ const translations = {
       emailPlaceholder: 'Your email',
       gdprLabel: 'I have read and accept the',
       privacyLink: 'privacy policy',
-      privacyUrl: '/en/politica-de-privacidad/',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'en'),
       buttonText: 'SIGN ME UP',
       disclaimer: 'Get priority access at our opening and exclusive discounts',
       successMessage: 'Thank you! We\'ve added you to the priority list',
@@ -127,7 +129,7 @@ const translations = {
       emailPlaceholder: 'Entrez votre email…',
       gdprLabel: 'J\'ai lu et j\'accepte la',
       privacyLink: 'politique de confidentialité',
-      privacyUrl: '/fr/politica-de-privacidad/',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'fr'),
       buttonText: 'M\'AVERTIR',
       successMessage: 'Merci! Nous vous avons ajouté à la liste prioritaire.',
       errorMessage: 'Erreur d\'envoi. Veuillez réessayer.',
@@ -142,7 +144,7 @@ const translations = {
       emailPlaceholder: 'Votre email',
       gdprLabel: 'J\'ai lu et j\'accepte la',
       privacyLink: 'politique de confidentialité',
-      privacyUrl: '/fr/politica-de-privacidad/',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'fr'),
       buttonText: 'M\'INSCRIRE',
       disclaimer: 'Recevez un accès prioritaire lors de notre ouverture et des réductions exclusives',
       successMessage: 'Merci! Nous vous avons ajouté à la liste prioritaire',

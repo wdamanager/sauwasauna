@@ -81,10 +81,11 @@ export class GraphQLClient {
   }
 
   /**
-   * Generate unique cache key
+   * Generate unique cache key including variables
    */
   _generateCacheKey(query, variables) {
-    const hash = btoa(query + JSON.stringify(variables)).substring(0, 20);
+    // Include full hash to avoid collisions between different IDs
+    const hash = btoa(query + JSON.stringify(variables));
     return `query_${hash}`;
   }
 }

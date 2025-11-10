@@ -1,0 +1,60 @@
+---
+/**
+ * Hreflang Meta Component
+ * WDA-556: SEO multiidioma para páginas legales
+ *
+ * Genera automáticamente tags hreflang para todas las versiones de idioma
+ * de una página, ayudando a Google a indexar correctamente cada versión.
+ *
+ * Props:
+ * - basePath: Path base sin idioma (ej: /aviso-legal) - usado solo si no hay customPaths
+ * - customPaths: Objeto con paths específicos por idioma {es: "/aviso-legal", en: "/legal-notice", ...}
+ * - baseUrl: URL base del sitio (default: https://sauwasauna.com)
+ */
+
+import { buildHreflangUrls } from '../../utils/language.js';
+
+interface Props {
+  basePath?: string;
+  customPaths?: Record<string, string>;
+  baseUrl?: string;
+}
+
+const { basePath, customPaths, baseUrl = 'https://sauwasauna.com' } = Astro.props;
+
+// Si hay customPaths, construir URLs manualmente
+let hreflangUrls;
+if (customPaths) {
+  hreflangUrls = Object.entries(customPaths).map(([lang, path]) => ({
+    lang: lang.toLowerCase(),
+    url: `${baseUrl}/${lang.toLowerCase()}${path}`
+  }));
+} else if (basePath) {
+  // Usar el método tradicional para páginas con el mismo slug en todos los idiomas
+  hreflangUrls = buildHreflangUrls(basePath, baseUrl);
+} else {
+  throw new Error('HreflangMeta requires either basePath or customPaths');
+}
+
+// Determinar la URL por defecto (español)
+const defaultUrl = customPaths
+  ? `${baseUrl}/es${customPaths.es || customPaths.ES}`
+  : `${baseUrl}/es${basePath}`;
+---
+
+<!-- Hreflang tags para SEO multiidioma -->
+{hreflangUrls.map(({ lang, locale, url }) => (
+  <link rel="alternate" hreflang={lang} href={url} />
+))}
+
+<!-- x-default apunta a español como idioma por defecto -->
+<link rel="alternate" hreflang="x-default" href={defaultUrl} />
+
+<!--
+  Ejemplo de output para /aviso-legal:
+  <link rel="alternate" hreflang="es" href="https://sauwasauna.com/es/aviso-legal" />
+  <link rel="alternate" hreflang="en" href="https://sauwasauna.com/en/aviso-legal" />
+  <link rel="alternate" hreflang="fr" href="https://sauwasauna.com/fr/aviso-legal" />
+  <link rel="alternate" hreflang="ca" href="https://sauwasauna.com/ca/aviso-legal" />
+  <link rel="alternate" hreflang="x-default" href="https://sauwasauna.com/es/aviso-legal" />
+-->
