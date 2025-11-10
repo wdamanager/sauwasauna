@@ -130,6 +130,8 @@ import Button from './ui/Button.astro';
   // NOTA: Vapor intro se muestra siempre (no usar sessionStorage)
   // Permitir al usuario saltar con botón Skip
 
+  // TODO: Mejorar audio de fuego - Temporalmente desactivado
+  /*
   // Cargar audio de fuego
   const fireAudio = new Audio('/audio/fire-crackling.mp3');
   fireAudio.volume = 0.3; // Volumen sutil
@@ -162,6 +164,7 @@ import Button from './ui/Button.astro';
   document.addEventListener('click', enableAudioOnInteraction);
   document.addEventListener('keydown', enableAudioOnInteraction);
   document.addEventListener('touchstart', enableAudioOnInteraction);
+  */
 
   // Función principal de inicialización
   function initVaporEffect() {
@@ -324,8 +327,8 @@ import Button from './ui/Button.astro';
     // Permitir skip con botón o ESC
     const handleSkip = () => {
       cancelAnimationFrame(animationFrame);
-      fireAudio.pause(); // Detener audio
-      fireAudio.currentTime = 0;
+      // fireAudio.pause(); // Detener audio - DESACTIVADO
+      // fireAudio.currentTime = 0;
       if (container) container.classList.add('hidden');
     };
 
