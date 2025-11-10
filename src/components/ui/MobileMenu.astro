@@ -125,8 +125,8 @@ const currentPath = Astro.url.pathname;
       </li>
       <li>
         <a
-          href={`/${locale}/${locale === 'es' ? 'acceso-exclusivo' : locale === 'ca' ? 'acces-exclusiu' : locale === 'en' ? 'exclusive-access' : 'acces-exclusif'}/`}
-          class={`nav-link ${currentPath.includes('/acceso-exclusivo') || currentPath.includes('/acces-exclusiu') || currentPath.includes('/exclusive-access') || currentPath.includes('/acces-exclusif') ? 'active' : ''}`}
+          href={`/${locale}/${locale === 'es' ? 'partners-hoteleros' : locale === 'ca' ? 'socis-hotelers' : locale === 'en' ? 'hotel-partners' : 'partenaires-hoteliers'}/`}
+          class={`nav-link ${currentPath.includes('/partners-hoteleros') || currentPath.includes('/socis-hotelers') || currentPath.includes('/hotel-partners') || currentPath.includes('/partenaires-hoteliers') ? 'active' : ''}`}
         >
           {localizedContent.partners}
         </a>

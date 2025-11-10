@@ -149,9 +149,8 @@ const icons = {
               fill="none"
               stroke="currentColor"
               xmlns="http://www.w3.org/2000/svg"
-            >
-              <Fragment set:html={icons[benefit.icon as keyof typeof icons]} />
-            </svg>
+              set:html={icons[benefit.icon as keyof typeof icons]}
+            />
           </div>
           <p class="benefit-text">
             {benefit.text}

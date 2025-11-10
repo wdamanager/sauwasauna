@@ -21,6 +21,9 @@ interface Props {
 }
 
 const { title, subtitle, intro, countries } = Astro.props;
+
+// Dividir el texto en párrafos separados por \n\n
+const paragraphs = intro.split('\n\n').filter((p: string) => p.trim());
 ---
 
 <section class="partners-countries">
@@ -28,22 +31,28 @@ const { title, subtitle, intro, countries } = Astro.props;
     <div class="partners-countries__header">
       <h2 class="section-label section-label--b2b">{title}</h2>
       <h3 class="section-title">{subtitle}</h3>
-      <p class="section-description">{intro}</p>
     </div>
 
-    <div class="partners-countries__grid">
-      {countries.map((country, index) => (
-        <div
-          class="partners-countries__card"
-          data-index={index}
-        >
-          <div class="partners-countries__flag" aria-hidden="true">
-            <FlagIcon countryCode={country.code} size={64} />
+    <div class="partners-countries__layout">
+      <div class="partners-countries__text">
+        {paragraphs.map((paragraph: string) => (
+          <p class="section-description">{paragraph}</p>
+        ))}
+      </div>
+
+      <div class="partners-countries__grid">
+        {countries.map((country, index) => (
+          <div
+            class="partners-countries__card"
+            data-index={index}
+          >
+            <div class="partners-countries__flag" aria-hidden="true">
+              <FlagIcon countryCode={country.code} size={40} />
+            </div>
+            <h4 class="partners-countries__name">{country.name}</h4>
           </div>
-          <h4 class="partners-countries__name">{country.name}</h4>
-          <span class="partners-countries__benefit">{country.benefit}</span>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   </div>
 </section>
@@ -62,25 +71,41 @@ const { title, subtitle, intro, countries } = Astro.props;
 
   .partners-countries__header {
     text-align: center;
-    margin-bottom: var(--spacing-10); /* WDA-531: 4rem usando variable */
+    margin-bottom: 3rem;
+  }
+
+  .partners-countries__layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .partners-countries__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .partners-countries__text .section-description {
+    margin: 0;
   }
 
   /* WDA-531: Usa clases globales .section-label, .section-title, .section-description */
 
   .partners-countries__grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    margin-top: 3rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 
   .partners-countries__card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 3rem 2rem;
+    padding: 1.5rem 1rem;
     background: #f4f4f4;
-    border-radius: 12px;
+    border-radius: 8px;
     border: 2px solid transparent;
     transition: all 0.3s ease;
     opacity: 0;
@@ -110,14 +135,14 @@ const { title, subtitle, intro, countries } = Astro.props;
   }
 
   .partners-countries__card:hover {
-    transform: translateY(-6px) scale(1.02);
+    transform: translateY(-3px) scale(1.01);
     border-color: #406E51;
     background: #ffffff;
-    box-shadow: 0 12px 32px rgba(64, 110, 81, 0.15);
+    box-shadow: 0 8px 20px rgba(64, 110, 81, 0.12);
   }
 
   .partners-countries__flag {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
     transition: transform 0.3s ease;
     display: flex;
     justify-content: center;
@@ -130,41 +155,21 @@ const { title, subtitle, intro, countries } = Astro.props;
   .partners-countries__name {
     font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
     font-weight: 400;
-    font-size: var(--font-size-card-title);
+    font-size: var(--font-size-body-sm);
     color: #1a1a1a;
-    margin: 0 0 0.5rem 0;
+    margin: 0;
     text-align: center;
   }
 
-  .partners-countries__benefit {
-    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
-    font-weight: 300;
-    font-size: var(--font-size-badge);
-    color: #406E51;
-    text-align: center;
-  }
-
-  /* Tablet (768px - 1023px) */
-  @media (min-width: 768px) and (max-width: 1023px) {
-    .partners-countries__grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 2rem;
+  /* Tablet (< 1024px) */
+  @media (max-width: 1023px) {
+    .partners-countries__layout {
+      grid-template-columns: 1fr;
+      gap: 3rem;
     }
-  }
 
-  /* Desktop (>= 1024px) */
-  @media (min-width: 1024px) {
-    .partners-countries__grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
-    }
-  }
-
-  /* Large Desktop (>= 1280px) */
-  @media (min-width: 1280px) {
-    .partners-countries__grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2.5rem;
+    .partners-countries__header {
+      margin-bottom: 2.5rem;
     }
   }
 
@@ -175,24 +180,23 @@ const { title, subtitle, intro, countries } = Astro.props;
     }
 
     .partners-countries__header {
-      margin-bottom: var(--spacing-8); /* WDA-531: 2.5rem usando variable */
+      margin-bottom: 2rem;
+    }
+
+    .partners-countries__layout {
+      gap: 2rem;
     }
 
     .partners-countries__grid {
-      margin-top: 2rem;
-      gap: 1.5rem;
+      gap: 0.75rem;
     }
 
     .partners-countries__card {
-      padding: 2.5rem 1.5rem;
+      padding: 1.25rem 0.75rem;
     }
 
     .partners-countries__name {
-      font-size: var(--font-size-heading);
-    }
-
-    .partners-countries__benefit {
-      font-size: var(--font-size-badge);
+      font-size: var(--font-size-meta);
     }
   }
 

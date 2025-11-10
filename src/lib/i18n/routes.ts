@@ -21,12 +21,12 @@ export const ROUTE_TRANSLATIONS: Record<string, Record<Locale, string>> = {
     fr: '/',
   },
 
-  // Partners / B2B page
+  // Partners / B2B page - WDA-528: Renamed from "Acceso Exclusivo" to "Partners Hoteleros"
   'partners-b2b': {
-    es: '/acceso-exclusivo/',
-    ca: '/acces-exclusiu/',
-    en: '/exclusive-access/',
-    fr: '/acces-exclusif/',
+    es: '/partners-hoteleros/',
+    ca: '/socis-hotelers/',
+    en: '/hotel-partners/',
+    fr: '/partenaires-hoteliers/',
   },
 
   // Careers page
@@ -76,7 +76,12 @@ export const SLUG_TO_ROUTE: Record<string, string> = {
   // Home
   '/': 'home',
 
-  // Partners
+  // Partners - WDA-528: New slugs
+  '/partners-hoteleros/': 'partners-b2b',
+  '/socis-hotelers/': 'partners-b2b',
+  '/hotel-partners/': 'partners-b2b',
+  '/partenaires-hoteliers/': 'partners-b2b',
+  // Old slugs for backwards compatibility (should redirect)
   '/acceso-exclusivo/': 'partners-b2b',
   '/acces-exclusiu/': 'partners-b2b',
   '/exclusive-access/': 'partners-b2b',

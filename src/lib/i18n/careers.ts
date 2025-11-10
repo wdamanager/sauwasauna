@@ -113,7 +113,7 @@ export interface CareersContent {
 export const careersContent: Record<CareersLocale, CareersContent> = {
   es: {
     seoTitle: 'Trabaja con nosotros - Sauna Master | SAUWA',
-    seoDescription: 'Únete a SAUWA como Sauna Master certificado en Andorra. Formación completa, carrera profesional única en bienestar nórdico.',
+    seoDescription: 'Únete a SAUWA como Sauna Master certificado/a en Andorra. Formación completa, carrera profesional única en bienestar nórdico.',
     hero: {
       title: 'Trabaja con nosotros',
       heading: 'OPORTUNIDAD ÚNICA: SAUNA MASTER ACREDITADO SAUWA® EN ANDORRA',
@@ -121,24 +121,14 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
       ctaText: 'Aplicar ahora',
     },
     profile: {
-      title: 'Perfil del candidato',
+      title: 'Perfil del candidato/a',
       subtitle: '¿A quién buscamos?',
     },
     requirements: [
       {
         icon: 'certification',
         title: 'Certificación Aufguss Master',
-        description: 'Formación oficial en ceremonias Aufguss y técnicas de waving profesional (OBLIGATORIO)',
-      },
-      {
-        icon: 'firstAid',
-        title: 'Primeros Auxilios y RCP',
-        description: 'Certificación vigente en primeros auxilios y reanimación cardiopulmonar',
-      },
-      {
-        icon: 'aromatherapy',
-        title: 'Aromaterapia',
-        description: 'Formación en aromaterapia y conocimientos de aceites esenciales terapéuticos',
+        description: 'Formación oficial en ceremonias Aufguss y técnicas de aromaterapia y waving profesional',
       },
       {
         icon: 'fitness',
@@ -147,13 +137,8 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
       },
       {
         icon: 'presentation',
-        title: 'Habilidades de showmanship',
+        title: 'Habilidades sociales',
         description: 'Oratoria, animación y capacidad para conectar con grupos multiculturales',
-      },
-      {
-        icon: 'languages',
-        title: 'Idiomas',
-        description: 'Español obligatorio. Se valora inglés, alemán, catalán o francés',
       },
     ],
     benefits: {
@@ -163,39 +148,39 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
         {
           icon: 'money',
           title: 'Salario competitivo',
-          description: 'Remuneración acorde a certificaciones y experiencia, con bonos por rendimiento',
+          description: 'Remuneración alineada con tu experiencia y certificaciones',
         },
         {
           icon: 'education',
           title: 'Formación continua',
-          description: 'Acceso a certificaciones internacionales y actualización de técnicas Aufguss',
+          description: 'Acceso a formación internacional y actualización constante en Aufguss, seguridad térmica y protocolos SAUWA.',
         },
         {
           icon: 'mountain',
           title: 'Entorno único',
-          description: 'Trabaja en ubicaciones premium en Andorra con vistas espectaculares',
+          description: 'Trabaja en ubicaciones privilegiadas de montaña con partners seleccionados, donde el entorno eleva la experiencia.',
         },
         {
           icon: 'clock',
           title: 'Horarios flexibles',
-          description: 'Turnos rotativos con descansos adecuados entre sesiones de alta intensidad',
+          description: 'Turnos organizados que permiten conciliar vida personal y trabajo.',
         },
         {
           icon: 'target',
           title: 'Carrera profesional',
-          description: 'Oportunidades de crecimiento como Senior Master o formador de nuevos talentos',
+          description: 'Crecimiento hacia roles como Senior Sauna Master, formador/a de nuevos talentos o coordinación de operaciones.',
         },
         {
           icon: 'handshake',
-          title: 'Equipo internacional',
-          description: 'Forma parte de un equipo multicultural apasionado por el bienestar',
+          title: 'Equipo multicultural',
+          description: 'Únete a un grupo internacional apasionado por el bienestar, la autenticidad nórdica y la sostenibilidad.',
         },
       ],
     },
     responsibilities: {
       title: 'Responsabilidades',
       heading: '¿Qué es ser Sauna Master?',
-      intro: 'Como Sauna Master en SAUWA, serás el embajador de la cultura finlandesa del bienestar. Tus responsabilidades incluyen:',
+      intro: 'Como Sauna Master en SAUWA, serás el/la embajador/a de la cultura finlandesa del bienestar. Tus responsabilidades incluyen:',
       items: [
         'Dirigir ceremonias Aufguss de alto nivel con técnicas de waving profesional',
         'Crear experiencias multisensoriales únicas combinando calor, aroma, sonido y storytelling',
@@ -209,7 +194,7 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
     },
     form: {
       title: 'Solicitud de empleo',
-      subtitle: '¿Listo para transformar el bienestar?',
+      subtitle: '¿Listo/a para transformar el bienestar?',
       labels: {
         name: 'Nombre',
         namePlaceholder: 'Tu nombre',
@@ -251,7 +236,7 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
 
   ca: {
     seoTitle: 'Treballa amb nosaltres - Sauna Master | SAUWA',
-    seoDescription: 'Uneix-te a SAUWA com a Sauna Master certificat a Andorra. Formació completa, carrera professional única en benestar nòrdic.',
+    seoDescription: 'Uneix-te a SAUWA com a Sauna Master certificat/da a Andorra. Formació completa, carrera professional única en benestar nòrdic.',
     hero: {
       title: 'Treballa amb nosaltres',
       heading: 'OPORTUNITAT ÚNICA: SAUNA MASTER ACREDITAT SAUWA® A ANDORRA',
@@ -259,24 +244,14 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
       ctaText: 'Aplicar ara',
     },
     profile: {
-      title: 'Perfil del candidat',
+      title: 'Perfil del candidat/a',
       subtitle: 'A qui busquem?',
     },
     requirements: [
       {
         icon: 'certification',
         title: 'Certificació Aufguss Master',
-        description: 'Formació oficial en cerimònies Aufguss i tècniques de waving professional (OBLIGATORI)',
-      },
-      {
-        icon: 'firstAid',
-        title: 'Primers Auxilis i RCP',
-        description: 'Certificació vigent en primers auxilis i reanimació cardiopulmonar',
-      },
-      {
-        icon: 'aromatherapy',
-        title: 'Aromateràpia',
-        description: 'Formació en aromateràpia i coneixements d\'olis essencials terapèutics',
+        description: 'Formació oficial en cerimònies Aufguss i tècniques d\'aromateràpia i waving professional',
       },
       {
         icon: 'fitness',
@@ -285,13 +260,8 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
       },
       {
         icon: 'presentation',
-        title: 'Habilitats de showmanship',
+        title: 'Habilitats socials',
         description: 'Oratòria, animació i capacitat per connectar amb grups multiculturals',
-      },
-      {
-        icon: 'languages',
-        title: 'Idiomes',
-        description: 'Català o espanyol obligatori. Es valora anglès, alemany o francès',
       },
     ],
     benefits: {
@@ -301,39 +271,39 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
         {
           icon: 'money',
           title: 'Salari competitiu',
-          description: 'Remuneració d\'acord amb certificacions i experiència, amb bonificacions per rendiment',
+          description: 'Remuneració alineada amb la teva experiència i certificacions',
         },
         {
           icon: 'education',
           title: 'Formació contínua',
-          description: 'Accés a certificacions internacionals i actualització de tècniques Aufguss',
+          description: 'Accés a formació internacional i actualització constant en Aufguss, seguretat tèrmica i protocols SAUWA.',
         },
         {
           icon: 'mountain',
           title: 'Entorn únic',
-          description: 'Treballa en ubicacions premium a Andorra amb vistes espectaculars',
+          description: 'Treballa en ubicacions privilegiades de muntanya amb partners seleccionats, on l\'entorn eleva l\'experiència.',
         },
         {
           icon: 'clock',
           title: 'Horaris flexibles',
-          description: 'Torns rotatius amb descansos adequats entre sessions d\'alta intensitat',
+          description: 'Torns organitzats que permeten conciliar vida personal i treball.',
         },
         {
           icon: 'target',
           title: 'Carrera professional',
-          description: 'Oportunitats de creixement com a Senior Master o formador de nous talents',
+          description: 'Creixement cap a rols com Senior Sauna Master, formador/a de nous talents o coordinació d\'operacions.',
         },
         {
           icon: 'handshake',
-          title: 'Equip internacional',
-          description: 'Forma part d\'un equip multicultural apassionat pel benestar',
+          title: 'Equip multicultural',
+          description: 'Uneix-te a un grup internacional apassionat pel benestar, l\'autenticitat nòrdica i la sostenibilitat.',
         },
       ],
     },
     responsibilities: {
       title: 'Responsabilitats',
       heading: 'Què és ser Sauna Master?',
-      intro: 'Com a Sauna Master a SAUWA, seràs l\'ambaixador de la cultura finlandesa del benestar. Les teves responsabilitats inclouen:',
+      intro: 'Com a Sauna Master a SAUWA, seràs l\'ambaixador/a de la cultura finlandesa del benestar. Les teves responsabilitats inclouen:',
       items: [
         'Dirigir cerimònies Aufguss d\'alt nivell amb tècniques de waving professional',
         'Crear experiències multisensorials úniques combinant calor, aroma, so i storytelling',
@@ -347,7 +317,7 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
     },
     form: {
       title: 'Sol·licitud de feina',
-      subtitle: 'Preparat per transformar el benestar?',
+      subtitle: 'Preparat/da per transformar el benestar?',
       labels: {
         name: 'Nom',
         namePlaceholder: 'El teu nom',
@@ -404,17 +374,7 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
       {
         icon: 'certification',
         title: 'Aufguss Master Certification',
-        description: 'Official training in Aufguss ceremonies and professional waving techniques (MANDATORY)',
-      },
-      {
-        icon: 'firstAid',
-        title: 'First Aid and CPR',
-        description: 'Current certification in first aid and cardiopulmonary resuscitation',
-      },
-      {
-        icon: 'aromatherapy',
-        title: 'Aromatherapy',
-        description: 'Training in aromatherapy and knowledge of therapeutic essential oils',
+        description: 'Official training in Aufguss ceremonies and aromatherapy and professional waving techniques',
       },
       {
         icon: 'fitness',
@@ -423,13 +383,8 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
       },
       {
         icon: 'presentation',
-        title: 'Showmanship skills',
+        title: 'Social skills',
         description: 'Public speaking, entertainment and ability to connect with multicultural groups',
-      },
-      {
-        icon: 'languages',
-        title: 'Languages',
-        description: 'English mandatory. Spanish, German, Catalan or French valued',
       },
     ],
     benefits: {
@@ -439,32 +394,32 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
         {
           icon: 'money',
           title: 'Competitive salary',
-          description: 'Compensation according to certifications and experience, with performance bonuses',
+          description: 'Compensation aligned with your experience and certifications',
         },
         {
           icon: 'education',
           title: 'Continuous training',
-          description: 'Access to international certifications and updated Aufguss techniques',
+          description: 'Access to international training and constant updates in Aufguss, thermal safety and SAUWA protocols.',
         },
         {
           icon: 'mountain',
           title: 'Unique environment',
-          description: 'Work at premium locations in Andorra with spectacular views',
+          description: 'Work in privileged mountain locations with selected partners, where the environment elevates the experience.',
         },
         {
           icon: 'clock',
           title: 'Flexible hours',
-          description: 'Rotating shifts with adequate rest between high-intensity sessions',
+          description: 'Organized shifts that allow you to balance personal life and work.',
         },
         {
           icon: 'target',
           title: 'Professional career',
-          description: 'Growth opportunities as Senior Master or trainer for new talents',
+          description: 'Growth towards roles such as Senior Sauna Master, trainer for new talents or operations coordination.',
         },
         {
           icon: 'handshake',
-          title: 'International team',
-          description: 'Be part of a multicultural team passionate about wellness',
+          title: 'Multicultural team',
+          description: 'Join an international group passionate about wellness, Nordic authenticity and sustainability.',
         },
       ],
     },
@@ -527,7 +482,7 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
 
   fr: {
     seoTitle: 'Travailler avec nous - Sauna Master | SAUWA',
-    seoDescription: 'Rejoignez SAUWA en tant que Sauna Master certifié en Andorre. Formation complète, carrière professionnelle unique en bien-être nordique.',
+    seoDescription: 'Rejoignez SAUWA en tant que Sauna Master certifié/e en Andorre. Formation complète, carrière professionnelle unique en bien-être nordique.',
     hero: {
       title: 'Travailler avec nous',
       heading: 'OPPORTUNITÉ UNIQUE : SAUNA MASTER ACCRÉDITÉ SAUWA® EN ANDORRE',
@@ -535,24 +490,14 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
       ctaText: 'Postuler maintenant',
     },
     profile: {
-      title: 'Profil du candidat',
+      title: 'Profil du candidat/e',
       subtitle: 'Qui recherchons-nous ?',
     },
     requirements: [
       {
         icon: 'certification',
         title: 'Certification Aufguss Master',
-        description: 'Formation officielle aux cérémonies Aufguss et techniques de waving professionnel (OBLIGATOIRE)',
-      },
-      {
-        icon: 'firstAid',
-        title: 'Premiers Secours et RCP',
-        description: 'Certification en cours de validité en premiers secours et réanimation cardiopulmonaire',
-      },
-      {
-        icon: 'aromatherapy',
-        title: 'Aromathérapie',
-        description: 'Formation en aromathérapie et connaissances des huiles essentielles thérapeutiques',
+        description: 'Formation officielle aux cérémonies Aufguss et techniques d\'aromathérapie et waving professionnel',
       },
       {
         icon: 'fitness',
@@ -561,13 +506,8 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
       },
       {
         icon: 'presentation',
-        title: 'Compétences de showmanship',
+        title: 'Compétences sociales',
         description: 'Oratoire, animation et capacité à connecter avec des groupes multiculturels',
-      },
-      {
-        icon: 'languages',
-        title: 'Langues',
-        description: 'Français obligatoire. Anglais, allemand, espagnol ou catalan valorisés',
       },
     ],
     benefits: {
@@ -577,39 +517,39 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
         {
           icon: 'money',
           title: 'Salaire compétitif',
-          description: 'Rémunération selon certifications et expérience, avec bonus de performance',
+          description: 'Rémunération alignée avec votre expérience et vos certifications',
         },
         {
           icon: 'education',
           title: 'Formation continue',
-          description: 'Accès aux certifications internationales et mise à jour des techniques Aufguss',
+          description: 'Accès à la formation internationale et mise à jour constante en Aufguss, sécurité thermique et protocoles SAUWA.',
         },
         {
           icon: 'mountain',
           title: 'Environnement unique',
-          description: 'Travaillez dans des lieux premium en Andorre avec des vues spectaculaires',
+          description: 'Travaillez dans des emplacements privilégiés de montagne avec des partenaires sélectionnés, où l\'environnement élève l\'expérience.',
         },
         {
           icon: 'clock',
           title: 'Horaires flexibles',
-          description: 'Rotations avec repos adéquats entre sessions à haute intensité',
+          description: 'Équipes organisées qui permettent de concilier vie personnelle et travail.',
         },
         {
           icon: 'target',
           title: 'Carrière professionnelle',
-          description: 'Opportunités d\'évolution comme Senior Master ou formateur de nouveaux talents',
+          description: 'Évolution vers des rôles tels que Senior Sauna Master, formateur/trice de nouveaux talents ou coordination des opérations.',
         },
         {
           icon: 'handshake',
-          title: 'Équipe internationale',
-          description: 'Faites partie d\'une équipe multiculturelle passionnée par le bien-être',
+          title: 'Équipe multiculturelle',
+          description: 'Rejoignez un groupe international passionné par le bien-être, l\'authenticité nordique et la durabilité.',
         },
       ],
     },
     responsibilities: {
       title: 'Responsabilités',
       heading: 'Qu\'est-ce qu\'être Sauna Master ?',
-      intro: 'En tant que Sauna Master chez SAUWA, vous serez l\'ambassadeur de la culture finlandaise du bien-être. Vos responsabilités incluent :',
+      intro: 'En tant que Sauna Master chez SAUWA, vous serez l\'ambassadeur/drice de la culture finlandaise du bien-être. Vos responsabilités incluent :',
       items: [
         'Diriger des cérémonies Aufguss de haut niveau avec techniques de waving professionnel',
         'Créer des expériences multisensorielles uniques combinant chaleur, arôme, son et storytelling',
@@ -623,7 +563,7 @@ export const careersContent: Record<CareersLocale, CareersContent> = {
     },
     form: {
       title: 'Candidature',
-      subtitle: 'Prêt à transformer le bien-être ?',
+      subtitle: 'Prêt/e à transformer le bien-être ?',
       labels: {
         name: 'Prénom',
         namePlaceholder: 'Votre prénom',

@@ -267,7 +267,7 @@
     @apply px-4 pb-8 pt-4 gap-1;
   }
   .logo {
-    @apply h-24 mb-0.5;
+    @apply h-32 mb-0.5;
   }
   .language-selector,
   .instagram-link {

@@ -317,6 +317,14 @@ const { allCategoriesText = 'Todas las categorías', locale = 'es' } = Astro.pro
     }
 
     if (dropdownMenu) {
+      // Calculate position for fixed dropdown
+      if (isDropdownOpen && dropdownTrigger) {
+        const rect = dropdownTrigger.getBoundingClientRect();
+        dropdownMenu.style.top = `${rect.bottom}px`;
+        dropdownMenu.style.left = `${rect.left}px`;
+        dropdownMenu.style.right = `${window.innerWidth - rect.right}px`;
+      }
+
       dropdownMenu.classList.toggle('open', isDropdownOpen);
 
       // Focus first option when opening
@@ -841,8 +849,8 @@ const { allCategoriesText = 'Todas las categorías', locale = 'es' } = Astro.pro
 
   /* Dropdown Menu */
   .dropdown-menu {
-    position: absolute;
-    top: 100%;
+    position: fixed; /* CRITICAL: fixed position to escape stacking contexts */
+    top: auto; /* Will be set by JavaScript */
     left: var(--container-padding-mobile);
     right: var(--container-padding-mobile);
     max-height: 0;
@@ -859,7 +867,8 @@ const { allCategoriesText = 'Todas las categorías', locale = 'es' } = Astro.pro
     opacity: 0;
     visibility: hidden;
     transition: all var(--transition-base);
-    z-index: var(--z-dropdown);
+    /* CRITICAL: High z-index to appear above everything */
+    z-index: 10000;
   }
 
   .dropdown-menu.open {

@@ -165,14 +165,14 @@ const { title, subtitle, benefits, columns = 3 } = Astro.props;
     }
   }
 
-  /* Mobile (< 768px) */
+  /* Mobile (< 768px) - WDA-544: Optimizado para reducir scroll vertical */
   @media (max-width: 767px) {
     .careers-benefits {
-      padding: 3rem 1.5rem;
+      padding: 2.5rem 1.5rem; /* Reducido de 3rem */
     }
 
     .careers-benefits__header {
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem; /* Reducido de 2.5rem */
     }
 
     .careers-benefits__subtitle {
@@ -180,17 +180,17 @@ const { title, subtitle, benefits, columns = 3 } = Astro.props;
     }
 
     .careers-benefits__grid {
-      gap: 1.5rem;
+      gap: 1.25rem; /* Reducido de 1.5rem */
     }
 
     .careers-benefits__card {
-      padding: 2rem 1.5rem;
+      padding: 1.5rem 1.25rem; /* Reducido de 2rem 1.5rem */
     }
 
     .careers-benefits__card-icon {
       width: 40px;
       height: 40px;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem; /* Reducido de 1rem */
     }
 
     .careers-benefits__card-icon svg {
@@ -200,10 +200,38 @@ const { title, subtitle, benefits, columns = 3 } = Astro.props;
 
     .careers-benefits__card-title {
       font-size: var(--font-size-heading);
+      margin-bottom: 0.75rem; /* Añadido para reducir espacio */
     }
 
     .careers-benefits__card-description {
       font-size: var(--font-size-body-xs);
+    }
+  }
+
+  /* Small mobile (< 480px) - WDA-544: Optimización extra para pantallas pequeñas */
+  @media (max-width: 479px) {
+    .careers-benefits {
+      padding: 2rem 1.25rem; /* Aún más compacto */
+    }
+
+    .careers-benefits__header {
+      margin-bottom: 1.75rem;
+    }
+
+    .careers-benefits__grid {
+      gap: 1rem; /* Más compacto entre cards */
+    }
+
+    .careers-benefits__card {
+      padding: 1.25rem 1rem; /* Más compacto */
+    }
+
+    .careers-benefits__card-icon {
+      margin-bottom: 0.625rem; /* 10px */
+    }
+
+    .careers-benefits__card-title {
+      margin-bottom: 0.625rem; /* 10px */
     }
   }
 

@@ -315,7 +315,7 @@ const { locale, title, subtitle } = Astro.props;
   }
 
   .partners-form__required {
-    color: #DB4529;
+    color: var(--color-b2b); /* WDA-546: Verde B2B */
   }
 
   .partners-form__badge {
@@ -325,7 +325,7 @@ const { locale, title, subtitle } = Astro.props;
     font-weight: 400;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    background: #DB4529;
+    background: var(--color-b2b); /* WDA-546: Verde B2B */
     color: #ffffff;
     border-radius: 4px;
   }
@@ -439,7 +439,7 @@ const { locale, title, subtitle } = Astro.props;
     padding: 20px 32px;
     border: none;
     border-radius: 8px;
-    background: #DB4529;
+    background: var(--color-b2b); /* WDA-546: Verde B2B */
     color: #ffffff;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -451,9 +451,9 @@ const { locale, title, subtitle } = Astro.props;
   }
 
   .partners-form__submit:hover:not(:disabled) {
-    background: #BA2515;
+    background: var(--color-b2b-hover); /* WDA-546: Verde B2B hover */
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(219, 69, 41, 0.25);
+    box-shadow: 0 8px 20px rgba(64, 110, 81, 0.25); /* WDA-546: Verde B2B shadow */
   }
 
   .partners-form__submit:disabled {
@@ -462,7 +462,7 @@ const { locale, title, subtitle } = Astro.props;
   }
 
   .partners-form__submit:focus-visible {
-    outline: 3px solid #DB4529;
+    outline: 3px solid var(--color-b2b); /* WDA-546: Verde B2B */
     outline-offset: 2px;
   }
 

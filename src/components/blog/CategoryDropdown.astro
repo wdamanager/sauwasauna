@@ -1,7 +1,8 @@
 ---
 /**
  * CategoryDropdown Component
- * Mobile-friendly dropdown selector for blog categories
+ * Mobile-friendly custom dropdown selector for blog categories
+ * Uses custom HTML/CSS to properly respect z-index over transformed elements
  * Fetches categories dynamically from WordPress GraphQL
  */
 
@@ -45,36 +46,57 @@ try {
     <p class="error-message">{error}</p>
   ) : categories.length > 0 ? (
     <div class="dropdown-wrapper">
-      <label for="category-select" class="visually-hidden">
-        Seleccionar categoría
-      </label>
-      <select
-        id="category-select"
-        class="category-select"
-        aria-label="Filtrar artículos por categoría"
+      <button
+        id="category-dropdown-button"
+        class="dropdown-button"
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded="false"
+        aria-labelledby="dropdown-label"
       >
-        <option value="all" selected>
+        <span id="dropdown-label" class="dropdown-label">
           {allCategoriesText}
-        </option>
-        {categories.map((category) => (
-          <option value={category.slug}>
-            {category.name}
-            {category.count > 0 && ` (${category.count})`}
-          </option>
-        ))}
-      </select>
-      <svg
-        class="dropdown-icon"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        aria-hidden="true"
+        </span>
+        <svg
+          class="dropdown-icon"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
+
+      <ul
+        id="category-dropdown-list"
+        class="dropdown-list hidden"
+        role="listbox"
+        aria-labelledby="dropdown-label"
       >
-        <path
-          fill-rule="evenodd"
-          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-          clip-rule="evenodd"
-        />
-      </svg>
+        <li
+          role="option"
+          data-value="all"
+          class="dropdown-item active"
+          tabindex="0"
+        >
+          {allCategoriesText}
+        </li>
+        {categories.map((category) => (
+          <li
+            role="option"
+            data-value={category.slug}
+            class="dropdown-item"
+            tabindex="-1"
+          >
+            {category.name}
+            {category.count > 0 && <span class="item-count">({category.count})</span>}
+          </li>
+        ))}
+      </ul>
     </div>
   ) : (
     <p class="no-categories">No hay categorías disponibles</p>
@@ -83,68 +105,238 @@ try {
 
 <script>
   /**
-   * Category Dropdown Client-Side Logic
-   * Handles dropdown state and dispatches filter events
+   * Custom Dropdown Client-Side Logic
+   * Handles dropdown state, keyboard navigation, and dispatches filter events
    */
 
-  const dropdown = document.querySelector<HTMLSelectElement>('#category-select');
+  const button = document.querySelector<HTMLButtonElement>('#category-dropdown-button');
+  const list = document.querySelector<HTMLUListElement>('#category-dropdown-list');
+  const label = document.querySelector<HTMLSpanElement>('#dropdown-label');
+  const wrapper = document.querySelector<HTMLDivElement>('.dropdown-wrapper');
 
-  if (dropdown) {
+  if (button && list && label && wrapper) {
     // State
     let activeCategory = 'all';
+    let isOpen = false;
+    let focusedIndex = 0;
 
     /**
-     * Handle category selection
+     * Get all dropdown items
      */
-    function handleCategoryChange(event: Event): void {
-      const select = event.target as HTMLSelectElement;
-      const category = select.value;
+    function getItems(): HTMLLIElement[] {
+      return Array.from(list.querySelectorAll<HTMLLIElement>('.dropdown-item'));
+    }
 
-      if (category === activeCategory) {
+    /**
+     * Open dropdown
+     */
+    function openDropdown(): void {
+      isOpen = true;
+      list.classList.remove('hidden');
+      button.setAttribute('aria-expanded', 'true');
+
+      // Position dropdown (ensure it's above everything)
+      const rect = button.getBoundingClientRect();
+      list.style.top = `${rect.height + 4}px`;
+
+      // Focus first item
+      focusedIndex = 0;
+      updateFocus();
+    }
+
+    /**
+     * Close dropdown
+     */
+    function closeDropdown(): void {
+      isOpen = false;
+      list.classList.add('hidden');
+      button.setAttribute('aria-expanded', 'false');
+      button.focus();
+    }
+
+    /**
+     * Toggle dropdown
+     */
+    function toggleDropdown(): void {
+      if (isOpen) {
+        closeDropdown();
+      } else {
+        openDropdown();
+      }
+    }
+
+    /**
+     * Update focus on item
+     */
+    function updateFocus(): void {
+      const items = getItems();
+      items.forEach((item, index) => {
+        if (index === focusedIndex) {
+          item.tabIndex = 0;
+          item.focus();
+        } else {
+          item.tabIndex = -1;
+        }
+      });
+    }
+
+    /**
+     * Select category
+     */
+    function selectCategory(value: string, name: string): void {
+      if (value === activeCategory) {
+        closeDropdown();
         return;
       }
 
       // Update state
-      activeCategory = category;
+      activeCategory = value;
+      label.textContent = name;
+
+      // Update active class
+      getItems().forEach(item => {
+        if (item.getAttribute('data-value') === value) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
 
       // Dispatch custom event for BlogGrid to listen
       const filterEvent = new CustomEvent('blog:filter', {
-        detail: { category },
+        detail: { category: value },
         bubbles: true,
       });
       document.dispatchEvent(filterEvent);
 
       // Update URL parameter
       const url = new URL(window.location.href);
-      if (category === 'all') {
+      if (value === 'all') {
         url.searchParams.delete('category');
       } else {
-        url.searchParams.set('category', category);
+        url.searchParams.set('category', value);
       }
       window.history.pushState({}, '', url.toString());
+
+      // Close dropdown
+      closeDropdown();
+    }
+
+    /**
+     * Handle button click
+     */
+    function handleButtonClick(): void {
+      toggleDropdown();
+    }
+
+    /**
+     * Handle item click
+     */
+    function handleItemClick(event: Event): void {
+      const item = event.currentTarget as HTMLLIElement;
+      const value = item.getAttribute('data-value') || 'all';
+      const name = item.textContent?.trim() || '';
+      selectCategory(value, name);
+    }
+
+    /**
+     * Handle button keyboard
+     */
+    function handleButtonKeydown(event: KeyboardEvent): void {
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        event.preventDefault();
+        openDropdown();
+      } else if (event.key === 'Escape' && isOpen) {
+        event.preventDefault();
+        closeDropdown();
+      }
+    }
+
+    /**
+     * Handle list keyboard navigation
+     */
+    function handleListKeydown(event: KeyboardEvent): void {
+      const items = getItems();
+
+      switch (event.key) {
+        case 'ArrowDown':
+          event.preventDefault();
+          focusedIndex = Math.min(focusedIndex + 1, items.length - 1);
+          updateFocus();
+          break;
+
+        case 'ArrowUp':
+          event.preventDefault();
+          focusedIndex = Math.max(focusedIndex - 1, 0);
+          updateFocus();
+          break;
+
+        case 'Home':
+          event.preventDefault();
+          focusedIndex = 0;
+          updateFocus();
+          break;
+
+        case 'End':
+          event.preventDefault();
+          focusedIndex = items.length - 1;
+          updateFocus();
+          break;
+
+        case 'Enter':
+        case ' ':
+          event.preventDefault();
+          const item = items[focusedIndex];
+          if (item) {
+            const value = item.getAttribute('data-value') || 'all';
+            const name = item.textContent?.trim() || '';
+            selectCategory(value, name);
+          }
+          break;
+
+        case 'Escape':
+          event.preventDefault();
+          closeDropdown();
+          break;
+      }
+    }
+
+    /**
+     * Handle click outside
+     */
+    function handleClickOutside(event: MouseEvent): void {
+      if (isOpen && !wrapper.contains(event.target as Node)) {
+        closeDropdown();
+      }
     }
 
     /**
      * Initialize event listeners
      */
     function init(): void {
-      dropdown.addEventListener('change', handleCategoryChange);
+      // Button events
+      button.addEventListener('click', handleButtonClick);
+      button.addEventListener('keydown', handleButtonKeydown);
+
+      // List item events
+      getItems().forEach(item => {
+        item.addEventListener('click', handleItemClick);
+        item.addEventListener('keydown', handleListKeydown);
+      });
+
+      // Click outside
+      document.addEventListener('click', handleClickOutside);
 
       // Check URL for category parameter
       const urlParams = new URLSearchParams(window.location.search);
       const categoryParam = urlParams.get('category');
 
-      if (categoryParam && dropdown) {
-        // Set the dropdown value
-        dropdown.value = categoryParam;
-        activeCategory = categoryParam;
-
-        // Dispatch filter event to load posts
-        const filterEvent = new CustomEvent('blog:filter', {
-          detail: { category: categoryParam },
-          bubbles: true,
-        });
-        document.dispatchEvent(filterEvent);
+      if (categoryParam) {
+        const item = getItems().find(i => i.getAttribute('data-value') === categoryParam);
+        if (item) {
+          const name = item.textContent?.trim() || '';
+          selectCategory(categoryParam, name);
+        }
       }
     }
 
@@ -164,18 +356,18 @@ try {
     width: 100%;
   }
 
-  /* Dropdown Wrapper */
+  /* Dropdown Wrapper - Critical for z-index */
   .dropdown-wrapper {
     position: relative;
     width: 100%;
     max-width: 300px;
+    /* DO NOT add z-index here - it will create stacking context */
   }
 
-  /* Select Element */
-  .category-select {
+  /* Dropdown Button */
+  .dropdown-button {
     appearance: none;
     -webkit-appearance: none;
-    -moz-appearance: none;
     width: 100%;
     padding: 0.75rem 2.5rem 0.75rem 1rem;
     font-family: 'Avenir Next', sans-serif;
@@ -187,34 +379,142 @@ try {
     cursor: pointer;
     transition: all 0.25s ease;
     min-height: 44px; /* WCAG 2.5.5 touch target */
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
-  .category-select:hover {
+  .dropdown-button:hover {
     border-color: #DB4529;
   }
 
-  .category-select:focus {
+  .dropdown-button:focus {
     outline: none;
     border-color: #BA2515;
     box-shadow: 0 0 0 3px rgba(219, 69, 41, 0.1);
   }
 
+  .dropdown-button[aria-expanded="true"] {
+    border-color: #BA2515;
+  }
+
+  /* Dropdown Label */
+  .dropdown-label {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   /* Dropdown Icon */
   .dropdown-icon {
-    position: absolute;
-    top: 50%;
-    right: 0.75rem;
-    transform: translateY(-50%);
     width: 1.25rem;
     height: 1.25rem;
     color: #636464;
-    pointer-events: none;
-    transition: color 0.25s ease;
+    transition: transform 0.25s ease, color 0.25s ease;
+    flex-shrink: 0;
+    margin-left: 0.5rem;
   }
 
-  .category-select:hover + .dropdown-icon,
-  .category-select:focus + .dropdown-icon {
+  .dropdown-button:hover .dropdown-icon,
+  .dropdown-button:focus .dropdown-icon {
     color: #DB4529;
+  }
+
+  .dropdown-button[aria-expanded="true"] .dropdown-icon {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown List - CRITICAL: This must have high z-index and proper positioning */
+  .dropdown-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    border: 2px solid #BA2515;
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem 0;
+    /* CRITICAL: High z-index + isolation creates new stacking context */
+    z-index: 10000;
+    isolation: isolate;
+    /* CRITICAL: This ensures the dropdown is rendered in its own layer */
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  .dropdown-list.hidden {
+    display: none;
+  }
+
+  /* Dropdown Item */
+  .dropdown-item {
+    padding: 0.75rem 1rem;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 16px;
+    color: #636464;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .dropdown-item:hover {
+    background-color: rgba(219, 69, 41, 0.05);
+    color: #BA2515;
+  }
+
+  .dropdown-item:focus {
+    outline: none;
+    background-color: rgba(219, 69, 41, 0.1);
+    color: #BA2515;
+  }
+
+  .dropdown-item.active {
+    background-color: #DB4529;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  .dropdown-item.active:hover,
+  .dropdown-item.active:focus {
+    background-color: #BA2515;
+    color: #ffffff;
+  }
+
+  /* Item Count */
+  .item-count {
+    font-size: 14px;
+    color: inherit;
+    opacity: 0.7;
+    margin-left: 0.5rem;
+  }
+
+  /* Scrollbar Styling */
+  .dropdown-list::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .dropdown-list::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .dropdown-list::-webkit-scrollbar-thumb {
+    background: #DB4529;
+    border-radius: 4px;
+  }
+
+  .dropdown-list::-webkit-scrollbar-thumb:hover {
+    background: #BA2515;
   }
 
   /* Error & Empty States */
@@ -230,19 +530,6 @@ try {
     color: #DB4529;
     background-color: rgba(219, 69, 41, 0.05);
     border-radius: 4px;
-  }
-
-  /* Visually Hidden Label */
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
   }
 
   /* Desktop - Hide by default */
@@ -266,33 +553,50 @@ try {
 
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
-    .category-select,
-    .dropdown-icon {
+    .dropdown-button,
+    .dropdown-icon,
+    .dropdown-item {
       transition: none;
     }
   }
 
   /* High contrast mode */
   @media (prefers-contrast: high) {
-    .category-select {
+    .dropdown-button {
+      border-width: 3px;
+    }
+
+    .dropdown-list {
       border-width: 3px;
     }
   }
 
   /* Dark mode support (if needed) */
   @media (prefers-color-scheme: dark) {
-    .category-select {
+    .dropdown-button,
+    .dropdown-list {
       background-color: #1a1a1a;
       color: #f0f0f0;
+    }
+
+    .dropdown-button {
       border-color: #333;
     }
 
-    .category-select:hover {
+    .dropdown-button:hover {
       border-color: #DB4529;
     }
 
     .dropdown-icon {
       color: #f0f0f0;
+    }
+
+    .dropdown-item {
+      color: #f0f0f0;
+    }
+
+    .dropdown-item:hover {
+      background-color: rgba(219, 69, 41, 0.2);
     }
   }
 </style>
