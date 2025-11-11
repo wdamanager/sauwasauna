@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Dynamic Sitemap.xml for SEO** (WDA-555, 2025-11-11): Implemented runtime sitemap generation
+  - Runtime generation with WordPress GraphQL integration
+  - Combines static pages (7 pages × 4 locales = 28 URLs) with dynamic blog posts
+  - Fetches posts from WordPress using `GET_ALL_POSTS_FOR_SITEMAP` query
+  - Filters out posts with `metaRobotsNoindex` SEO setting
+  - Multi-language support (es, ca, en, fr) with proper URL structure
+  - Total 52 URLs: 28 static pages + 24 blog posts (6 posts × 4 locales)
+  - 1-hour cache headers for performance optimization
+  - Graceful fallback to static URLs if WordPress fails
+  - Valid XML per sitemap 0.9 specification
+  - robots.txt pointing to sitemap at https://sauwasauna.com/sitemap.xml
+  - Files: `src/pages/sitemap.xml.js`, `src/pages/robots.txt.js`, `src/lib/wordpress/queries.js`
 - **CSS Architecture Overhaul** (WDA-531): Complete refactoring of CSS system
   - New modular CSS architecture with design tokens, utilities, and components
   - Comprehensive documentation structure in `/docs/`
