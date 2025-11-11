@@ -1,0 +1,129 @@
+---
+/**
+ * WDA-315: Página "Trabaja con nosotros" - ES
+ * Oportunidad laboral: Sauna Master certificado
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import NavbarScroll from '../../components/NavbarScroll.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
+import JobHero from '../../components/careers/JobHero.astro';
+import RequirementsList from '../../components/careers/RequirementsList.astro';
+import BenefitsGrid from '../../components/careers/BenefitsGrid.astro';
+import JobApplicationForm from '../../components/careers/JobApplicationForm.astro';
+import { getCareersContent } from '../../lib/i18n/careers';
+
+const locale = 'es';
+const content = getCareersContent(locale);
+
+const seoTitle = content.seoTitle;
+const seoDescription = content.seoDescription;
+---
+
+<Layout title={seoTitle} description={seoDescription} lang={locale} pageType="careers">
+  <NavbarScroll locale={locale} />
+
+  <main>
+    <JobHero
+      title={content.hero.title}
+      heading={content.hero.heading}
+      subtitle={content.hero.subtitle}
+      ctaText={content.hero.ctaText}
+      ctaHref="#formulario"
+      backgroundImage="/images/sauwa-sauna-saunamaster-aufguss-esplanade.webp"
+    />
+
+    <RequirementsList
+      title={content.profile.title}
+      subtitle={content.profile.subtitle}
+      requirements={content.requirements}
+      imageSrc="/images/sauwa-sauna-saunamaster-trabaja-nosotros.webp"
+      imageAlt="Sauna Master profesional SAUWA en Andorra"
+      layout="image-left"
+    />
+
+    <BenefitsGrid
+      title={content.benefits.title}
+      subtitle={content.benefits.subtitle}
+      benefits={content.benefits.items}
+      columns={3}
+    />
+
+    <section class="section section--bg-white">
+      <div class="container container--narrow">
+        <header class="section-header section-header--center">
+          <h2 class="section-label section-label--primary">{content.responsibilities.title}</h2>
+          <h3 class="section-title section-title--center">{content.responsibilities.heading}</h3>
+          <p class="section-description section-description--center section-description--max-width">
+            {content.responsibilities.intro}
+          </p>
+        </header>
+
+        <ul class="list list--icon careers-responsibilities__list">
+          {content.responsibilities.items.map((item) => (
+            <li class="list__item">
+              <svg
+                class="list__icon"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M5 13L9 17L19 7"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span class="careers-responsibilities__item-text">{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <JobApplicationForm
+      locale={locale}
+      title={content.form.title}
+      subtitle={content.form.subtitle}
+    />
+  </main>
+
+  <FooterBlack locale={locale} />
+</Layout>
+
+<style>
+  /* ===================================================================
+     WDA-531: Estilos específicos de página (no globales)
+     Usa clases globales de utilities.css, components.css y layouts.css
+     Solo estilos únicos de esta página aquí
+     =================================================================== */
+
+  .careers-responsibilities__list {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .careers-responsibilities__item-text {
+    font-family: var(--font-family-secondary);
+    font-weight: var(--font-weight-light);
+    font-size: var(--font-scale-md);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-primary);
+  }
+
+  /* Override color del icono para usar verde B2B */
+  .list__icon {
+    color: var(--color-b2b);
+  }
+
+  @media (max-width: 767px) {
+    .careers-responsibilities__item-text {
+      font-size: var(--font-scale-base);
+    }
+  }
+</style>

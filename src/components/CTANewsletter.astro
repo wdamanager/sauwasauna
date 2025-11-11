@@ -1,0 +1,21 @@
+---
+/**
+ * CTANewsletter - Sección CTA mejorada para prioridad de apertura
+ * WDA-269: Mejorar sección CTA Newsletter
+ * WDA-99: Integrar formulario newsletter en landing
+ *
+ * Ahora usa el componente NewsletterForm unificado con variant="cta"
+ */
+
+import NewsletterForm from './NewsletterForm.astro';
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  class?: string;
+}
+
+const { locale = 'es', class: className = '' } = Astro.props;
+---
+
+<!-- Newsletter Form - CTA Variant -->
+<NewsletterForm variant="cta" locale={locale} class={className} />

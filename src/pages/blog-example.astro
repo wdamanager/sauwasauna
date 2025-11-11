@@ -1,0 +1,211 @@
+---
+/**
+ * Blog Example Page
+ * Ejemplo de implementación del componente BlogPostsClient
+ *
+ * Esta página demuestra cómo usar el sistema GraphQL client-side
+ * para cargar posts dinámicamente desde WordPress Headless.
+ */
+
+import BlogPostsClient from '../components/blog/BlogPostsClient.astro';
+
+const pageTitle = 'Blog SAUWA';
+const pageDescription = 'Descubre artículos sobre bienestar, salud y el mundo de las saunas';
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={pageDescription} />
+    <title>{pageTitle}</title>
+
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <style>
+      /* Reset básico */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+        color: #1a1a1a;
+        background: #ffffff;
+      }
+
+      /* Header */
+      .page-header {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        color: #ffffff;
+        padding: 4rem 1rem 3rem;
+        text-align: center;
+        margin-bottom: 4rem;
+      }
+
+      .page-header h1 {
+        font-size: 3rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+
+      .page-header p {
+        font-size: 1.25rem;
+        font-weight: 300;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Container principal */
+      .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem 4rem;
+      }
+
+      /* Sección de filtros (ejemplo para futura implementación) */
+      .filters-section {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 3rem;
+        flex-wrap: wrap;
+      }
+
+      .filter-button {
+        font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #666666;
+        background: transparent;
+        border: 2px solid #e0e0e0;
+        border-radius: 4px;
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .filter-button:hover {
+        border-color: #DB4529;
+        color: #DB4529;
+      }
+
+      .filter-button.active {
+        background: #DB4529;
+        color: #ffffff;
+        border-color: #DB4529;
+      }
+
+      /* Footer */
+      .page-footer {
+        background: #f5f5f5;
+        padding: 3rem 1rem;
+        text-align: center;
+        margin-top: 4rem;
+      }
+
+      .page-footer p {
+        font-size: 14px;
+        color: #666666;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .page-header h1 {
+          font-size: 2rem;
+        }
+
+        .page-header p {
+          font-size: 1rem;
+        }
+
+        .main-container {
+          padding: 0 1rem 2rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="page-header">
+      <h1>{pageTitle}</h1>
+      <p>{pageDescription}</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+      <!-- Sección de filtros (comentada para futura implementación)
+      <section class="filters-section">
+        <button class="filter-button active">Todos</button>
+        <button class="filter-button">Bienestar</button>
+        <button class="filter-button">Salud</button>
+        <button class="filter-button">Consejos</button>
+        <button class="filter-button">Noticias</button>
+      </section>
+      -->
+
+      <!-- Blog Posts (cargados dinámicamente) -->
+      <section class="posts-section">
+        <BlogPostsClient
+          postsPerPage={6}
+          showLoadMore={true}
+        />
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      <p>&copy; 2024 SAUWA. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Script opcional para funcionalidades adicionales -->
+    <script>
+      // Ejemplo: Smooth scroll para navegación
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('Blog page loaded');
+
+        // Tracking de visualización de posts (ejemplo)
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              console.log('Post visible:', entry.target);
+              // Aquí podrías enviar analytics
+            }
+          });
+        }, {
+          threshold: 0.5
+        });
+
+        // Observar posts cuando se cargan
+        setTimeout(() => {
+          const posts = document.querySelectorAll('.blog-card');
+          posts.forEach(post => observer.observe(post));
+        }, 1000);
+      });
+
+      // Ejemplo: Implementación de filtros (para futura implementación)
+      /*
+      const filterButtons = document.querySelectorAll('.filter-button');
+      filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          // Lógica de filtrado
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+
+          const category = button.textContent;
+          console.log('Filtrar por:', category);
+          // Aquí implementarías la lógica de filtrado usando GraphQL
+        });
+      });
+      */
+    </script>
+  </body>
+</html>

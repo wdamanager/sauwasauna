@@ -1,0 +1,154 @@
+---
+/**
+ * Dynamic Blog Post Page - Catalan (CA)
+ * Individual blog post page with hero image and full content
+ */
+
+import type { GetStaticPaths } from 'astro';
+import Layout from '../../../layouts/Layout.astro';
+import FooterBlack from '../../../components/layout/FooterBlack.astro';
+import BlogPostHero from '../../../components/blog/BlogPostHero.astro';
+import BlogPostContent from '../../../components/blog/BlogPostContent.astro';
+import { getBlogPosts, getPostBySlug } from '../../../lib/blog-queries';
+import type { BlogPost } from '../../../lib/types/blog';
+
+const locale = 'ca';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  try {
+    // Fetch all posts to get slugs
+    const response = await getBlogPosts({ first: 100 });
+    const posts = response.posts.nodes;
+
+    if (!posts || posts.length === 0) {
+      console.warn('[CA Blog Post] No posts found');
+      return [];
+    }
+
+    // For each post, fetch full content
+    const paths = await Promise.all(
+      posts.map(async (post: BlogPost) => {
+        try {
+          const fullPost = await getPostBySlug(post.slug);
+          if (!fullPost) {
+            console.warn(`[CA Blog Post] Could not fetch full content for: ${post.slug}`);
+            return null;
+          }
+          return {
+            params: { slug: post.slug },
+            props: { post: fullPost },
+          };
+        } catch (error) {
+          console.error(`[CA Blog Post] Error fetching post ${post.slug}:`, error);
+          return null;
+        }
+      })
+    );
+
+    return paths.filter((path) => path !== null);
+  } catch (error) {
+    console.error('[CA Blog Post] Error fetching posts for static paths:', error);
+    return [];
+  }
+};
+
+const { slug } = Astro.params;
+const { post } = Astro.props;
+
+// Handle 404 case
+if (!post) {
+  return Astro.redirect('/404');
+}
+
+// SEO metadata
+const pageTitle = post.seo?.title || `${post.title} | Blog SAUWA`;
+const pageDescription = post.seo?.metaDesc || post.excerpt;
+const featuredImageUrl = post.featuredImage?.node?.sourceUrl || '';
+
+// Schema.org structured data
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.title,
+  datePublished: post.date,
+  dateModified: post.modified || post.date,
+  author: {
+    '@type': 'Person',
+    name: post.author?.node?.name || 'SAUWA',
+  },
+  image: featuredImageUrl,
+  publisher: {
+    '@type': 'Organization',
+    name: 'SAUWA',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://sauwasauna.com/images/logo.png',
+    },
+  },
+  description: pageDescription,
+};
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  lang={locale}
+  pageType="blog-post"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+
+  <!-- SEO Meta Tags -->
+  <Fragment slot="head">
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    {featuredImageUrl && <meta property="og:image" content={featuredImageUrl} />}
+    <meta property="article:published_time" content={post.date} />
+    {post.modified && <meta property="article:modified_time" content={post.modified} />}
+    {post.author?.node?.name && <meta property="article:author" content={post.author.node.name} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    {featuredImageUrl && <meta name="twitter:image" content={featuredImageUrl} />}
+
+    <!-- hreflang tags for multilingual -->
+    <link rel="alternate" hreflang="es" href={`https://sauwasauna.com/es/guia-sauwa-sauna/${slug}/`} />
+    <link rel="alternate" hreflang="ca" href={`https://sauwasauna.com/ca/guia-sauwa-sauna/${slug}/`} />
+    <link rel="alternate" hreflang="en" href={`https://sauwasauna.com/en/guia-sauwa-sauna/${slug}/`} />
+    <link rel="alternate" hreflang="fr" href={`https://sauwasauna.com/fr/guia-sauwa-sauna/${slug}/`} />
+    <link rel="alternate" hreflang="x-default" href={`https://sauwasauna.com/es/guia-sauwa-sauna/${slug}/`} />
+  </Fragment>
+
+  <!-- Main Content -->
+  <main class="blog-post-page">
+    <!-- Hero Section -->
+    <BlogPostHero
+      post={post}
+      locale={locale}
+    />
+
+    <!-- Content Section -->
+    <BlogPostContent
+      post={post}
+      locale={locale}
+    />
+  </main>
+
+  <!-- Footer -->
+  <FooterBlack locale={locale} />
+</Layout>
+
+<style>
+  .blog-post-page {
+    min-height: 100vh;
+    background: #ffffff;
+  }
+
+  /* Ensure no top padding on blog post pages (hero is full-screen) */
+  :global(body:has(.blog-post-page)) {
+    padding-top: 0;
+  }
+</style>

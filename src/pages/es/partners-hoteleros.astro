@@ -1,0 +1,127 @@
+---
+/**
+ * WDA-528: Página "Partners Hoteleros SAUWA" - ES
+ * Anteriormente "Acceso Exclusivo"
+ * Partners B2B: Hoteles y glampings premium
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import NavbarScroll from '../../components/NavbarScroll.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
+import ExclusiveHero from '../../components/partners/ExclusiveHero.astro';
+import CountryFlags from '../../components/partners/CountryFlags.astro';
+import SelectionProcess from '../../components/partners/SelectionProcess.astro';
+import PartnerApplicationForm from '../../components/partners/PartnerApplicationForm.astro';
+import { getPartnersContent } from '../../lib/i18n/partners';
+
+const locale = 'es';
+const content = getPartnersContent(locale);
+
+const seoTitle = content.seoTitle;
+const seoDescription = content.seoDescription;
+---
+
+<Layout title={seoTitle} description={seoDescription} lang={locale} pageType="partners">
+  <NavbarScroll locale={locale} />
+
+  <main>
+    <ExclusiveHero
+      title={content.hero.title}
+      heading={content.hero.heading}
+      subtitle={content.hero.subtitle}
+      ctaText={content.hero.ctaText}
+      ctaHref="#formulario"
+      backgroundImage="/images/sauwa-sauna-partners-hoteleros.webp"
+    />
+
+    <section class="section section--bg-light">
+      <div class="container container--narrow">
+        <div class="two-column">
+          <div class="partners-intro__text">
+            <h2 class="section-label section-label--b2b">{content.intro.title}</h2>
+            <h3 class="section-title">{content.intro.heading}</h3>
+            <p class="section-description">{content.intro.text}</p>
+          </div>
+          <div class="partners-intro__image">
+            <img
+              src={content.intro.imageSrc}
+              alt={content.intro.imageAlt}
+              loading="lazy"
+              class="img-cover img-rounded"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <CountryFlags
+      title={content.countries.title}
+      subtitle={content.countries.subtitle}
+      intro={content.countries.intro}
+      countries={content.countries.items}
+    />
+
+    <SelectionProcess
+      title={content.selection.title}
+      subtitle={content.selection.subtitle}
+      intro={content.selection.intro}
+      requirements={content.selection.requirements}
+    />
+
+    <PartnerApplicationForm
+      locale={locale}
+      title={content.form.title}
+      subtitle={content.form.subtitle}
+    />
+  </main>
+
+  <FooterBlack locale={locale} />
+</Layout>
+
+<style>
+  /* ===================================================================
+     WDA-531: Estilos específicos de página (no globales)
+     Usa clases globales de utilities.css y layouts.css
+     Solo estilos únicos de esta página aquí
+     =================================================================== */
+
+  .partners-intro__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+  }
+
+  @media (max-width: 767px) {
+    .partners-intro__text {
+      gap: 0; /* WDA-294: Sin gap en mobile */
+    }
+  }
+
+  .partners-intro__image {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+  }
+
+  .partners-intro__image img {
+    transition: transform var(--transition-base);
+  }
+
+  .partners-intro__image:hover img {
+    transform: scale(1.03);
+  }
+
+  @media (max-width: 767px) {
+    .partners-intro__image {
+      min-height: 300px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .partners-intro__image:hover img {
+      transform: none;
+    }
+  }
+</style>

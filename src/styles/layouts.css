@@ -1,0 +1,656 @@
+/* ==========================================================================
+   SAUWA Layout Patterns - Estructuras de Página Reutilizables
+   Layouts consistentes para construcción rápida de páginas
+
+   Fecha creación: 2025-11-09
+   Versión: 1.0.0
+   Refactorización: WDA-531
+   ========================================================================== */
+
+/* ==========================================================================
+   PAGE WRAPPER - Contenedor principal de página
+   ========================================================================== */
+
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  flex: 1;
+}
+
+/* ==========================================================================
+   HERO LAYOUTS - Secciones hero
+   ========================================================================== */
+
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero--half {
+  min-height: 50vh;
+}
+
+.hero--tall {
+  min-height: 80vh;
+}
+
+/* Hero background */
+.hero__background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.hero__background img,
+.hero__background video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Hero overlay */
+.hero__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.hero__overlay--dark {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.hero__overlay--light {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Hero content */
+.hero__content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: var(--spacing-8) var(--spacing-5);
+  max-width: var(--container-max-width-narrow);
+  margin: 0 auto;
+}
+
+.hero__content--left {
+  text-align: left;
+}
+
+.hero__content--right {
+  text-align: right;
+}
+
+/* ==========================================================================
+   SECTION HEADERS - Encabezados de sección estandarizados
+   ========================================================================== */
+
+.section-header {
+  margin-bottom: var(--spacing-8);
+}
+
+.section-header--center {
+  text-align: center;
+}
+
+.section-header--center .section-label,
+.section-header--center .section-title,
+.section-header--center .section-description {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Header con ancho máximo para descripción */
+.section-header--narrow .section-description {
+  max-width: 800px;
+}
+
+/* ==========================================================================
+   TWO COLUMN LAYOUTS - Layouts de 2 columnas
+   ========================================================================== */
+
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--grid-gap);
+  align-items: center;
+}
+
+.two-column--60-40 {
+  grid-template-columns: 60% 40%;
+}
+
+.two-column--70-30 {
+  grid-template-columns: 70% 30%;
+}
+
+.two-column--reverse {
+  direction: rtl;
+}
+
+.two-column--reverse > * {
+  direction: ltr;
+}
+
+/* Responsive: Stack en móvil */
+@media (max-width: 767px) {
+  .two-column,
+  .two-column--60-40,
+  .two-column--70-30 {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  .two-column--reverse {
+    direction: ltr;
+  }
+}
+
+/* ==========================================================================
+   FEATURE GRID - Grid para features/beneficios
+   ========================================================================== */
+
+.feature-grid {
+  display: grid;
+  gap: var(--grid-gap);
+}
+
+.feature-grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.feature-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.feature-grid--4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Feature item */
+.feature-item {
+  padding: var(--spacing-6);
+  text-align: center;
+}
+
+.feature-item--left {
+  text-align: left;
+}
+
+.feature-item__icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--spacing-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-item--left .feature-item__icon {
+  margin-left: 0;
+}
+
+.feature-item__title {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-scale-md);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-2);
+}
+
+.feature-item__description {
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-scale-base);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+/* Responsive feature grid */
+@media (max-width: 1023px) {
+  .feature-grid--4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .feature-grid--2,
+  .feature-grid--3,
+  .feature-grid--4 {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  .feature-item {
+    padding: var(--spacing-4);
+  }
+}
+
+/* ==========================================================================
+   CONTENT WITH SIDEBAR - Layout con sidebar
+   ========================================================================== */
+
+.content-with-sidebar {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: var(--grid-gap);
+}
+
+.content-with-sidebar--left {
+  grid-template-columns: 300px 1fr;
+}
+
+.content-with-sidebar--wide {
+  grid-template-columns: 1fr 400px;
+}
+
+.content-with-sidebar__main {
+  min-width: 0;
+}
+
+.content-with-sidebar__sidebar {
+  position: sticky;
+  top: calc(var(--header-height-desktop) + var(--spacing-6));
+  align-self: start;
+}
+
+/* Responsive sidebar */
+@media (max-width: 1023px) {
+  .content-with-sidebar,
+  .content-with-sidebar--left,
+  .content-with-sidebar--wide {
+    grid-template-columns: 1fr;
+  }
+
+  .content-with-sidebar__sidebar {
+    position: static;
+  }
+}
+
+/* ==========================================================================
+   MASONRY LAYOUT - Grid tipo Pinterest
+   ========================================================================== */
+
+.masonry {
+  column-count: 3;
+  column-gap: var(--grid-gap);
+}
+
+.masonry--2 {
+  column-count: 2;
+}
+
+.masonry--4 {
+  column-count: 4;
+}
+
+.masonry__item {
+  break-inside: avoid;
+  margin-bottom: var(--grid-gap);
+}
+
+/* Responsive masonry */
+@media (max-width: 1023px) {
+  .masonry,
+  .masonry--4 {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 767px) {
+  .masonry,
+  .masonry--2,
+  .masonry--4 {
+    column-count: 1;
+  }
+}
+
+/* ==========================================================================
+   SPLIT SECTION - Sección dividida (imagen + contenido)
+   ========================================================================== */
+
+.split-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 500px;
+}
+
+.split-section--reverse {
+  direction: rtl;
+}
+
+.split-section--reverse > * {
+  direction: ltr;
+}
+
+.split-section__image {
+  position: relative;
+  overflow: hidden;
+}
+
+.split-section__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.split-section__content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--spacing-10) var(--spacing-8);
+}
+
+/* Responsive split section */
+@media (max-width: 767px) {
+  .split-section {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .split-section--reverse {
+    direction: ltr;
+  }
+
+  .split-section__image {
+    min-height: 300px;
+  }
+
+  .split-section__content {
+    padding: var(--spacing-6) var(--spacing-5);
+  }
+}
+
+/* ==========================================================================
+   CTA SECTION - Call to Action layouts
+   ========================================================================== */
+
+.cta-section {
+  background-color: var(--color-primary);
+  color: var(--color-bg-white);
+  text-align: center;
+  padding: var(--spacing-12) var(--spacing-6);
+}
+
+.cta-section--b2b {
+  background-color: var(--color-b2b);
+}
+
+.cta-section--dark {
+  background-color: var(--color-bg-dark);
+}
+
+.cta-section--gradient {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+}
+
+.cta-section__content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cta-section__title {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-scale-2xl);
+  font-weight: var(--font-weight-light);
+  margin: 0 0 var(--spacing-5);
+}
+
+.cta-section__description {
+  font-family: var(--font-family-secondary);
+  font-size: var(--font-scale-lg);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-relaxed);
+  margin: 0 0 var(--spacing-6);
+  opacity: 0.95;
+}
+
+.cta-section__actions {
+  display: flex;
+  gap: var(--spacing-4);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Responsive CTA */
+@media (max-width: 767px) {
+  .cta-section {
+    padding: var(--spacing-8) var(--spacing-5);
+  }
+
+  .cta-section__title {
+    font-size: var(--font-scale-xl);
+  }
+
+  .cta-section__description {
+    font-size: var(--font-scale-base);
+  }
+
+  .cta-section__actions {
+    flex-direction: column;
+  }
+}
+
+/* ==========================================================================
+   TIMELINE LAYOUT - Layout tipo timeline
+   ========================================================================== */
+
+.timeline {
+  position: relative;
+  padding: var(--spacing-8) 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--border-color-base);
+  transform: translateX(-50%);
+}
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-8);
+  margin-bottom: var(--spacing-8);
+  position: relative;
+}
+
+.timeline-item:nth-child(even) .timeline-item__content {
+  grid-column: 2;
+}
+
+.timeline-item:nth-child(even)::before {
+  left: auto;
+  right: 50%;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 24px;
+  width: 16px;
+  height: 16px;
+  background-color: var(--color-primary);
+  border: 4px solid var(--color-bg-white);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.timeline-item__content {
+  background-color: var(--color-bg-white);
+  padding: var(--spacing-6);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-base);
+}
+
+/* Responsive timeline */
+@media (max-width: 767px) {
+  .timeline::before {
+    left: 20px;
+  }
+
+  .timeline-item {
+    grid-template-columns: 1fr;
+    padding-left: 50px;
+  }
+
+  .timeline-item:nth-child(even) .timeline-item__content {
+    grid-column: 1;
+  }
+
+  .timeline-item::before {
+    left: 20px !important;
+  }
+}
+
+/* ==========================================================================
+   STICKY NAVIGATION - Navegación sticky lateral
+   ========================================================================== */
+
+.sticky-nav {
+  position: sticky;
+  top: calc(var(--header-height-desktop) + var(--spacing-6));
+  padding: var(--spacing-5);
+  background-color: var(--color-bg-light);
+  border-radius: var(--radius-md);
+}
+
+.sticky-nav__title {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-scale-md);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--spacing-4);
+}
+
+.sticky-nav__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sticky-nav__item {
+  margin-bottom: var(--spacing-2);
+}
+
+.sticky-nav__link {
+  display: block;
+  padding: var(--spacing-2) var(--spacing-3);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: all var(--transition-fast);
+}
+
+.sticky-nav__link:hover,
+.sticky-nav__link--active {
+  color: var(--color-primary);
+  border-left-color: var(--color-primary);
+  background-color: rgba(186, 37, 21, 0.05);
+}
+
+/* ==========================================================================
+   FOOTER LAYOUTS
+   ========================================================================== */
+
+.footer {
+  background-color: var(--color-bg-dark);
+  color: var(--color-bg-white);
+  padding: var(--spacing-10) 0 var(--spacing-6);
+}
+
+.footer__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--grid-gap);
+  margin-bottom: var(--spacing-8);
+}
+
+.footer__column-title {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-scale-base);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--spacing-4);
+}
+
+.footer__bottom {
+  padding-top: var(--spacing-6);
+  border-top: var(--border-width-thin) solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Responsive footer */
+@media (max-width: 1023px) {
+  .footer__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .footer {
+    padding: var(--spacing-8) 0 var(--spacing-4);
+  }
+
+  .footer__grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    gap: var(--spacing-4);
+    text-align: center;
+  }
+}
+
+/* ==========================================================================
+   NOTAS DE USO
+
+   1. LAYOUTS PREDEFINIDOS para construcción rápida de páginas
+   2. Todos los layouts son responsive por defecto
+   3. Combinar con utilities.css y components.css para personalización
+   4. Usar CSS custom properties para ajustes específicos
+   5. Los layouts mantienen consistencia visual en todo el sitio
+
+   Ejemplo de uso:
+   <section class="section section--bg-light">
+     <div class="container">
+       <header class="section-header section-header--center">
+         <h2 class="section-label section-label--primary">Label</h2>
+         <h3 class="section-title">Título</h3>
+         <p class="section-description">Descripción</p>
+       </header>
+
+       <div class="feature-grid feature-grid--3">
+         <div class="feature-item">
+           <div class="feature-item__icon">Icon</div>
+           <h4 class="feature-item__title">Feature</h4>
+           <p class="feature-item__description">Description</p>
+         </div>
+         <!-- Más features -->
+       </div>
+     </div>
+   </section>
+   ========================================================================== */

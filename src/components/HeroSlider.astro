@@ -1,0 +1,132 @@
+---
+/**
+ * Hero Section with Single Looping Video
+ * - Displays a continuous looping video background
+ * - Responsive: different videos for desktop and mobile
+ * - Auto-plays, muted, and loops seamlessly
+ * - Maintains overlay gradient for brand consistency
+ */
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div class={`hero-slider absolute inset-0 w-full h-full overflow-hidden ${className}`}>
+  <!-- Desktop Video -->
+  <video
+    class="hidden md:block absolute inset-0 w-full h-full object-cover"
+    autoplay
+    loop
+    muted
+    playsinline
+    preload="auto"
+    disablepictureinpicture
+    aria-label="SAUWA Finnish sauna experience - background video"
+    style="pointer-events: none;"
+  >
+    <source src="/images/hero/desktop/sauwa-hero-desktop.webm" type="video/webm" />
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Mobile Video -->
+  <video
+    class="block md:hidden absolute inset-0 w-full h-full object-cover"
+    autoplay
+    loop
+    muted
+    playsinline
+    preload="auto"
+    disablepictureinpicture
+    aria-label="SAUWA Finnish sauna experience - background video"
+    style="pointer-events: none;"
+  >
+    <source src="/images/hero/mobile/sauwa-hero-mobile.webm" type="video/webm" />
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Overlay Gradient -->
+  <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 pointer-events-none z-10"></div>
+</div>
+
+<style>
+  /* Ensure video fills container and maintains proper z-index */
+  video {
+    z-index: 1;
+  }
+
+  /* Ensure overlay stays on top */
+  .hero-slider > div {
+    z-index: 10;
+  }
+
+  /* Hide video controls in all browsers (Safari/Mac fix) */
+  video::-webkit-media-controls {
+    display: none !important;
+  }
+  video::-webkit-media-controls-enclosure {
+    display: none !important;
+  }
+  video::-webkit-media-controls-panel {
+    display: none !important;
+  }
+  video::-webkit-media-controls-play-button {
+    display: none !important;
+  }
+  video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+  }
+</style>
+
+<script>
+  /**
+   * Hero Video Auto-play Handler
+   * Ensures video plays even if autoplay is blocked
+   */
+  class HeroVideo {
+    private videos: NodeListOf<HTMLVideoElement>;
+
+    constructor() {
+      this.videos = document.querySelectorAll('.hero-slider video');
+      this.init();
+    }
+
+    private init() {
+      this.videos.forEach((video) => {
+        // Force muted and remove controls (Safari/Mac fix)
+        video.muted = true;
+        video.controls = false;
+        video.setAttribute('muted', '');
+        video.removeAttribute('controls');
+
+        // Ensure video plays if autoplay is blocked
+        video.play().catch((error) => {
+          console.warn('Video autoplay was prevented:', error);
+
+          // Attempt to play on user interaction
+          const playOnInteraction = () => {
+            video.muted = true; // Ensure muted before play
+            video.play();
+            document.removeEventListener('click', playOnInteraction);
+            document.removeEventListener('touchstart', playOnInteraction);
+          };
+
+          document.addEventListener('click', playOnInteraction, { once: true });
+          document.addEventListener('touchstart', playOnInteraction, { once: true });
+        });
+
+        // Log video errors for debugging
+        video.addEventListener('error', (e) => {
+          console.error('Video loading error:', e);
+        });
+      });
+    }
+  }
+
+  // Initialize video handler
+  document.addEventListener('DOMContentLoaded', () => {
+    new HeroVideo();
+  });
+</script>

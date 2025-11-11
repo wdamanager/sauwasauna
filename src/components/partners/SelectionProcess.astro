@@ -1,0 +1,275 @@
+---
+/**
+ * WDA-320: Proceso de selección con requisitos exclusivos
+ * Diseño vertical con iconos premium
+ */
+
+interface SelectionRequirement {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+interface Props {
+  title: string;
+  subtitle: string;
+  intro: string;
+  requirements: SelectionRequirement[];
+}
+
+const { title, subtitle, intro, requirements } = Astro.props;
+---
+
+<section class="partners-selection">
+  <div class="partners-selection__container">
+    <div class="partners-selection__header">
+      <h2 class="section-label section-label--b2b">{title}</h2>
+      <h3 class="section-title">{subtitle}</h3>
+      <p class="section-description">{intro}</p>
+    </div>
+
+    <div class="partners-selection__list">
+      {requirements.map((req, index) => (
+        <div
+          class="partners-selection__item"
+          data-index={index}
+        >
+          <div class="partners-selection__item-icon-wrapper">
+            <div class="partners-selection__item-icon" aria-hidden="true" set:html={req.icon} />
+          </div>
+          <div class="partners-selection__item-content">
+            <h4 class="partners-selection__item-title">{req.title}</h4>
+            <p class="partners-selection__item-description">{req.description}</p>
+          </div>
+          <div class="partners-selection__item-check" aria-hidden="true">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M5 13L9 17L19 7"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .partners-selection {
+    width: 100%;
+    padding: 5rem 2rem;
+    background: linear-gradient(
+      180deg,
+      #f4f4f4 0%,
+      #ffffff 100%
+    );
+  }
+
+  .partners-selection__container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .partners-selection__header {
+    text-align: center;
+    margin-bottom: var(--spacing-10); /* WDA-531: 4rem usando variable */
+  }
+
+  /* WDA-531: Ahora usa clases globales .section-label y .section-title */
+
+  .partners-selection__list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .partners-selection__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 2rem;
+    align-items: start;
+    padding: 2.5rem 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 2px solid #f4f4f4;
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: slideInRight 0.6s ease-out forwards;
+  }
+
+  /* WDA-531: Animation delays sin inline styles */
+  .partners-selection__item[data-index="0"] { animation-delay: 0s; }
+  .partners-selection__item[data-index="1"] { animation-delay: 0.15s; }
+  .partners-selection__item[data-index="2"] { animation-delay: 0.3s; }
+  .partners-selection__item[data-index="3"] { animation-delay: 0.45s; }
+  .partners-selection__item[data-index="4"] { animation-delay: 0.6s; }
+  .partners-selection__item[data-index="5"] { animation-delay: 0.75s; }
+
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .partners-selection__item:hover {
+    border-color: #406E51;
+    box-shadow: 0 8px 24px rgba(64, 110, 81, 0.12);
+    transform: translateX(4px);
+  }
+
+  .partners-selection__item-icon-wrapper {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #406E51 0%, #4a7e5c 100%);
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+  }
+
+  .partners-selection__item:hover .partners-selection__item-icon-wrapper {
+    transform: scale(1.05);
+  }
+
+  .partners-selection__item-icon {
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .partners-selection__item-content {
+    flex: 1;
+  }
+
+  .partners-selection__item-title {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: var(--font-size-card-title);
+    color: #1a1a1a;
+    margin: 0 0 1rem 0;
+  }
+
+  .partners-selection__item-description {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: var(--font-size-body);
+    line-height: 1.7;
+    color: #636464;
+    margin: 0;
+  }
+
+  .partners-selection__item-check {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8f5e9;
+    border-radius: 50%;
+    color: #406E51;
+    transition: all 0.3s ease;
+  }
+
+  .partners-selection__item:hover .partners-selection__item-check {
+    background: #406E51;
+    color: #ffffff;
+    transform: rotate(360deg);
+  }
+
+  /* Mobile (< 768px) */
+  @media (max-width: 767px) {
+    .partners-selection {
+      padding: 3rem var(--container-padding-mobile); /* WDA-294: Unificado a 20px */
+    }
+
+    .partners-selection__header {
+      margin-bottom: var(--spacing-8); /* WDA-531: 2.5rem usando variable */
+    }
+
+    .partners-selection__list {
+      gap: 1.5rem;
+    }
+
+    .partners-selection__item {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 2rem 1.5rem;
+      text-align: center;
+    }
+
+    .partners-selection__item-icon-wrapper {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto;
+    }
+
+    .partners-selection__item-icon {
+      font-size: 1.75rem;
+    }
+
+    .partners-selection__item-title {
+      font-size: var(--font-size-card-title);
+    }
+
+    .partners-selection__item-description {
+      font-size: var(--font-size-body-sm);
+    }
+
+    .partners-selection__item-check {
+      margin: 0 auto;
+    }
+  }
+
+  /* Tablet (768px - 1023px) */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .partners-selection__item {
+      gap: 1.5rem;
+    }
+
+    .partners-selection__item-icon-wrapper {
+      width: 64px;
+      height: 64px;
+    }
+
+    .partners-selection__item-title {
+      font-size: var(--font-size-card-title);
+    }
+  }
+
+  /* Reduced motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .partners-selection__item {
+      animation: none;
+      opacity: 1;
+    }
+
+    .partners-selection__item:hover {
+      transform: none;
+    }
+
+    .partners-selection__item:hover .partners-selection__item-icon-wrapper {
+      transform: none;
+    }
+
+    .partners-selection__item:hover .partners-selection__item-check {
+      transform: none;
+    }
+  }
+</style>

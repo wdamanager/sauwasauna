@@ -1,0 +1,346 @@
+---
+// VaporIntro.astro - Intro con efecto vapor y sonido de fuego
+import Button from './ui/Button.astro';
+---
+
+<div class="vapor-container" id="vapor-intro">
+  <canvas id="vapor-canvas" class="vapor-canvas"></canvas>
+  <div class="skip-button-wrapper" id="skip-wrapper">
+    <Button variant="skip" id="skip-button">
+      Saltar introducción
+    </Button>
+  </div>
+</div>
+
+<div class="main-content" id="main-content" style="display: none;">
+  <div class="hero">
+    <h1>SAUWASAUNA</h1>
+    <p>Auténticas saunas finlandesas</p>
+    <p class="tagline">Experimenta la tradición nórdica</p>
+  </div>
+</div>
+
+<style>
+  .vapor-container {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    cursor: pointer;
+    background: transparent;
+    pointer-events: all;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .vapor-container.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .vapor-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+  }
+
+  .skip-button-wrapper {
+    position: absolute;
+    bottom: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    animation: fadeInSkip 0.5s ease-in 1s forwards;
+    z-index: 10;
+  }
+
+  @keyframes fadeInSkip {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .main-content {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 2rem;
+    animation: fadeInContent 0.8s ease-out;
+  }
+
+  @keyframes fadeInContent {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 8vw, 4rem);
+    margin: 0 0 1rem;
+    letter-spacing: 0.1em;
+    font-weight: 300;
+  }
+
+  .hero p {
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    margin: 0.5rem 0;
+    opacity: 0.8;
+  }
+
+  .tagline {
+    margin-top: 2rem !important;
+    font-style: italic;
+    opacity: 0.6 !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vapor-container {
+      animation: simpleFade 0.5s ease-out forwards;
+    }
+    
+    .hero {
+      animation: none;
+    }
+  }
+
+  @keyframes simpleFade {
+    to {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  // NOTA: Vapor intro se muestra siempre (no usar sessionStorage)
+  // Permitir al usuario saltar con botón Skip
+
+  // TODO: Mejorar audio de fuego - Temporalmente desactivado
+  /*
+  // Cargar audio de fuego
+  const fireAudio = new Audio('/audio/fire-crackling.mp3');
+  fireAudio.volume = 0.3; // Volumen sutil
+  fireAudio.loop = false; // No loop
+
+  let audioPlayed = false;
+
+  // Intentar reproducir audio
+  const playAudio = () => {
+    if (!audioPlayed) {
+      fireAudio.play().catch(err => {
+        console.log('Autoplay bloqueado por el navegador');
+      });
+      audioPlayed = true;
+    }
+  };
+
+  // Intentar reproducir inmediatamente
+  playAudio();
+
+  // Si falla autoplay, reproducir en primera interacción
+  const enableAudioOnInteraction = () => {
+    playAudio();
+    // Remover listeners después de reproducir
+    document.removeEventListener('click', enableAudioOnInteraction);
+    document.removeEventListener('keydown', enableAudioOnInteraction);
+    document.removeEventListener('touchstart', enableAudioOnInteraction);
+  };
+
+  document.addEventListener('click', enableAudioOnInteraction);
+  document.addEventListener('keydown', enableAudioOnInteraction);
+  document.addEventListener('touchstart', enableAudioOnInteraction);
+  */
+
+  // Función principal de inicialización
+  function initVaporEffect() {
+    const canvas = document.getElementById('vapor-canvas') as HTMLCanvasElement;
+    const container = document.getElementById('vapor-intro');
+    const skipWrapper = document.getElementById('skip-wrapper');
+    const skipButton = document.getElementById('skip-button');
+    const mainContent = document.getElementById('main-content');
+
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+    
+    // Configurar tamaño
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    
+  // Skip button ya tiene animación CSS (fadeInSkip a 1s)
+    
+    // Clase de partícula de vapor
+    class VaporParticle {
+      x: number;
+      y: number;
+      size: number;
+      speedY: number;
+      speedX: number;
+      opacity: number;
+      maxOpacity: number;
+      life: number;
+      fadeInSpeed: number;
+      fadeOutStart: number;
+      
+      constructor() {
+        this.x = 0;
+        this.y = 0;
+        this.size = 0;
+        this.speedY = 0;
+        this.speedX = 0;
+        this.opacity = 0;
+        this.maxOpacity = 0;
+        this.life = 0;
+        this.fadeInSpeed = 0;
+        this.fadeOutStart = 0;
+        this.reset();
+        // Iniciar en posiciones aleatorias para el primer frame
+        this.y = Math.random() * canvas.height;
+        this.life = Math.random() * 0.5 + 0.2;
+      }
+      
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + Math.random() * 100;
+        this.size = Math.random() * 150 + 100;
+        this.speedY = Math.random() * 1.5 + 0.8;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.opacity = 0;
+        this.maxOpacity = Math.random() * 0.3 + 0.2;
+        this.life = 0;
+        this.fadeInSpeed = Math.random() * 0.015 + 0.01;
+        this.fadeOutStart = Math.random() * 0.3 + 0.5;
+      }
+      
+      update() {
+        this.y -= this.speedY;
+        this.x += this.speedX;
+        this.life += 0.003;
+        
+        // Fade in
+        if (this.life < 0.3 && this.opacity < this.maxOpacity) {
+          this.opacity += this.fadeInSpeed;
+        }
+        
+        // Fade out
+        if (this.life > this.fadeOutStart) {
+          this.opacity -= 0.005;
+        }
+        
+        // Resetear cuando sale de pantalla o se desvanece
+        if (this.y < -this.size || this.opacity <= 0 || this.life > 1) {
+          this.reset();
+        }
+      }
+      
+      draw(ctx: CanvasRenderingContext2D, globalOpacity: number = 1) {
+        const gradient = ctx.createRadialGradient(
+          this.x, this.y, 0,
+          this.x, this.y, this.size
+        );
+        
+        const finalOpacity = this.opacity * globalOpacity;
+        gradient.addColorStop(0, `rgba(255, 255, 255, ${finalOpacity})`);
+        gradient.addColorStop(0.4, `rgba(255, 255, 255, ${finalOpacity * 0.6})`);
+        gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(
+          this.x - this.size,
+          this.y - this.size,
+          this.size * 2,
+          this.size * 2
+        );
+      }
+    }
+    
+    // Crear partículas
+    const particles: VaporParticle[] = [];
+    const particleCount = 60;
+    
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new VaporParticle());
+    }
+    
+    let animationFrame: number;
+    const startTime = Date.now();
+    const vaporDuration = 4000; // 4 segundos
+    const fadeOutDuration = 2000; // 2 segundos
+    const totalDuration = vaporDuration + fadeOutDuration;
+    
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const totalProgress = Math.min(elapsed / totalDuration, 1);
+      
+      // Limpiar canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Calcular opacidad global (sin fondo oscuro)
+      let globalOpacity = 1;
+
+      if (elapsed < vaporDuration) {
+        // Fase de vapor activo
+        globalOpacity = 1;
+      } else {
+        // Fase de fade out
+        const fadeProgress = (elapsed - vaporDuration) / fadeOutDuration;
+        globalOpacity = 1 - fadeProgress;
+      }
+      
+      // Actualizar y dibujar partículas
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw(ctx, globalOpacity);
+      });
+      
+      // Continuar animación hasta el final
+      if (totalProgress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      } else {
+        // Animación terminada - ocultar con clase
+        if (container) container.classList.add('hidden');
+      }
+    };
+
+    animate();
+
+    // Permitir skip con botón o ESC
+    const handleSkip = () => {
+      cancelAnimationFrame(animationFrame);
+      // fireAudio.pause(); // Detener audio - DESACTIVADO
+      // fireAudio.currentTime = 0;
+      if (container) container.classList.add('hidden');
+    };
+
+    // Skip button click
+    skipButton?.addEventListener('click', handleSkip);
+
+    // ESC key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') handleSkip();
+    });
+  }
+
+  // Inicializar efecto de vapor
+  initVaporEffect();
+</script>

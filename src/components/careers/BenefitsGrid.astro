@@ -1,0 +1,249 @@
+---
+/**
+ * WDA-315: Grid de beneficios con iconos
+ * WDA-325: Iconos Line Art SVG
+ * Responsive: 3 cols desktop, 2 tablet, 1 mobile
+ */
+
+import { iconPaths } from '../../lib/i18n/careers';
+
+interface Benefit {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+interface Props {
+  title: string;
+  subtitle: string;
+  benefits: Benefit[];
+  columns?: 2 | 3 | 4;
+}
+
+const { title, subtitle, benefits, columns = 3 } = Astro.props;
+---
+
+<section class="careers-benefits">
+  <div class="careers-benefits__container">
+    <div class="careers-benefits__header">
+      <h2 class="section-title-small">{title}</h2>
+      <h3 class="section-heading-large">{subtitle}</h3>
+    </div>
+
+    <div class={`careers-benefits__grid careers-benefits__grid--cols-${columns}`}>
+      {benefits.map((benefit, index) => (
+        <div
+          class="careers-benefits__card"
+          style={`animation-delay: ${index * 0.1}s;`}
+        >
+          <div class="careers-benefits__card-icon" aria-hidden="true">
+            <svg
+              width="40"
+              height="40"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+              set:html={iconPaths[benefit.icon as keyof typeof iconPaths]}
+            />
+          </div>
+          <h4 class="careers-benefits__card-title">{benefit.title}</h4>
+          <p class="careers-benefits__card-description">{benefit.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .careers-benefits {
+    width: 100%;
+    padding: 5rem 2rem;
+    background-color: #f4f4f4;
+  }
+
+  .careers-benefits__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .careers-benefits__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  /* Title and subtitle now use global classes .section-title-small and .section-heading-large */
+
+  .careers-benefits__grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+
+  .careers-benefits__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2.5rem 2rem;
+    background: #ffffff;
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .careers-benefits__card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  /* WDA-325: Iconos Line Art SVG */
+  .careers-benefits__card-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #DB4529;
+    margin-bottom: 1.5rem;
+  }
+
+  .careers-benefits__card-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .careers-benefits__card-title {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: var(--font-size-card-title);
+    color: #1a1a1a;
+    margin: 0 0 1rem 0;
+  }
+
+  .careers-benefits__card-description {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: var(--font-size-body-sm);
+    line-height: 1.6;
+    color: #636464;
+    margin: 0;
+  }
+
+  /* Tablet (768px - 1023px) */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .careers-benefits__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+    }
+  }
+
+  /* Desktop (>= 1024px) */
+  @media (min-width: 1024px) {
+    .careers-benefits__grid--cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .careers-benefits__grid--cols-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .careers-benefits__grid--cols-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  /* Mobile (< 768px) - WDA-544: Optimizado para reducir scroll vertical */
+  @media (max-width: 767px) {
+    .careers-benefits {
+      padding: 2.5rem 1.5rem; /* Reducido de 3rem */
+    }
+
+    .careers-benefits__header {
+      margin-bottom: 2rem; /* Reducido de 2.5rem */
+    }
+
+    .careers-benefits__subtitle {
+      font-size: 1.75rem;
+    }
+
+    .careers-benefits__grid {
+      gap: 1.25rem; /* Reducido de 1.5rem */
+    }
+
+    .careers-benefits__card {
+      padding: 1.5rem 1.25rem; /* Reducido de 2rem 1.5rem */
+    }
+
+    .careers-benefits__card-icon {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 0.75rem; /* Reducido de 1rem */
+    }
+
+    .careers-benefits__card-icon svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .careers-benefits__card-title {
+      font-size: var(--font-size-heading);
+      margin-bottom: 0.75rem; /* Añadido para reducir espacio */
+    }
+
+    .careers-benefits__card-description {
+      font-size: var(--font-size-body-xs);
+    }
+  }
+
+  /* Small mobile (< 480px) - WDA-544: Optimización extra para pantallas pequeñas */
+  @media (max-width: 479px) {
+    .careers-benefits {
+      padding: 2rem 1.25rem; /* Aún más compacto */
+    }
+
+    .careers-benefits__header {
+      margin-bottom: 1.75rem;
+    }
+
+    .careers-benefits__grid {
+      gap: 1rem; /* Más compacto entre cards */
+    }
+
+    .careers-benefits__card {
+      padding: 1.25rem 1rem; /* Más compacto */
+    }
+
+    .careers-benefits__card-icon {
+      margin-bottom: 0.625rem; /* 10px */
+    }
+
+    .careers-benefits__card-title {
+      margin-bottom: 0.625rem; /* 10px */
+    }
+  }
+
+  /* Reduced motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .careers-benefits__card {
+      animation: none;
+      opacity: 1;
+    }
+
+    .careers-benefits__card:hover {
+      transform: none;
+    }
+  }
+</style>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sticky Layout Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* Spacer to create scroll */
+    .spacer {
+      height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+    }
+
+    /* Main section */
+    .benefits-blog-section {
+      position: relative;
+      background-color: #f4f4f4;
+    }
+
+    .sticky-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    /* Left column - Sticky */
+    .sticky-column {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      background-color: #f4f4f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sticky-content {
+      width: 100%;
+      padding: 4rem 3rem;
+      text-align: center;
+    }
+
+    /* Right column - Scroll */
+    .scroll-column {
+      position: relative;
+      background-color: #F8F8F8;
+      padding: 4rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    .card {
+      background: white;
+      padding: 3rem;
+      border-radius: 8px;
+      min-height: 600px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+
+    /* End spacer */
+    .end-spacer {
+      height: 50vh;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Spacer before section -->
+  <div class="spacer">Scroll Down ⬇️</div>
+
+  <!-- Main Section -->
+  <section class="benefits-blog-section">
+    <div class="sticky-grid">
+      <!-- Left Column - Sticky -->
+      <div class="sticky-column">
+        <div class="sticky-content">
+          <h2 style="font-size: 2rem; margin-bottom: 1rem;">STICKY COLUMN</h2>
+          <p>This content should stick to the top as you scroll through the right column.</p>
+        </div>
+      </div>
+
+      <!-- Right Column - Scroll -->
+      <div class="scroll-column">
+        <div class="card">
+          <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Card 1</h3>
+          <p>This is the first card. It creates scroll height.</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Card 2</h3>
+          <p>This is the second card. Keep scrolling...</p>
+        </div>
+        <div class="card">
+          <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Card 3</h3>
+          <p>This is the third card. The left column should stay sticky.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- End spacer -->
+  <div class="end-spacer">The End 🎉</div>
+
+</body>
+</html>

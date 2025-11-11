@@ -1,0 +1,115 @@
+---
+/**
+ * BenefitsBlogSection - Sección con layout sticky 2 columnas
+ * Inspirada en DATA Arquitectura - Sección Projectes
+ *
+ * Layout Desktop:
+ * - Columna izquierda: sticky con beneficios
+ * - Columna derecha: scroll con blog cards
+ *
+ * Layout Mobile/Tablet:
+ * - Stack vertical (beneficios arriba, blog abajo)
+ */
+
+import BenefitsList from './BenefitsList.astro';
+import BlogScrollCards from './BlogScrollCards.astro';
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  class?: string;
+}
+
+const { locale = 'es', class: className = '' } = Astro.props;
+---
+
+<section class={`benefits-blog-section ${className}`} id="beneficios-blog">
+  <div class="sticky-grid">
+    <!-- Columna izquierda - Sticky -->
+    <div class="sticky-column">
+      <div class="sticky-content">
+        <BenefitsList locale={locale} />
+      </div>
+    </div>
+
+    <!-- Columna derecha - Scroll -->
+    <div class="scroll-column">
+      <BlogScrollCards locale={locale} limit={3} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .benefits-blog-section {
+    position: relative;
+    background-color: #FFFFFF;
+  }
+
+  .sticky-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+  }
+
+  /* Columna izquierda - Sticky */
+  .sticky-column {
+    position: relative;
+    background-color: #f4f4f4;
+  }
+
+  .sticky-content {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    overflow: visible;
+  }
+
+  /* Columna derecha - Scroll */
+  .scroll-column {
+    position: relative;
+    background-color: #f4f4f4;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .sticky-grid {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    .sticky-content {
+      position: relative;
+      height: auto;
+      padding: 0;
+    }
+
+    .scroll-column {
+      background-color: #f4f4f4;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .benefits-blog-section {
+      padding: 0;
+    }
+
+    .sticky-content {
+      padding: 0;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .sticky-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sticky-content {
+      position: relative;
+      height: auto;
+    }
+  }
+</style>

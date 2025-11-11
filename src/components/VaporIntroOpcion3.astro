@@ -1,0 +1,205 @@
+---
+// VaporIntroOpcion3.astro - Steam animation without audio
+// Modified for opcion-3: no fire crackling sound
+---
+
+<div class="vapor-container" id="vapor-intro">
+  <canvas id="vapor-canvas" class="vapor-canvas"></canvas>
+</div>
+
+<style>
+  .vapor-container {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: transparent;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .vapor-container.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .vapor-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vapor-container {
+      animation: simpleFade 0.5s ease-out forwards;
+    }
+  }
+
+  @keyframes simpleFade {
+    to {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+  // Steam animation effect for opcion-3
+  // No audio, no skip button, auto-dismiss after animation
+
+  function initVaporEffect() {
+    const canvas = document.getElementById('vapor-canvas') as HTMLCanvasElement;
+    const container = document.getElementById('vapor-intro');
+
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+
+    // Configure size
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Vapor particle class
+    class VaporParticle {
+      x: number;
+      y: number;
+      size: number;
+      speedY: number;
+      speedX: number;
+      opacity: number;
+      maxOpacity: number;
+      life: number;
+      fadeInSpeed: number;
+      fadeOutStart: number;
+
+      constructor() {
+        this.x = 0;
+        this.y = 0;
+        this.size = 0;
+        this.speedY = 0;
+        this.speedX = 0;
+        this.opacity = 0;
+        this.maxOpacity = 0;
+        this.life = 0;
+        this.fadeInSpeed = 0;
+        this.fadeOutStart = 0;
+        this.reset();
+        // Start at random positions for first frame
+        this.y = Math.random() * canvas.height;
+        this.life = Math.random() * 0.5 + 0.2;
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + Math.random() * 100;
+        this.size = Math.random() * 150 + 100;
+        this.speedY = Math.random() * 1.5 + 0.8;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.opacity = 0;
+        this.maxOpacity = Math.random() * 0.3 + 0.2;
+        this.life = 0;
+        this.fadeInSpeed = Math.random() * 0.015 + 0.01;
+        this.fadeOutStart = Math.random() * 0.3 + 0.5;
+      }
+
+      update() {
+        this.y -= this.speedY;
+        this.x += this.speedX;
+        this.life += 0.003;
+
+        // Fade in
+        if (this.life < 0.3 && this.opacity < this.maxOpacity) {
+          this.opacity += this.fadeInSpeed;
+        }
+
+        // Fade out
+        if (this.life > this.fadeOutStart) {
+          this.opacity -= 0.005;
+        }
+
+        // Reset when out of screen or faded
+        if (this.y < -this.size || this.opacity <= 0 || this.life > 1) {
+          this.reset();
+        }
+      }
+
+      draw(ctx: CanvasRenderingContext2D, globalOpacity: number = 1) {
+        const gradient = ctx.createRadialGradient(
+          this.x, this.y, 0,
+          this.x, this.y, this.size
+        );
+
+        const finalOpacity = this.opacity * globalOpacity;
+        gradient.addColorStop(0, `rgba(255, 255, 255, ${finalOpacity})`);
+        gradient.addColorStop(0.4, `rgba(255, 255, 255, ${finalOpacity * 0.6})`);
+        gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(
+          this.x - this.size,
+          this.y - this.size,
+          this.size * 2,
+          this.size * 2
+        );
+      }
+    }
+
+    // Create particles
+    const particles: VaporParticle[] = [];
+    const particleCount = 60;
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new VaporParticle());
+    }
+
+    let animationFrame: number;
+    const startTime = Date.now();
+    const vaporDuration = 3000; // 3 seconds (shorter than original)
+    const fadeOutDuration = 1500; // 1.5 seconds
+    const totalDuration = vaporDuration + fadeOutDuration;
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const totalProgress = Math.min(elapsed / totalDuration, 1);
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Calculate global opacity
+      let globalOpacity = 1;
+
+      if (elapsed < vaporDuration) {
+        // Active vapor phase
+        globalOpacity = 1;
+      } else {
+        // Fade out phase
+        const fadeProgress = (elapsed - vaporDuration) / fadeOutDuration;
+        globalOpacity = 1 - fadeProgress;
+      }
+
+      // Update and draw particles
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw(ctx, globalOpacity);
+      });
+
+      // Continue animation until finished
+      if (totalProgress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      } else {
+        // Animation finished - hide with class
+        if (container) container.classList.add('hidden');
+      }
+    };
+
+    animate();
+  }
+
+  // Initialize vapor effect on page load
+  initVaporEffect();
+</script>

@@ -1,0 +1,966 @@
+---
+/**
+ * NewsletterForm - Unified Reusable Component
+ * WDA-99: Integrar formulario newsletter en landing
+ *
+ * Supports two design variants:
+ * - hero: Transparent overlay on hero slider (email only)
+ * - cta: Gray section with name + email fields
+ *
+ * Features:
+ * - GraphQL backend integration
+ * - Multilingual support (ES/CA/EN/FR)
+ * - Client-side validation
+ * - Loading states and error handling
+ * - GDPR consent required
+ */
+
+import { getLegalUrl } from '../lib/wordpress/legal-slugs.js';
+
+export interface Props {
+  variant: 'hero' | 'cta';
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  class?: string;
+}
+
+const { variant, locale = 'es', class: className = '' } = Astro.props;
+
+// Translations for all supported languages
+const translations = {
+  es: {
+    hero: {
+      ctaText: 'Recibe acceso prioritario en nuestra apertura:',
+      emailPlaceholder: 'Introduce tu email…',
+      gdprLabel: 'He leído y acepto la',
+      privacyLink: 'política de privacidad',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'es'),
+      buttonText: 'AVISADME',
+      successMessage: '¡Gracias! Te hemos añadido a la lista prioritaria.',
+      errorMessage: 'Error al enviar. Por favor, inténtalo de nuevo.',
+      emailRequired: 'El email es obligatorio',
+      emailInvalid: 'El email no es válido',
+      privacyRequired: 'Debes aceptar la política de privacidad',
+    },
+    cta: {
+      titleSeo: 'APERTURA SAUNA ANDORRA',
+      titleCommercial: 'Apúntate para recibir prioridad de apertura',
+      namePlaceholder: 'Nombre',
+      emailPlaceholder: 'Tu email',
+      gdprLabel: 'He leído y acepto la',
+      privacyLink: 'política de privacidad',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'es'),
+      buttonText: 'APUNTARME',
+      disclaimer: 'Recibe acceso prioritario en nuestra apertura y descuentos exclusivos',
+      successMessage: '¡Gracias! Te hemos añadido a la lista prioritaria',
+      errorMessage: 'Error al enviar. Inténtalo de nuevo.',
+      nameRequired: 'El nombre es obligatorio',
+      emailRequired: 'El email es obligatorio',
+      emailInvalid: 'El email no es válido',
+      privacyRequired: 'Debes aceptar la política de privacidad',
+    },
+  },
+  ca: {
+    hero: {
+      ctaText: 'Rep accés prioritari en la nostra obertura:',
+      emailPlaceholder: 'Introdueix el teu email…',
+      gdprLabel: 'He llegit i accepto la',
+      privacyLink: 'política de privacitat',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'ca'),
+      buttonText: 'AVISAR-ME',
+      successMessage: 'Gràcies! T\'hem afegit a la llista prioritària.',
+      errorMessage: 'Error en enviar. Si us plau, torna-ho a intentar.',
+      emailRequired: 'L\'email és obligatori',
+      emailInvalid: 'L\'email no és vàlid',
+      privacyRequired: 'Has d\'acceptar la política de privacitat',
+    },
+    cta: {
+      titleSeo: 'OBERTURA SAUNA ANDORRA',
+      titleCommercial: 'Apunta\'t per rebre prioritat d\'obertura',
+      namePlaceholder: 'Nom',
+      emailPlaceholder: 'El teu email',
+      gdprLabel: 'He llegit i accepto la',
+      privacyLink: 'política de privacitat',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'ca'),
+      buttonText: 'APUNTAR-ME',
+      disclaimer: 'Rep accés prioritari en la nostra obertura i descomptes exclusius',
+      successMessage: 'Gràcies! T\'hem afegit a la llista prioritària',
+      errorMessage: 'Error en enviar. Torna-ho a intentar.',
+      nameRequired: 'El nom és obligatori',
+      emailRequired: 'L\'email és obligatori',
+      emailInvalid: 'L\'email no és vàlid',
+      privacyRequired: 'Has d\'acceptar la política de privacitat',
+    },
+  },
+  en: {
+    hero: {
+      ctaText: 'Get priority access at our opening:',
+      emailPlaceholder: 'Enter your email…',
+      gdprLabel: 'I have read and accept the',
+      privacyLink: 'privacy policy',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'en'),
+      buttonText: 'NOTIFY ME',
+      successMessage: 'Thank you! We\'ve added you to the priority list.',
+      errorMessage: 'Error sending. Please try again.',
+      emailRequired: 'Email is required',
+      emailInvalid: 'Email is not valid',
+      privacyRequired: 'You must accept the privacy policy',
+    },
+    cta: {
+      titleSeo: 'ANDORRA SAUNA OPENING',
+      titleCommercial: 'Sign up for priority access',
+      namePlaceholder: 'Name',
+      emailPlaceholder: 'Your email',
+      gdprLabel: 'I have read and accept the',
+      privacyLink: 'privacy policy',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'en'),
+      buttonText: 'SIGN ME UP',
+      disclaimer: 'Get priority access at our opening and exclusive discounts',
+      successMessage: 'Thank you! We\'ve added you to the priority list',
+      errorMessage: 'Error sending. Please try again.',
+      nameRequired: 'Name is required',
+      emailRequired: 'Email is required',
+      emailInvalid: 'Email is not valid',
+      privacyRequired: 'You must accept the privacy policy',
+    },
+  },
+  fr: {
+    hero: {
+      ctaText: 'Recevez un accès prioritaire lors de notre ouverture:',
+      emailPlaceholder: 'Entrez votre email…',
+      gdprLabel: 'J\'ai lu et j\'accepte la',
+      privacyLink: 'politique de confidentialité',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'fr'),
+      buttonText: 'M\'AVERTIR',
+      successMessage: 'Merci! Nous vous avons ajouté à la liste prioritaire.',
+      errorMessage: 'Erreur d\'envoi. Veuillez réessayer.',
+      emailRequired: 'L\'email est obligatoire',
+      emailInvalid: 'L\'email n\'est pas valide',
+      privacyRequired: 'Vous devez accepter la politique de confidentialité',
+    },
+    cta: {
+      titleSeo: 'OUVERTURE SAUNA ANDORRE',
+      titleCommercial: 'Inscrivez-vous pour un accès prioritaire',
+      namePlaceholder: 'Prénom',
+      emailPlaceholder: 'Votre email',
+      gdprLabel: 'J\'ai lu et j\'accepte la',
+      privacyLink: 'politique de confidentialité',
+      privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'fr'),
+      buttonText: 'M\'INSCRIRE',
+      disclaimer: 'Recevez un accès prioritaire lors de notre ouverture et des réductions exclusives',
+      successMessage: 'Merci! Nous vous avons ajouté à la liste prioritaire',
+      errorMessage: 'Erreur d\'envoi. Veuillez réessayer.',
+      nameRequired: 'Le nom est obligatoire',
+      emailRequired: 'L\'email est obligatoire',
+      emailInvalid: 'L\'email n\'est pas valide',
+      privacyRequired: 'Vous devez accepter la politique de confidentialité',
+    },
+  },
+};
+
+const content = translations[locale][variant];
+const formId = `newsletter-form-${variant}`;
+const uniqueId = `${variant}-${locale}-${Date.now()}`;
+---
+
+{variant === 'hero' ? (
+  <!-- Hero Variant: Minimal transparent form -->
+  <div class={`newsletter-form-wrapper hero-variant ${className}`}>
+    {content.ctaText && <p class="text-cta">{content.ctaText}</p>}
+
+    <form class="newsletter-form hero-form" id={formId} data-variant="hero" data-locale={locale} novalidate>
+      <!-- Email Input -->
+      <input
+        type="email"
+        name="email"
+        id={`email-${uniqueId}`}
+        placeholder={content.emailPlaceholder}
+        required
+        class="email-input"
+        aria-label={content.emailPlaceholder}
+        autocomplete="email"
+      />
+
+      <!-- Privacy Checkbox -->
+      <label class="privacy-label">
+        <input
+          type="checkbox"
+          name="privacy"
+          id={`privacy-${uniqueId}`}
+          required
+          class="privacy-checkbox"
+          aria-required="true"
+        />
+        <span class="privacy-text">
+          {content.gdprLabel}{' '}
+          <a href={content.privacyUrl} class="privacy-link" target="_blank" rel="noopener noreferrer">
+            {content.privacyLink}
+          </a>
+          <span class="required-asterisk">*</span>
+        </span>
+      </label>
+
+      <!-- Submit Button -->
+      <button type="submit" class="submit-button" disabled>
+        <span class="button-text">{content.buttonText}</span>
+        <span class="button-loading hidden">
+          <svg class="spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </span>
+      </button>
+
+      <!-- Messages -->
+      <div class="form-message success-message hidden" role="alert">
+        {content.successMessage}
+      </div>
+      <div class="form-message error-message hidden" role="alert">
+        <span class="error-text">{content.errorMessage}</span>
+      </div>
+    </form>
+  </div>
+) : (
+  <!-- CTA Variant: Full section with titles -->
+  <section id="cta-newsletter" class={`newsletter-form-wrapper cta-variant ${className}`}>
+    <div class="cta-container">
+      <div class="cta-wrapper">
+        <!-- Titles -->
+        <div class="titles-wrapper">
+          <h2 class="title-seo">{content.titleSeo}</h2>
+          <h3 class="title-commercial">{content.titleCommercial}</h3>
+        </div>
+
+        <!-- Form -->
+        <form class="newsletter-form cta-form" id={formId} data-variant="cta" data-locale={locale} novalidate>
+          <!-- Name Field -->
+          <div class="form-row">
+            <input
+              type="text"
+              name="nombre"
+              id={`nombre-${uniqueId}`}
+              placeholder={content.namePlaceholder}
+              required
+              class="form-input"
+              aria-label={content.namePlaceholder}
+              autocomplete="name"
+            />
+          </div>
+
+          <!-- Email Field -->
+          <div class="form-row">
+            <input
+              type="email"
+              name="email"
+              id={`email-${uniqueId}`}
+              placeholder={content.emailPlaceholder}
+              required
+              class="form-input"
+              aria-label={content.emailPlaceholder}
+              autocomplete="email"
+            />
+          </div>
+
+          <!-- Privacy Checkbox -->
+          <div class="form-row privacy-row">
+            <label class="privacy-label">
+              <input
+                type="checkbox"
+                name="privacy"
+                id={`privacy-${uniqueId}`}
+                required
+                class="privacy-checkbox"
+                aria-required="true"
+              />
+              <span class="privacy-text">
+                {content.gdprLabel}{' '}
+                <a href={content.privacyUrl} class="privacy-link" target="_blank" rel="noopener noreferrer">
+                  {content.privacyLink}
+                </a>
+              </span>
+            </label>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="form-row">
+            <button type="submit" class="cta-button" disabled>
+              <span class="button-text">{content.buttonText}</span>
+              <span class="button-loading hidden">
+                <svg class="spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </span>
+            </button>
+          </div>
+
+          <!-- Messages -->
+          <div class="form-message success-message hidden" role="alert">
+            {content.successMessage}
+          </div>
+          <div class="form-message error-message hidden" role="alert">
+            <span class="error-text">{content.errorMessage}</span>
+          </div>
+        </form>
+
+        <!-- Disclaimer -->
+        <p class="disclaimer-text">{content.disclaimer}</p>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  /* ============================================
+     HERO VARIANT STYLES
+     ============================================ */
+
+  .hero-variant {
+    width: 100%;
+    max-width: 28rem;
+    margin: 0 auto;
+  }
+
+  .hero-variant .text-cta {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1.25rem; /* WDA-531: 20px (fue 18px) */
+    font-weight: 400;
+    color: white;
+    text-align: center;
+    margin-bottom: 0.25rem;
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+  }
+
+  .hero-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    animation: fadeInUp 0.8s ease-out 0.8s both;
+  }
+
+  .hero-form .email-input {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: white;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 4px;
+    transition: all 300ms ease-out;
+  }
+
+  .hero-form .email-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .hero-form .email-input:focus {
+    outline: none;
+    border-color: white;
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-form .email-input.error {
+    border-color: #ef4444;
+    animation: shake 0.3s;
+  }
+
+  .hero-form .privacy-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .hero-form .privacy-checkbox {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: #DB4529;
+  }
+
+  .hero-form .privacy-text {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.4;
+  }
+
+  .hero-form .privacy-link {
+    color: white;
+    text-decoration: underline;
+    transition: opacity 200ms ease;
+  }
+
+  .hero-form .privacy-link:hover {
+    opacity: 0.9;
+  }
+
+  .hero-form .required-asterisk {
+    color: #DB4529;
+    margin-left: 0.125rem;
+  }
+
+  .hero-form .submit-button {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: white;
+    background-color: #DB4529;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 300ms ease-out;
+    position: relative;
+  }
+
+  .hero-form .submit-button:not(:disabled):hover {
+    background-color: #BA2515;
+  }
+
+  .hero-form .submit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* ============================================
+     CTA VARIANT STYLES
+     ============================================ */
+
+  .cta-variant {
+    background-color: #f4f4f4;
+    padding: 5rem 0 4rem 0;
+    position: relative;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 600ms ease-out;
+  }
+
+  .cta-variant.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .cta-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--container-padding); /* Desktop: 24px */
+  }
+
+  .cta-wrapper {
+    max-width: 48rem;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .titles-wrapper {
+    margin-bottom: 3rem;
+  }
+
+  .title-seo {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #DB4529;
+    margin: 0 0 1rem;
+  }
+
+  .title-commercial {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 300;
+    line-height: 1.3;
+    color: #1a1a1a;
+    margin: 0;
+  }
+
+  .cta-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0 auto 2rem auto;
+    max-width: 28rem;
+  }
+
+  .form-row {
+    width: 100%;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #000000;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    transition: all 300ms ease-out;
+  }
+
+  .form-input::placeholder {
+    color: #6b7280;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #DB4529;
+    box-shadow: 0 0 0 4px rgba(219, 69, 41, 0.2);
+  }
+
+  .form-input.error {
+    border-color: #ef4444;
+    animation: shake 0.3s;
+  }
+
+  .cta-form .privacy-row {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+  }
+
+  .cta-form .privacy-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .cta-form .privacy-checkbox {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: #DB4529;
+  }
+
+  .cta-form .privacy-text {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.8);
+    line-height: 1.4;
+  }
+
+  .cta-form .privacy-link {
+    color: #DB4529;
+    text-decoration: underline;
+    transition: color 200ms ease;
+  }
+
+  .cta-form .privacy-link:hover {
+    color: #BA2515;
+  }
+
+  .cta-button {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #FFFFFF;
+    background-color: #DB4529;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 300ms ease-out;
+    position: relative;
+  }
+
+  .cta-button:not(:disabled):hover {
+    background-color: #BA2515;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(219, 69, 41, 0.4);
+  }
+
+  .cta-button:not(:disabled):active {
+    transform: translateY(0);
+  }
+
+  .cta-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .disclaimer-text {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.7);
+    text-align: center;
+    margin-top: 1.5rem;
+    line-height: 1.5;
+  }
+
+  /* ============================================
+     SHARED STYLES
+     ============================================ */
+
+  /* Button Loading State */
+  .button-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .button-loading.hidden {
+    display: none;
+  }
+
+  button.submitting .button-text {
+    opacity: 0;
+  }
+
+  button.submitting .button-loading {
+    display: block;
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* Form Messages */
+  .form-message {
+    padding: 1rem;
+    border-radius: 4px;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    text-align: center;
+    margin-top: 1rem;
+  }
+
+  .success-message {
+    background: #d1fae5;
+    color: #065f46;
+  }
+
+  .error-message {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 767px) {
+    .cta-variant {
+      padding: 3rem 0;
+    }
+
+    .cta-container {
+      padding: 0 var(--container-padding-mobile); /* WDA-535: 20px unificado */
+    }
+
+    .title-commercial {
+      font-size: 2rem;
+    }
+
+    .form-input,
+    .cta-button {
+      padding: 0.875rem 1.25rem;
+      font-size: 15px;
+    }
+
+    .disclaimer-text {
+      font-size: 0.8125rem;
+      padding: 0 var(--container-padding-mobile); /* WDA-535: 20px unificado */
+    }
+  }
+</style>
+
+<script define:vars={{ translations, variant, locale }}>
+  /**
+   * NewsletterFormController
+   * Handles form validation, submission, and user feedback
+   */
+  class NewsletterFormController {
+    constructor(formElement) {
+      this.form = formElement;
+      this.variant = this.form.dataset.variant;
+      this.locale = this.form.dataset.locale;
+      this.translations = translations[this.locale][this.variant];
+
+      // Form elements
+      this.nombreInput = this.form.querySelector('input[name="nombre"]');
+      this.emailInput = this.form.querySelector('input[name="email"]');
+      this.privacyCheckbox = this.form.querySelector('input[name="privacy"]');
+      this.submitButton = this.form.querySelector('button[type="submit"]');
+      this.buttonText = this.submitButton.querySelector('.button-text');
+      this.buttonLoading = this.submitButton.querySelector('.button-loading');
+      this.successMessage = this.form.querySelector('.success-message');
+      this.errorMessage = this.form.querySelector('.error-message');
+
+      this.init();
+    }
+
+    init() {
+      // Enable submit button when all required fields are filled
+      this.form.addEventListener('input', () => this.updateButtonState());
+      this.form.addEventListener('change', () => this.updateButtonState());
+
+      // Handle form submission
+      this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+
+      // Remove error states on input
+      this.emailInput.addEventListener('input', () => {
+        this.emailInput.classList.remove('error');
+      });
+
+      if (this.nombreInput) {
+        this.nombreInput.addEventListener('input', () => {
+          this.nombreInput.classList.remove('error');
+        });
+      }
+
+      // Setup scroll animation for CTA variant
+      if (this.variant === 'cta') {
+        this.setupScrollAnimation();
+      }
+
+      // Initial button state
+      this.updateButtonState();
+    }
+
+    updateButtonState() {
+      const emailValid = this.emailInput.value.trim().length > 0;
+      const nombreValid = !this.nombreInput || this.nombreInput.value.trim().length > 0;
+      const privacyChecked = this.privacyCheckbox.checked;
+
+      this.submitButton.disabled = !(emailValid && nombreValid && privacyChecked);
+    }
+
+    setupScrollAnimation() {
+      const section = this.form.closest('.cta-variant');
+      if (!section) return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            }
+          });
+        },
+        {
+          threshold: 0.2,
+          rootMargin: '0px 0px -50px 0px',
+        }
+      );
+
+      observer.observe(section);
+    }
+
+    validate() {
+      let isValid = true;
+      this.hideMessages();
+
+      // Reset error states
+      this.emailInput.classList.remove('error');
+      if (this.nombreInput) {
+        this.nombreInput.classList.remove('error');
+      }
+
+      // Validate name (CTA variant only)
+      if (this.nombreInput && !this.nombreInput.value.trim()) {
+        this.nombreInput.classList.add('error');
+        this.nombreInput.focus();
+        isValid = false;
+      }
+
+      // Validate email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(this.emailInput.value.trim())) {
+        this.emailInput.classList.add('error');
+        if (isValid) this.emailInput.focus();
+        isValid = false;
+      }
+
+      // Validate privacy consent
+      if (!this.privacyCheckbox.checked) {
+        const label = this.privacyCheckbox.closest('.privacy-label');
+        if (label) {
+          label.style.animation = 'shake 0.3s';
+          setTimeout(() => {
+            label.style.animation = '';
+          }, 300);
+        }
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    async handleSubmit(e) {
+      e.preventDefault();
+
+      if (!this.validate()) {
+        return;
+      }
+
+      // Show loading state
+      this.submitButton.disabled = true;
+      this.submitButton.classList.add('submitting');
+
+      // Prepare form data
+      const formData = {
+        nombre: this.nombreInput ? this.nombreInput.value.trim() : '',
+        email: this.emailInput.value.trim(),
+        gdprConsent: this.privacyCheckbox.checked,
+        newsletter: true,
+        language: this.locale,
+        source: this.variant === 'hero' ? 'hero-newsletter' : 'cta-newsletter',
+      };
+
+      try {
+        await this.sendToBackend(formData);
+
+        // Show success message
+        this.showSuccess();
+
+        // Reset form
+        this.form.reset();
+        this.updateButtonState();
+
+        // Track conversion
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'newsletter_signup', {
+            event_category: 'engagement',
+            event_label: this.variant,
+            language: this.locale,
+          });
+        }
+      } catch (error) {
+        console.error('Newsletter submission error:', error);
+        this.showError();
+      } finally {
+        this.submitButton.disabled = false;
+        this.submitButton.classList.remove('submitting');
+      }
+    }
+
+    async sendToBackend(data) {
+      const GRAPHQL_URL = 'https://backend.sauwasauna.com/graphql';
+
+      // GraphQL mutation for newsletter submission
+      const mutation = `
+        mutation SubmitNewsletter($input: SubmitContactFormInput!) {
+          submitContactForm(input: $input) {
+            success
+            message
+          }
+        }
+      `;
+
+      const variables = {
+        input: {
+          name: data.nombre || 'Newsletter Subscriber',
+          email: data.email,
+          message: `Newsletter subscription - ${data.source}`,
+          newsletter: data.newsletter,
+          gdprConsent: data.gdprConsent,
+          language: data.language,
+          clientMutationId: `newsletter-${Date.now()}`,
+        },
+      };
+
+      const response = await fetch(GRAPHQL_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: mutation,
+          variables,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.errors) {
+        console.error('GraphQL errors:', result.errors);
+        throw new Error(result.errors[0].message);
+      }
+
+      if (!result.data?.submitContactForm?.success) {
+        throw new Error(result.data?.submitContactForm?.message || 'Submission failed');
+      }
+
+      return result.data;
+    }
+
+    showSuccess() {
+      this.successMessage.classList.remove('hidden');
+      setTimeout(() => {
+        this.successMessage.classList.add('hidden');
+      }, 5000);
+    }
+
+    showError() {
+      this.errorMessage.classList.remove('hidden');
+      setTimeout(() => {
+        this.errorMessage.classList.add('hidden');
+      }, 5000);
+    }
+
+    hideMessages() {
+      this.successMessage.classList.add('hidden');
+      this.errorMessage.classList.add('hidden');
+    }
+  }
+
+  // Initialize all newsletter forms on the page
+  document.addEventListener('DOMContentLoaded', () => {
+    const forms = document.querySelectorAll('.newsletter-form');
+    forms.forEach((form) => {
+      new NewsletterFormController(form);
+    });
+  });
+</script>

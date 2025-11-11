@@ -1,0 +1,30 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import NavbarNoHero from '../../components/NavbarNoHero.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
+import HreflangMeta from '../../components/seo/HreflangMeta.astro';
+import LegalPageClient from '../../components/legal/LegalPageClient.astro';
+import { LEGAL_PAGE_IDS } from '../../lib/wordpress/polylang-client.js';
+import { getHreflangPaths } from '../../lib/wordpress/legal-slugs.js';
+
+const lang = 'fr';
+const title = 'Politique de Confidentialité | SAUWA';
+const description = 'Politique de confidentialité de SAUWA. Traitement des données personnelles selon le RGPD.';
+---
+
+<Layout title={title} description={description} lang={lang} navbar="none">
+  <HreflangMeta customPaths={getHreflangPaths('POLITICA_PRIVACIDAD')} slot="head" />
+  <NavbarNoHero locale={lang} />
+  <main class="legal-page">
+    <LegalPageClient
+      pageId={LEGAL_PAGE_IDS.POLITICA_PRIVACIDAD}
+      pageType="politica-privacidad"
+      lang="FR"
+      loadingText="Chargement du contenu..."
+      errorTitle="Erreur de chargement"
+      errorMessage="Impossible de charger la politique de confidentialité. Veuillez réessayer."
+      retryText="Réessayer"
+    />
+  </main>
+  <FooterBlack locale={lang} />
+</Layout>

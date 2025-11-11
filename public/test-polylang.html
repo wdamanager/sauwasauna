@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test GraphQL Polylang - SAUWA</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 2rem;
+      background: #f4f4f4;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #BA2515;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      color: #333;
+      margin: 2rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #BA2515;
+    }
+    .test-controls {
+      display: flex;
+      gap: 1rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 0.75rem 1.5rem;
+      background: #BA2515;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #DB4529;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .test-result {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 4px;
+      border-left: 4px solid #ccc;
+    }
+    .test-result.success {
+      background: #d4edda;
+      border-color: #28a745;
+      color: #155724;
+    }
+    .test-result.error {
+      background: #f8d7da;
+      border-color: #dc3545;
+      color: #721c24;
+    }
+    .test-result.info {
+      background: #d1ecf1;
+      border-color: #17a2b8;
+      color: #0c5460;
+    }
+    .test-result h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+    .test-result pre {
+      background: rgba(0,0,0,0.05);
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #BA2515;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .stat-card {
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #BA2515;
+    }
+    .stat-card .label {
+      color: #666;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 Test GraphQL Polylang Integration</h1>
+    <p>Testing SAUWA legal pages with WordPress WPGraphQL + Polylang</p>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="value" id="stat-passed">0</div>
+        <div class="label">Tests Passed</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="stat-failed">0</div>
+        <div class="label">Tests Failed</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="stat-time">0ms</div>
+        <div class="label">Total Time</div>
+      </div>
+    </div>
+
+    <h2>Test Controls</h2>
+    <div class="test-controls">
+      <button id="test-all">▶️ Run All Tests</button>
+      <button id="test-connection">🔗 Test Connection</button>
+      <button id="test-polylang">🌐 Test Polylang</button>
+      <button id="test-legal-pages">📄 Test Legal Pages</button>
+      <button id="test-translations">🔄 Test Translations</button>
+      <button id="clear-results">🗑️ Clear Results</button>
+    </div>
+
+    <h2>Test Results</h2>
+    <div id="results"></div>
+  </div>
+
+  <script type="module">
+    const GRAPHQL_ENDPOINT = 'https://backend.sauwasauna.com/graphql';
+    const LEGAL_PAGE_IDS = {
+      AVISO_LEGAL: 94,
+      POLITICA_COOKIES: 96,
+      POLITICA_PRIVACIDAD: 3
+    };
+    const LANGUAGES = ['ES', 'EN', 'FR', 'CA'];
+
+    let stats = { passed: 0, failed: 0, totalTime: 0 };
+
+    // Helper functions
+    function updateStats() {
+      document.getElementById('stat-passed').textContent = stats.passed;
+      document.getElementById('stat-failed').textContent = stats.failed;
+      document.getElementById('stat-time').textContent = `${stats.totalTime}ms`;
+    }
+
+    function addResult(title, success, data, error = null) {
+      const resultsDiv = document.getElementById('results');
+      const resultDiv = document.createElement('div');
+      resultDiv.className = `test-result ${success ? 'success' : 'error'}`;
+
+      let html = `<h3>${success ? '✅' : '❌'} ${title}</h3>`;
+
+      if (success && data) {
+        html += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      }
+
+      if (error) {
+        html += `<p><strong>Error:</strong> ${error.message}</p>`;
+        if (error.stack) {
+          html += `<pre>${error.stack}</pre>`;
+        }
+      }
+
+      resultDiv.innerHTML = html;
+      resultsDiv.appendChild(resultDiv);
+
+      if (success) stats.passed++;
+      else stats.failed++;
+      updateStats();
+    }
+
+    function addInfo(title, message) {
+      const resultsDiv = document.getElementById('results');
+      const resultDiv = document.createElement('div');
+      resultDiv.className = 'test-result info';
+      resultDiv.innerHTML = `<h3>ℹ️ ${title}</h3><p>${message}</p>`;
+      resultsDiv.appendChild(resultDiv);
+    }
+
+    async function queryGraphQL(query, variables = {}) {
+      const startTime = performance.now();
+
+      try {
+        const response = await fetch(GRAPHQL_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, variables })
+        });
+
+        const endTime = performance.now();
+        const duration = Math.round(endTime - startTime);
+        stats.totalTime += duration;
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+
+        if (result.errors) {
+          throw new Error(result.errors[0].message);
+        }
+
+        return { data: result.data, duration };
+
+      } catch (error) {
+        const endTime = performance.now();
+        stats.totalTime += Math.round(endTime - startTime);
+        throw error;
+      }
+    }
+
+    // Test 1: Connection
+    async function testConnection() {
+      addInfo('Test 1: Connection', 'Testing GraphQL endpoint connection...');
+
+      try {
+        const query = `{ posts(first: 1) { nodes { id title } } }`;
+        const { data, duration } = await queryGraphQL(query);
+
+        addResult(
+          `Connection Test (${duration}ms)`,
+          true,
+          { endpoint: GRAPHQL_ENDPOINT, status: 'Connected', duration }
+        );
+      } catch (error) {
+        addResult('Connection Test', false, null, error);
+      }
+    }
+
+    // Test 2: Polylang Plugin
+    async function testPolylang() {
+      addInfo('Test 2: Polylang', 'Checking if Polylang is installed and active...');
+
+      try {
+        const query = `
+          {
+            post(id: 94, idType: DATABASE_ID) {
+              id
+              title
+              language {
+                code
+                locale
+                name
+              }
+              translations {
+                id
+                language {
+                  code
+                }
+              }
+            }
+          }
+        `;
+
+        const { data, duration } = await queryGraphQL(query);
+
+        const hasLanguage = data.post && data.post.language;
+        const hasTranslations = data.post && data.post.translations;
+
+        if (hasLanguage && hasTranslations) {
+          addResult(
+            `Polylang Active (${duration}ms)`,
+            true,
+            {
+              language: data.post.language,
+              availableTranslations: data.post.translations.map(t => t.language.code)
+            }
+          );
+        } else {
+          throw new Error('Polylang fields not available');
+        }
+      } catch (error) {
+        addResult('Polylang Plugin Test', false, null, error);
+      }
+    }
+
+    // Test 3: Legal Pages Exist
+    async function testLegalPages() {
+      addInfo('Test 3: Legal Pages', 'Verifying all legal pages exist...');
+
+      for (const [name, id] of Object.entries(LEGAL_PAGE_IDS)) {
+        try {
+          const query = `
+            {
+              post(id: ${id}, idType: DATABASE_ID) {
+                id
+                title
+                content
+                language {
+                  code
+                }
+              }
+            }
+          `;
+
+          const { data, duration } = await queryGraphQL(query);
+
+          if (data.post && data.post.content) {
+            addResult(
+              `${name} exists (ID: ${id}) - ${duration}ms`,
+              true,
+              {
+                id: data.post.id,
+                title: data.post.title,
+                language: data.post.language.code,
+                hasContent: data.post.content.length > 0
+              }
+            );
+          } else {
+            throw new Error('Post not found or no content');
+          }
+        } catch (error) {
+          addResult(`${name} (ID: ${id})`, false, null, error);
+        }
+      }
+    }
+
+    // Test 4: Translations
+    async function testTranslations() {
+      addInfo('Test 4: Translations', 'Testing translation retrieval for each language...');
+
+      for (const lang of LANGUAGES) {
+        try {
+          const query = `
+            query GetLegalPageTranslated($id: ID!, $lang: LanguageCodeEnum!) {
+              post(id: $id, idType: DATABASE_ID) {
+                id
+                title
+                language {
+                  code
+                }
+                translation(language: $lang) {
+                  id
+                  title
+                  content
+                  language {
+                    code
+                  }
+                }
+              }
+            }
+          `;
+
+          const { data, duration } = await queryGraphQL(query, {
+            id: LEGAL_PAGE_IDS.AVISO_LEGAL,
+            lang: lang
+          });
+
+          const hasTranslation = data.post && data.post.translation;
+
+          if (hasTranslation) {
+            addResult(
+              `Aviso Legal [${lang}] - ${duration}ms`,
+              true,
+              {
+                originalLang: data.post.language.code,
+                translationLang: data.post.translation.language.code,
+                title: data.post.translation.title,
+                hasContent: data.post.translation.content.length > 0
+              }
+            );
+          } else {
+            addInfo(
+              `Aviso Legal [${lang}] - Fallback`,
+              `No translation found, will use fallback (Original: ${data.post.language.code})`
+            );
+          }
+        } catch (error) {
+          addResult(`Translation [${lang}]`, false, null, error);
+        }
+      }
+    }
+
+    // Run all tests
+    async function runAllTests() {
+      stats = { passed: 0, failed: 0, totalTime: 0 };
+      document.getElementById('results').innerHTML = '';
+
+      const startTime = Date.now();
+
+      await testConnection();
+      await testPolylang();
+      await testLegalPages();
+      await testTranslations();
+
+      const totalTime = Date.now() - startTime;
+
+      addInfo('All Tests Complete', `Total execution time: ${totalTime}ms | Passed: ${stats.passed} | Failed: ${stats.failed}`);
+    }
+
+    // Event listeners
+    document.getElementById('test-all').addEventListener('click', runAllTests);
+    document.getElementById('test-connection').addEventListener('click', testConnection);
+    document.getElementById('test-polylang').addEventListener('click', testPolylang);
+    document.getElementById('test-legal-pages').addEventListener('click', testLegalPages);
+    document.getElementById('test-translations').addEventListener('click', testTranslations);
+    document.getElementById('clear-results').addEventListener('click', () => {
+      document.getElementById('results').innerHTML = '';
+      stats = { passed: 0, failed: 0, totalTime: 0 };
+      updateStats();
+    });
+  </script>
+</body>
+</html>

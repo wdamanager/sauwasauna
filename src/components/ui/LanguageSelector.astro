@@ -1,0 +1,238 @@
+---
+/**
+ * LanguageSelector - Minimal language selector
+ * - Only shows language codes: ES, CA, EN, FR
+ * - Subtle arrow, no borders
+ * - Minimal and clean design
+ */
+
+import { getLocalizedUrl, type Locale } from '../../lib/i18n/routes';
+
+export interface Props {
+  currentLang: 'es' | 'ca' | 'en' | 'fr';
+  class?: string;
+}
+
+const { currentLang, class: className = '' } = Astro.props;
+
+const langCodes = ['es', 'ca', 'en', 'fr'] as const;
+const currentPath = Astro.url.pathname;
+---
+
+<div class={`language-selector ${className}`} id="language-selector">
+  <!-- Current Language Button -->
+  <button
+    class="lang-button"
+    id="lang-button"
+    aria-label="Select language"
+    aria-expanded="false"
+  >
+    <span class="lang-code">{currentLang.toUpperCase()}</span>
+    <svg class="lang-chevron" width="12" height="12" viewBox="0 0 12 12" fill="none">
+      <path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <!-- Dropdown Menu -->
+  <div class="lang-dropdown" id="lang-dropdown">
+    {langCodes.map((code) => {
+      const href = getLocalizedUrl(currentPath, code as Locale);
+      return (
+        <a
+          href={href}
+          class={`lang-option ${code === currentLang ? 'active' : ''}`}
+          data-lang={code}
+        >
+          {code.toUpperCase()}
+        </a>
+      );
+    })}
+  </div>
+</div>
+
+<style>
+  .language-selector {
+    position: relative;
+  }
+
+  .lang-button {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: white;
+    font-family: var(--font-avenir, 'Nunito Sans', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .lang-button:hover {
+    opacity: 0.8;
+  }
+
+  .lang-button:focus-visible {
+    outline: none;
+    opacity: 0.8;
+  }
+
+  .lang-code {
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    font-size: 0.875rem;
+  }
+
+  .lang-chevron {
+    width: 12px;
+    height: 12px;
+    transition: transform 0.2s ease;
+    opacity: 0.7;
+  }
+
+  .lang-button[aria-expanded="true"] .lang-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown */
+  .lang-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: 60px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+    z-index: 100;
+    overflow: hidden;
+  }
+
+  .lang-dropdown.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .lang-option {
+    display: block;
+    padding: 0.625rem 0.875rem;
+    color: #1a1a1a;
+    font-family: var(--font-avenir, 'Nunito Sans', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 400;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.15s ease;
+    letter-spacing: 0.025em;
+  }
+
+  .lang-option:hover {
+    background: rgba(219, 69, 41, 0.08);
+    color: #DB4529;
+  }
+
+  .lang-option.active {
+    background: rgba(219, 69, 41, 0.12);
+    color: #DB4529;
+    font-weight: 600;
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 768px) {
+    .lang-button {
+      font-size: 0.8125rem;
+    }
+
+    .lang-code {
+      font-size: 0.8125rem;
+    }
+
+    .lang-chevron {
+      width: 10px;
+      height: 10px;
+    }
+  }
+</style>
+
+<script>
+  class LanguageSelectorController {
+    private button: HTMLButtonElement;
+    private dropdown: HTMLElement;
+    private isOpen: boolean = false;
+
+    constructor() {
+      this.button = document.getElementById('lang-button') as HTMLButtonElement;
+      this.dropdown = document.getElementById('lang-dropdown') as HTMLElement;
+
+      if (!this.button || !this.dropdown) return;
+
+      this.init();
+    }
+
+    private init() {
+      // Toggle dropdown on button click
+      this.button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggle();
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (this.isOpen && !this.dropdown.contains(e.target as Node)) {
+          this.close();
+        }
+      });
+
+      // Close dropdown on ESC key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.isOpen) {
+          this.close();
+        }
+      });
+
+      // Save language preference when clicking option
+      const options = this.dropdown.querySelectorAll('.lang-option');
+      options.forEach((option) => {
+        option.addEventListener('click', (e) => {
+          const lang = (e.currentTarget as HTMLElement).dataset.lang;
+          if (lang) {
+            localStorage.setItem('preferredLanguage', lang);
+          }
+        });
+      });
+    }
+
+    private toggle() {
+      if (this.isOpen) {
+        this.close();
+      } else {
+        this.open();
+      }
+    }
+
+    private open() {
+      this.dropdown.classList.add('open');
+      this.button.setAttribute('aria-expanded', 'true');
+      this.isOpen = true;
+    }
+
+    private close() {
+      this.dropdown.classList.remove('open');
+      this.button.setAttribute('aria-expanded', 'false');
+      this.isOpen = false;
+    }
+  }
+
+  // Initialize language selector
+  let langSelector: LanguageSelectorController;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    langSelector = new LanguageSelectorController();
+  });
+</script>

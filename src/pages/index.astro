@@ -1,0 +1,48 @@
+---
+/**
+ * Root index - Auto-detección de idioma y redirect
+ * 1. Revisa localStorage (preferencia guardada)
+ * 2. Detecta idioma navegador
+ * 3. Fallback a español
+ */
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SAUWA - Sauna finlandesa en Andorra</title>
+  </head>
+  <body>
+    <script>
+      // Idiomas soportados
+      const supportedLanguages = ['es', 'ca', 'en', 'fr'];
+      const defaultLang = 'es';
+
+      function detectLanguage() {
+        // 1. Preferencia guardada en localStorage
+        const savedLang = localStorage.getItem('preferredLanguage');
+        if (savedLang && supportedLanguages.includes(savedLang)) {
+          return savedLang;
+        }
+
+        // 2. Detectar idioma del navegador
+        const browserLang = navigator.language.toLowerCase();
+
+        // Mapeo exacto (es-ES → es, ca-ES → ca, etc.)
+        const langCode = browserLang.split('-')[0];
+        if (supportedLanguages.includes(langCode)) {
+          return langCode;
+        }
+
+        // 3. Fallback a español
+        return defaultLang;
+      }
+
+      // Detectar y redirigir (con trailing slash para consistencia)
+      const targetLang = detectLanguage();
+      window.location.href = `/${targetLang}/`;
+    </script>
+  </body>
+</html>

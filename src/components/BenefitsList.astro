@@ -1,0 +1,533 @@
+---
+/**
+ * BenefitsList - Lista de 5 beneficios con iconos
+ * Columna izquierda del layout sticky
+ */
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+}
+
+const { locale = 'es' } = Astro.props;
+
+// Benefits content by language
+const content = {
+  es: {
+    seoTitle: 'GUÍA SAUWA SAUNA',
+    heading: 'Aprende más sobre sauna, baños fríos y recuperación',
+    newParagraph: 'En la calidez de la leña encendida y en el impacto del agua helada, descubrimos la fuerza del contraste: donde el cuerpo se renueva, la mente se calma y el alma se conecta con lo esencial.',
+    intro: 'Descubre los beneficios científicos del contraste térmico, rituales nórdicos auténticos y consejos prácticos para maximizar tu experiencia.',
+    ctaPrimary: 'Explorar la guía',
+    ctaPrimaryLink: '/es/guia-sauwa-sauna/',
+    ctaSecondary: 'SUSCRÍBETE',
+    ctaSecondaryLink: '#cta-newsletter',
+    benefits: [
+      {
+        icon: 'muscle',
+        title: 'Recuperación muscular',
+        text: 'Acelera la recuperación tras actividad física intensa y reduce la fatiga muscular.',
+      },
+      {
+        icon: 'sleep',
+        title: 'Mejora del sueño',
+        text: 'Favorece un descanso profundo y reparador gracias a la liberación de endorfinas.',
+      },
+      {
+        icon: 'circulation',
+        title: 'Activación circulatoria',
+        text: 'Estimula la circulación sanguínea y mejora el enfoque mental.',
+      },
+      {
+        icon: 'resilience',
+        title: 'Fortalecimiento inmune',
+        text: 'Refuerza la tolerancia al frío y mejora la respuesta inmunológica.',
+      },
+      {
+        icon: 'nature',
+        title: 'Conexión con la naturaleza',
+        text: 'Ritual auténtico guiado por sauna master en entorno natural único.',
+      },
+    ],
+  },
+  ca: {
+    seoTitle: 'GUIA SAUWA SAUNA',
+    heading: 'Aprèn més sobre sauna, banys freds i recuperació',
+    newParagraph: 'En la calidesa de la llenya encesa i en l\'impacte de l\'aigua gelada, descobrim la força del contrast: on el cos es renova, la ment es calma i l\'ànima es connecta amb l\'essencial.',
+    intro: 'Descobreix els beneficis científics del contrast tèrmic, rituals nòrdics autèntics i consells pràctics per maximitzar la teva experiència.',
+    ctaPrimary: 'Explorar la guia',
+    ctaPrimaryLink: '/ca/guia-sauwa-sauna/',
+    ctaSecondary: 'SUBSCRIU-TE',
+    ctaSecondaryLink: '#cta-newsletter',
+    benefits: [
+      {
+        icon: 'muscle',
+        title: 'Recuperació muscular',
+        text: 'Accelera la recuperació després d\'activitat física intensa i redueix la fatiga muscular.',
+      },
+      {
+        icon: 'sleep',
+        title: 'Millora del son',
+        text: 'Afavoreix un descans profund i reparador gràcies a l\'alliberament d\'endorfines.',
+      },
+      {
+        icon: 'circulation',
+        title: 'Activació circulatòria',
+        text: 'Estimula la circulació sanguínia i millora l\'enfocament mental.',
+      },
+      {
+        icon: 'resilience',
+        title: 'Enfortiment immune',
+        text: 'Reforça la tolerància al fred i millora la resposta immunològica.',
+      },
+      {
+        icon: 'nature',
+        title: 'Connexió amb la natura',
+        text: 'Ritual autèntic guiat per sauna master en entorn natural únic.',
+      },
+    ],
+  },
+  en: {
+    seoTitle: 'SAUWA SAUNA GUIDE',
+    heading: 'Learn more about sauna, cold baths and recovery',
+    newParagraph: 'In the warmth of burning wood and the impact of icy water, we discover the power of contrast: where the body renews, the mind calms, and the soul connects with the essential.',
+    intro: 'Discover the scientific benefits of thermal contrast, authentic Nordic rituals and practical tips to maximize your experience.',
+    ctaPrimary: 'Explore the guide',
+    ctaPrimaryLink: '/en/guia-sauwa-sauna/',
+    ctaSecondary: 'SUBSCRIBE',
+    ctaSecondaryLink: '#cta-newsletter',
+    benefits: [
+      {
+        icon: 'muscle',
+        title: 'Muscle recovery',
+        text: 'Accelerates recovery after intense physical activity and reduces muscle fatigue.',
+      },
+      {
+        icon: 'sleep',
+        title: 'Sleep improvement',
+        text: 'Promotes deep and restorative rest thanks to endorphin release.',
+      },
+      {
+        icon: 'circulation',
+        title: 'Circulation activation',
+        text: 'Stimulates blood circulation and improves mental focus.',
+      },
+      {
+        icon: 'resilience',
+        title: 'Immune strengthening',
+        text: 'Strengthens cold tolerance and improves immune response.',
+      },
+      {
+        icon: 'nature',
+        title: 'Nature connection',
+        text: 'Authentic ritual guided by sauna master in unique natural setting.',
+      },
+    ],
+  },
+  fr: {
+    seoTitle: 'GUIDE SAUWA SAUNA',
+    heading: 'Apprenez-en plus sur le sauna, les bains froids et la récupération',
+    newParagraph: 'Dans la chaleur du bois qui brûle et l\'impact de l\'eau glacée, nous découvrons la force du contraste : où le corps se renouvelle, l\'esprit s\'apaise et l\'âme se connecte à l\'essentiel.',
+    intro: 'Découvrez les bienfaits scientifiques du contraste thermique, les rituels nordiques authentiques et des conseils pratiques pour maximiser votre expérience.',
+    ctaPrimary: 'Explorer le guide',
+    ctaPrimaryLink: '/fr/guia-sauwa-sauna/',
+    ctaSecondary: 'S\'ABONNER',
+    ctaSecondaryLink: '#cta-newsletter',
+    benefits: [
+      {
+        icon: 'muscle',
+        title: 'Récupération musculaire',
+        text: 'Accélère la récupération après une activité physique intense et réduit la fatigue musculaire.',
+      },
+      {
+        icon: 'sleep',
+        title: 'Amélioration du sommeil',
+        text: 'Favorise un repos profond et réparateur grâce à la libération d\'endorphines.',
+      },
+      {
+        icon: 'circulation',
+        title: 'Activation circulatoire',
+        text: 'Stimule la circulation sanguine et améliore la concentration mentale.',
+      },
+      {
+        icon: 'resilience',
+        title: 'Renforcement immunitaire',
+        text: 'Renforce la tolérance au froid et améliore la réponse immunitaire.',
+      },
+      {
+        icon: 'nature',
+        title: 'Connexion avec la nature',
+        text: 'Rituel authentique guidé par un maître de sauna dans un cadre naturel unique.',
+      },
+    ],
+  },
+};
+
+const localizedContent = content[locale];
+
+// SVG Icons (optimized, 24x24)
+const icons = {
+  muscle: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+    </svg>
+  `,
+  sleep: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+    </svg>
+  `,
+  circulation: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    </svg>
+  `,
+  resilience: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+    </svg>
+  `,
+  nature: `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  `,
+};
+---
+
+<div class="benefits-content">
+  <h2 class="seo-title fade-in-left">{localizedContent.seoTitle}</h2>
+  <h3 class="main-heading fade-in-left">{localizedContent.heading}</h3>
+  <p class="new-paragraph fade-in-left">{localizedContent.newParagraph}</p>
+  <p class="intro-text fade-in-left">{localizedContent.intro}</p>
+
+  <!-- WDA-272: Dual CTAs -->
+  <div class="cta-buttons-container fade-in-left">
+    <!-- Primary CTA: Explorar el diario (outline style) -->
+    <a href={localizedContent.ctaPrimaryLink} class="cta-link cta-primary">
+      {localizedContent.ctaPrimary}
+      <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+      </svg>
+    </a>
+
+    <!-- Secondary CTA: Acceso prioritario (inverted filled style) -->
+    <a href={localizedContent.ctaSecondaryLink} class="cta-link cta-secondary">
+      {localizedContent.ctaSecondary}
+    </a>
+  </div>
+</div>
+
+<style>
+  .benefits-content {
+    max-width: 100%;
+    width: 100%; /* Ensure full width */
+    padding: 4rem 3rem; /* Desktop padding moved from sticky-content */
+  }
+
+  .seo-title {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #DB4529;
+    margin: 0 0 1rem;
+  }
+
+  .main-heading {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 300;
+    line-height: 1.3;
+    color: #1a1a1a;
+    margin: 0 0 1.5rem;
+  }
+
+  .intro-text {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: clamp(1.0625rem, 1.3vw, 1.25rem); /* WDA-531: 17px → 20px (fue 15px → 18px) */
+    font-weight: 400;
+    line-height: 1.7;
+    color: #444;
+    margin: 0 0 3rem;
+  }
+
+  .benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 3rem;
+  }
+
+  .benefit-item {
+    display: flex;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease;
+  }
+
+  .benefit-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .benefit-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #DB4529;
+  }
+
+  .benefit-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .benefit-content {
+    flex: 1;
+  }
+
+  .benefit-title {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1.25rem; /* WDA-531: 20px (fue 18px) */
+    font-weight: 400;
+    color: #1a1a1a;
+    margin: 0 0 0.5rem;
+  }
+
+  .benefit-text {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1.0625rem; /* WDA-531: 17px (fue 15.2px) */
+    font-weight: 400;
+    line-height: 1.6;
+    color: #555;
+    margin: 0;
+  }
+
+  /* New paragraph styling */
+  .new-paragraph {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: clamp(1.0625rem, 1.4vw, 1.375rem); /* WDA-531: 17px → 22px (fue 16px → 20px) */
+    font-weight: 400;
+    line-height: 1.7;
+    color: #333;
+    margin: 0 0 1.5rem;
+    font-style: italic;
+  }
+
+  /* WDA-272: CTA Buttons Container - Side by side on desktop, stacked on mobile */
+  .cta-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    .cta-buttons-container {
+      flex-direction: row;
+      gap: 1rem;
+    }
+  }
+
+  /* Base CTA styles */
+  .cta-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    text-decoration: none;
+    padding: 1rem 3.5rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    min-height: 44px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* Arrow icon for primary button */
+  .arrow-icon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  /* Primary CTA: Outline style (naranja corporativo) */
+  .cta-primary {
+    color: #DB4529;
+    background-color: transparent;
+    border: 1px solid #DB4529;
+  }
+
+  .cta-primary:hover {
+    background-color: #DB4529;
+    color: #FFFFFF;
+  }
+
+  .cta-primary:hover .arrow-icon {
+    transform: translateX(4px);
+  }
+
+  /* Secondary CTA: Inverted filled style (naranja filled, hover to outline) */
+  .cta-secondary {
+    color: #FFFFFF;
+    background-color: #DB4529;
+    border: 1px solid #DB4529;
+  }
+
+  .cta-secondary:hover {
+    background-color: transparent;
+    color: #DB4529;
+  }
+
+  @media (max-width: 1024px) {
+    .benefits-content {
+      padding: 3rem 2rem; /* Tablet padding */
+    }
+
+    .benefit-item {
+      gap: 1rem;
+    }
+
+    .benefit-icon {
+      width: 40px;
+      height: 40px;
+    }
+
+    .benefit-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .benefits-content {
+      padding: 2rem var(--container-padding-mobile); /* Mobile padding consistent */
+      margin-bottom: 0; /* Remove margin to prevent sticky break */
+    }
+
+    /* Centrar títulos y texto en mobile */
+    .seo-title,
+    .main-heading,
+    .new-paragraph,
+    .intro-text {
+      text-align: center;
+    }
+
+    .intro-text {
+      margin-bottom: 2rem;
+    }
+
+    .benefit-item {
+      margin-bottom: 1.5rem;
+    }
+
+    /* Full-width buttons on mobile */
+    .cta-link {
+      width: 100%; /* Full width en mobile */
+      align-self: stretch;
+      justify-content: center;
+      padding: 1rem 2rem;
+    }
+  }
+
+  /* Fade-in animation from left to right */
+  .fade-in-left {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+
+  .fade-in-left.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Stagger delays for cascading effect */
+  .seo-title.is-visible {
+    transition-delay: 0.1s;
+  }
+
+  .main-heading.is-visible {
+    transition-delay: 0.2s;
+  }
+
+  .new-paragraph.is-visible {
+    transition-delay: 0.3s;
+  }
+
+  .intro-text.is-visible {
+    transition-delay: 0.4s;
+  }
+
+  .cta-buttons-container.is-visible {
+    transition-delay: 0.5s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .benefit-item,
+    .cta-link,
+    .fade-in-left,
+    .arrow-icon {
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
+
+    .cta-primary:hover .arrow-icon {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // Intersection Observer for fade-in animations
+  document.addEventListener('DOMContentLoaded', () => {
+    const fadeElements = document.querySelectorAll('.fade-in-left');
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px 0px -100px 0px',
+      threshold: 0.1,
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    fadeElements.forEach((element) => {
+      observer.observe(element);
+    });
+
+    // WDA-540: Smooth scroll to newsletter section
+    const ctaSecondaryLink = document.querySelector('.cta-secondary');
+    if (ctaSecondaryLink) {
+      ctaSecondaryLink.addEventListener('click', (e) => {
+        const href = ctaSecondaryLink.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          e.preventDefault();
+          const targetId = href.substring(1);
+          const targetElement = document.getElementById(targetId);
+
+          if (targetElement) {
+            // Smooth scroll to the target element
+            targetElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+              inline: 'nearest'
+            });
+          }
+        }
+      });
+    }
+  });
+</script>

@@ -1,0 +1,529 @@
+---
+/**
+ * MobileMenu Component - WDA-314 / WDA-340
+ * Sidebar deslizante para navegación mobile y desktop (estilo minimalista)
+ *
+ * Features:
+ * - Sidebar desde la derecha con overlay oscuro
+ * - Animación slide-in suave (0.4s ease-out-quad)
+ * - Ancho: 80% viewport, max 320px (mobile), 400px (desktop)
+ * - Height: 100vh, z-index: 1000
+ * - WDA-340 Desktop: Sin selector de idiomas (en navbar), Sin Instagram (en navbar)
+ * - WDA-340 Mobile: Con selector de idiomas e Instagram
+ * - Cierre al clic en overlay
+ * - Bloquea scroll del body cuando abierto
+ *
+ * @prop {string} locale - Idioma actual (es/ca/en/fr)
+ */
+
+import { getLocalizedUrl, type Locale } from '../../lib/i18n/routes';
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+}
+
+const { locale = 'es' } = Astro.props;
+
+// Contenido por idioma
+const content = {
+  es: {
+    home: 'Inicio',
+    blog: 'Guía',
+    careers: 'Trabaja con nosotros',
+    partners: 'Acceso exclusivo',
+    language: 'Idioma',
+    followUs: 'Síguenos',
+  },
+  ca: {
+    home: 'Inici',
+    blog: 'Guia',
+    careers: 'Treballa amb nosaltres',
+    partners: 'Accés exclusiu',
+    language: 'Idioma',
+    followUs: 'Segueix-nos',
+  },
+  en: {
+    home: 'Home',
+    blog: 'Guide',
+    careers: 'Work with us',
+    partners: 'Exclusive access',
+    language: 'Language',
+    followUs: 'Follow us',
+  },
+  fr: {
+    home: 'Accueil',
+    blog: 'Guide',
+    careers: 'Travailler avec nous',
+    partners: 'Accès exclusif',
+    language: 'Langue',
+    followUs: 'Suivez-nous',
+  },
+};
+
+const localizedContent = content[locale];
+
+// Idiomas disponibles
+const languages = [
+  { code: 'es', label: 'Español' },
+  { code: 'ca', label: 'Català' },
+  { code: 'en', label: 'English' },
+  { code: 'fr', label: 'Français' },
+];
+
+// Detectar página actual para marcar como activa y traducir rutas
+const currentPath = Astro.url.pathname;
+---
+
+<div class="mobile-menu" data-state="closed" data-mobile-menu>
+  <!-- Overlay -->
+  <div class="overlay" data-overlay></div>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" aria-label="Mobile navigation">
+    <!-- NUEVO: Botón cerrar X -->
+    <button
+      class="close-button"
+      aria-label="Cerrar menú"
+      data-close-menu
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- NUEVO: Logo SAUWA -->
+    <a href={`/${locale}/`} class="sidebar-logo-link">
+      <img src="/images/logo/sauwa-black.svg" alt="SAUWA Sauna" class="sidebar-logo" />
+    </a>
+
+    <!-- Navigation Links -->
+    <ul class="nav-links">
+      <li>
+        <a
+          href={`/${locale}/`}
+          class={`nav-link ${currentPath === `/${locale}/` || currentPath === `/${locale}` ? 'active' : ''}`}
+        >
+          {localizedContent.home}
+        </a>
+      </li>
+      <li>
+        <a
+          href={`/${locale}/guia-sauwa-sauna/`}
+          class={`nav-link ${currentPath.includes('/guia-sauwa-sauna') ? 'active' : ''}`}
+        >
+          {localizedContent.blog}
+        </a>
+      </li>
+      <li>
+        <a
+          href={`/${locale}/${locale === 'es' ? 'trabaja-con-nosotros' : locale === 'ca' ? 'treballa-amb-nosaltres' : locale === 'en' ? 'work-with-us' : 'travailler-avec-nous'}/`}
+          class={`nav-link ${currentPath.includes('/trabaja-con-nosotros') || currentPath.includes('/treballa-amb-nosaltres') || currentPath.includes('/work-with-us') || currentPath.includes('/travailler-avec-nous') ? 'active' : ''}`}
+        >
+          {localizedContent.careers}
+        </a>
+      </li>
+      <li>
+        <a
+          href={`/${locale}/${locale === 'es' ? 'partners-hoteleros' : locale === 'ca' ? 'socis-hotelers' : locale === 'en' ? 'hotel-partners' : 'partenaires-hoteliers'}/`}
+          class={`nav-link ${currentPath.includes('/partners-hoteleros') || currentPath.includes('/socis-hotelers') || currentPath.includes('/hotel-partners') || currentPath.includes('/partenaires-hoteliers') ? 'active' : ''}`}
+        >
+          {localizedContent.partners}
+        </a>
+      </li>
+    </ul>
+
+    <!-- Language Selector -->
+    <div class="language-section">
+      <h3 class="section-heading">{localizedContent.language}</h3>
+      <div class="language-grid">
+        {languages.map((lang) => {
+          const href = getLocalizedUrl(currentPath, lang.code as Locale);
+          return (
+            <a
+              href={href}
+              class={`language-link ${lang.code === locale ? 'active' : ''}`}
+              aria-label={`Switch to ${lang.label}`}
+            >
+              {lang.code.toUpperCase()}
+            </a>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Social Links -->
+    <div class="social-section">
+      <p class="social-label">{localizedContent.followUs}</p>
+      <a
+        href="https://www.instagram.com/sauwa.ad/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="social-link"
+        aria-label="Follow us on Instagram"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+        <span>Instagram</span>
+      </a>
+    </div>
+  </nav>
+</div>
+
+<style>
+  /* Mobile Menu Container */
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    visibility: hidden;
+    pointer-events: none;
+    /* WDA-294: Prevent horizontal scroll when sidebar is off-screen */
+    overflow: hidden;
+  }
+
+  .mobile-menu[data-state="open"] {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  /* Overlay */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.4s ease-out; /* WDA-314: Animación más elegante */
+    backdrop-filter: blur(2px);
+  }
+
+  .mobile-menu[data-state="open"] .overlay {
+    opacity: 1;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 80%;
+    max-width: 320px;
+    height: 100vh;
+    background: #FFFFFF;
+    z-index: 1000;
+    transform: translateX(100%); /* WDA-314: Transform en lugar de right */
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* WDA-314: ease-out-quad */
+    display: flex;
+    flex-direction: column;
+    padding: 2rem; /* WDA-314: Padding uniforme, ajustaremos dentro */
+    overflow-y: auto;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .mobile-menu[data-state="open"] .sidebar {
+    transform: translateX(0); /* WDA-314: Slide in suave */
+  }
+
+  /* WDA-314: Botón cerrar X */
+  .close-button {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #1a1a1a;
+    z-index: 10;
+    transition: color 0.2s ease;
+  }
+
+  .close-button:hover {
+    color: #DB4529;
+  }
+
+  .close-button:active {
+    transform: scale(0.95);
+  }
+
+  /* WDA-314: Logo SAUWA arriba */
+  .sidebar-logo-link {
+    display: block;
+    padding: 1.5rem 2rem 1rem 0; /* WDA-531: Reducido spacing para mobile compacto */
+    border-bottom: 1px solid #e5e5e5;
+    margin-bottom: 1.5rem; /* WDA-531: Reducido de 2rem a 1.5rem */
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .sidebar-logo-link:hover {
+    opacity: 0.8;
+  }
+
+  .sidebar-logo {
+    max-width: 140px;
+    height: auto;
+    display: block;
+  }
+
+  /* Navigation Links */
+  .nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 3rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .nav-link {
+    display: block;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 1.125rem; /* WDA-531: Fijo 18px - mobile menu más compacto */
+    font-weight: 400;
+    color: #1f2937;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem; /* WDA-531: Reducido de 1rem a 0.75rem para más espacio */
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .nav-link:hover {
+    color: #DB4529;
+    background-color: #f8f8f8;
+    border-left-color: #DB4529;
+  }
+
+  /* WDA-314: Estado activo para el nav-link actual */
+  .nav-link.active {
+    color: #DB4529;
+    border-left-color: #DB4529;
+    background-color: #fef2f2;
+    font-weight: 500;
+  }
+
+  .nav-link:active {
+    transform: scale(0.98);
+  }
+
+  /* Section Headings */
+  .section-heading {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 0.875rem; /* WDA-531: 14px fijo - headers compactos */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6b7280;
+    margin: 0 0 0.75rem 0; /* WDA-531: Reducido de 1rem a 0.75rem */
+  }
+
+  /* Language Section */
+  .language-section {
+    margin-bottom: 2rem; /* WDA-531: Reducido de 3rem a 2rem */
+    padding-bottom: 1.5rem; /* WDA-531: Reducido de 2rem a 1.5rem */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .language-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .language-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 0.875rem; /* WDA-531: 14px fijo - botones compactos */
+    font-weight: 500;
+    color: #1f2937;
+    text-decoration: none;
+    padding: 0.625rem 1rem; /* WDA-531: Reducido vertical de 0.75rem a 0.625rem */
+    min-height: 44px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    transition: all 0.2s ease;
+  }
+
+  .language-link:hover {
+    border-color: #DB4529;
+    color: #DB4529;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(219, 69, 41, 0.15);
+  }
+
+  .language-link.active {
+    background: #DB4529;
+    border-color: #DB4529;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  /* Social Section */
+  .social-section {
+    margin-top: auto;
+  }
+
+  .social-label {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 0.875rem; /* WDA-531: 14px fijo - consistente con otros headers */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #6b7280;
+    margin: 0 0 0.75rem 0; /* WDA-531: Reducido de 1rem a 0.75rem */
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* WDA-531: Reducido de 1rem a 0.75rem */
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 0.9375rem; /* WDA-531: 15px fijo - más compacto */
+    font-weight: 500;
+    color: #1f2937;
+    text-decoration: none;
+    padding: 0.75rem; /* WDA-531: Reducido de 1rem a 0.75rem */
+    min-height: 44px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    transition: all 0.2s ease;
+  }
+
+  .social-link:hover {
+    border-color: #DB4529;
+    color: #DB4529;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(219, 69, 41, 0.15);
+  }
+
+  .social-link svg {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  /* WDA-340: Desktop Menu Behavior */
+  @media (min-width: 768px) {
+    /* Mantener el menú visible pero ajustar tamaño */
+    .sidebar {
+      max-width: 400px; /* Más ancho en desktop */
+    }
+
+    /* Ocultar sección de idiomas en desktop (idioma está en navbar) */
+    .language-section {
+      display: none !important;
+    }
+
+    /* Ocultar sección social en desktop (Instagram está en navbar) */
+    .social-section {
+      display: none !important;
+    }
+  }
+
+  /* Reducir movimiento si el usuario lo prefiere */
+  @media (prefers-reduced-motion: reduce) {
+    .overlay,
+    .sidebar,
+    .nav-link,
+    .language-link,
+    .social-link {
+      transition: none;
+    }
+
+    .nav-link:hover,
+    .language-link:hover,
+    .social-link:hover {
+      transform: none;
+    }
+  }
+
+  /* Small mobile adjustments */
+  @media (max-width: 360px) {
+    .sidebar {
+      width: 85%;
+      padding: 5rem 1.5rem 1.5rem;
+    }
+
+    /* WDA-531: Font sizes ahora usan clamp() - no need responsive overrides */
+  }
+</style>
+
+<script>
+  /**
+   * MobileMenu Client-Side Logic
+   * Maneja apertura/cierre del menú y control del scroll
+   */
+
+  function initMobileMenu() {
+    const menu = document.querySelector('[data-mobile-menu]') as HTMLElement;
+    const overlay = document.querySelector('[data-overlay]') as HTMLElement;
+    const closeButton = document.querySelector('[data-close-menu]') as HTMLElement;
+
+    if (!menu || !overlay) return;
+
+    // WDA-314: Cerrar menu con botón X
+    if (closeButton) {
+      closeButton.addEventListener('click', closeMenu);
+    }
+
+    // Cerrar menu al hacer clic en overlay
+    overlay.addEventListener('click', closeMenu);
+
+    // Cerrar menu con tecla Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.getAttribute('data-state') === 'open') {
+        closeMenu();
+      }
+    });
+
+    // Escuchar evento del hamburger button
+    document.addEventListener('hamburger:toggle', ((e: CustomEvent) => {
+      const isOpen = e.detail.isOpen;
+      if (isOpen) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    }) as EventListener);
+
+    // Cerrar menu al hacer clic en links de navegación y logo
+    const navLinks = menu.querySelectorAll('.nav-link, .language-link, .sidebar-logo-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    function openMenu() {
+      menu.setAttribute('data-state', 'open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenu() {
+      menu.setAttribute('data-state', 'closed');
+      document.body.style.overflow = '';
+
+      // Dispatch evento para sincronizar hamburger button
+      const event = new CustomEvent('mobile-menu:close', {
+        bubbles: true,
+      });
+      document.dispatchEvent(event);
+    }
+  }
+
+  // Initialize on DOM load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobileMenu);
+  } else {
+    initMobileMenu();
+  }
+</script>

@@ -1,0 +1,272 @@
+---
+/**
+ * WDA-315: Lista de requisitos con imagen lateral
+ * WDA-325: Iconos Line Art SVG
+ * Layout 50/50 imagen + lista de requisitos
+ */
+
+import { iconPaths } from '../../lib/i18n/careers';
+
+interface Requirement {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+interface Props {
+  title: string;
+  subtitle: string;
+  requirements: Requirement[];
+  imageSrc?: string;
+  imageAlt?: string;
+  layout?: 'image-left' | 'image-right';
+}
+
+const {
+  title,
+  subtitle,
+  requirements,
+  imageSrc,
+  imageAlt = '',
+  layout = 'image-left',
+} = Astro.props;
+
+const hasImage = imageSrc && imageSrc.length > 0;
+---
+
+<section class={`careers-requirements ${hasImage ? 'careers-requirements--with-image' : ''}`}>
+  <div class="careers-requirements__container">
+    <div class="careers-requirements__header">
+      <h2 class="section-title-small">{title}</h2>
+      <h3 class="section-heading-large">{subtitle}</h3>
+    </div>
+
+    <div class={`careers-requirements__layout careers-requirements__layout--${layout}`}>
+      {hasImage && (
+        <div class="careers-requirements__image-wrapper">
+          <img
+            src={imageSrc}
+            alt={imageAlt}
+            class="careers-requirements__image"
+            loading="lazy"
+          />
+        </div>
+      )}
+
+      <div class="careers-requirements__list">
+        {requirements.map((req) => (
+          <div class="careers-requirements__item">
+            <div class="careers-requirements__item-icon" aria-hidden="true">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+                set:html={iconPaths[req.icon as keyof typeof iconPaths]}
+              />
+            </div>
+            <div class="careers-requirements__item-content">
+              <h4 class="careers-requirements__item-title">{req.title}</h4>
+              <p class="careers-requirements__item-description">{req.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .careers-requirements {
+    width: 100%;
+    padding: 5rem 2rem;
+    background-color: #ffffff;
+  }
+
+  .careers-requirements--with-image {
+    background-color: #f4f4f4;
+  }
+
+  .careers-requirements__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .careers-requirements__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  /* Title and subtitle now use global classes .section-title-small and .section-heading-large */
+
+  .careers-requirements__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .careers-requirements__image-wrapper {
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .careers-requirements__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .careers-requirements__image:hover {
+    transform: scale(1.02);
+  }
+
+  .careers-requirements__list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .careers-requirements__item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: #ffffff;
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .careers-requirements--with-image .careers-requirements__item {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .careers-requirements__item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  /* WDA-325: Iconos Line Art SVG */
+  .careers-requirements__item-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #DB4529;
+  }
+
+  .careers-requirements__item-icon svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .careers-requirements__item-content {
+    flex: 1;
+  }
+
+  .careers-requirements__item-title {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: var(--font-size-heading);
+    color: #1a1a1a;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .careers-requirements__item-description {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 300;
+    font-size: var(--font-size-body-sm);
+    line-height: 1.6;
+    color: #636464;
+    margin: 0;
+  }
+
+  /* Desktop layout (>= 768px) */
+  @media (min-width: 768px) {
+    .careers-requirements__layout {
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+
+    .careers-requirements__layout--image-left {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .careers-requirements__layout--image-left .careers-requirements__image-wrapper {
+      order: 1;
+    }
+
+    .careers-requirements__layout--image-left .careers-requirements__list {
+      order: 2;
+    }
+
+    .careers-requirements__layout--image-right {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .careers-requirements__layout--image-right .careers-requirements__image-wrapper {
+      order: 2;
+    }
+
+    .careers-requirements__layout--image-right .careers-requirements__list {
+      order: 1;
+    }
+  }
+
+  /* Mobile (< 768px) */
+  @media (max-width: 767px) {
+    .careers-requirements {
+      padding: 3rem 1.5rem;
+    }
+
+    .careers-requirements__header {
+      margin-bottom: 2.5rem;
+    }
+
+    .careers-requirements__subtitle {
+      font-size: 1.75rem;
+    }
+
+    .careers-requirements__image-wrapper {
+      min-height: 300px;
+    }
+
+    .careers-requirements__list {
+      gap: 1.5rem;
+    }
+
+    .careers-requirements__item {
+      padding: 1.25rem;
+      gap: 1rem;
+    }
+
+    .careers-requirements__item-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1.5rem;
+    }
+
+    .careers-requirements__item-title {
+      font-size: var(--font-size-body);
+    }
+
+    .careers-requirements__item-description {
+      font-size: var(--font-size-body-xs);
+    }
+  }
+
+  /* Reduced motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .careers-requirements__image:hover,
+    .careers-requirements__item:hover {
+      transform: none;
+    }
+  }
+</style>
