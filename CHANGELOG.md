@@ -57,6 +57,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - MP4 fallback agregado para Safari antiguo
   - `preload="auto"` para mejor compatibilidad Safari 18.1
   - Graceful degradation: poster estático profesional si autoplay bloqueado
+- **Hero section responsive typography** (WDA-402, 2025-11-11):
+  - Ajustado tamaño H2 para laptops 15" (1366px): 1.875rem en lugar de 3rem
+  - Ajustado tamaño H2 para tablets/laptops pequeños (1024px): 1.75rem
+  - Reducido margin-bottom del H2 en pantallas intermedias
+  - Reposicionado scroll-icon para evitar overlap con formulario newsletter
+  - Perfecto spacing vertical en todas las resoluciones de laptop
 
 ### Documentation
 - [CSS Architecture](/docs/architecture/css-architecture.md) - Complete CSS system design

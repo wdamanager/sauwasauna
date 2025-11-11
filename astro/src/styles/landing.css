@@ -243,6 +243,18 @@
   .newsletter-form {
     @apply max-w-[380px];
   }
+
+  /* Reducir H2 en laptops 15" para evitar overlap con scroll-icon */
+  .hero-section .heading-secondary {
+    font-size: 1.875rem !important; /* text-3xl en lugar de text-5xl */
+    line-height: 1.3 !important;
+    margin-bottom: 2rem !important;
+  }
+
+  /* Ajustar scroll-icon para laptops */
+  .hero-section .scroll-indicator {
+    bottom: 2rem;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -252,6 +264,19 @@
   .logo {
     @apply h-32 mb-0.5;
   }
+
+  /* Reducir H2 en tablets/laptops pequeños */
+  .hero-section .heading-secondary {
+    font-size: 1.75rem !important; /* text-3xl reducido */
+    line-height: 1.3 !important;
+    margin-bottom: 1.75rem !important;
+  }
+
+  /* Ajustar scroll-icon */
+  .hero-section .scroll-indicator {
+    bottom: 1.5rem;
+  }
+
   .language-selector,
   .instagram-link {
     @apply top-6;
