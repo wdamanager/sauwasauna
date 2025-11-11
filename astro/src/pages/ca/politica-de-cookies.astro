@@ -1,0 +1,30 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import NavbarNoHero from '../../components/NavbarNoHero.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
+import HreflangMeta from '../../components/seo/HreflangMeta.astro';
+import LegalPageClient from '../../components/legal/LegalPageClient.astro';
+import { LEGAL_PAGE_IDS } from '../../lib/wordpress/polylang-client.js';
+import { getHreflangPaths } from '../../lib/wordpress/legal-slugs.js';
+
+const lang = 'ca';
+const title = 'Política de Cookies | SAUWA';
+const description = 'Política de cookies de SAUWA. Informació sobre l\'ús de cookies.';
+---
+
+<Layout title={title} description={description} lang={lang} navbar="none">
+  <HreflangMeta customPaths={getHreflangPaths('POLITICA_COOKIES')} slot="head" />
+  <NavbarNoHero locale={lang} />
+  <main class="legal-page">
+    <LegalPageClient
+      pageId={LEGAL_PAGE_IDS.POLITICA_COOKIES}
+      pageType="politica-cookies"
+      lang="CA"
+      loadingText="Carregant contingut..."
+      errorTitle="Error en carregar el contingut"
+      errorMessage="No s'ha pogut carregar la política de cookies. Si us plau, torna-ho a intentar."
+      retryText="Tornar a intentar"
+    />
+  </main>
+  <FooterBlack locale={lang} />
+</Layout>

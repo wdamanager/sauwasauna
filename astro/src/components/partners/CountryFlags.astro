@@ -1,0 +1,215 @@
+---
+/**
+ * WDA-320: Grid de banderas de países nórdicos y centroeuropeos
+ * Diseño elegante con hover effects
+ * Banderas SVG profesionales (no emojis)
+ */
+
+import FlagIcon from './FlagIcon.astro';
+
+interface Country {
+  code: string;
+  name: string;
+  benefit: string;
+}
+
+interface Props {
+  title: string;
+  subtitle: string;
+  intro: string;
+  countries: Country[];
+}
+
+const { title, subtitle, intro, countries } = Astro.props;
+
+// Dividir el texto en párrafos separados por \n\n
+const paragraphs = intro.split('\n\n').filter((p: string) => p.trim());
+---
+
+<section class="partners-countries">
+  <div class="partners-countries__container">
+    <div class="partners-countries__header">
+      <h2 class="section-label section-label--b2b">{title}</h2>
+      <h3 class="section-title">{subtitle}</h3>
+    </div>
+
+    <div class="partners-countries__layout">
+      <div class="partners-countries__text">
+        {paragraphs.map((paragraph: string) => (
+          <p class="section-description">{paragraph}</p>
+        ))}
+      </div>
+
+      <div class="partners-countries__grid">
+        {countries.map((country, index) => (
+          <div
+            class="partners-countries__card"
+            data-index={index}
+          >
+            <div class="partners-countries__flag" aria-hidden="true">
+              <FlagIcon countryCode={country.code} size={40} />
+            </div>
+            <h4 class="partners-countries__name">{country.name}</h4>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .partners-countries {
+    width: 100%;
+    padding: 5rem 2rem;
+    background-color: #ffffff;
+  }
+
+  .partners-countries__container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .partners-countries__header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .partners-countries__layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .partners-countries__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .partners-countries__text .section-description {
+    margin: 0;
+  }
+
+  /* WDA-531: Usa clases globales .section-label, .section-title, .section-description */
+
+  .partners-countries__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .partners-countries__card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    background: #f4f4f4;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    opacity: 0;
+    animation: fadeInScale 0.5s ease-out forwards;
+  }
+
+  /* WDA-531: Animation delays sin inline styles */
+  .partners-countries__card[data-index="0"] { animation-delay: 0s; }
+  .partners-countries__card[data-index="1"] { animation-delay: 0.08s; }
+  .partners-countries__card[data-index="2"] { animation-delay: 0.16s; }
+  .partners-countries__card[data-index="3"] { animation-delay: 0.24s; }
+  .partners-countries__card[data-index="4"] { animation-delay: 0.32s; }
+  .partners-countries__card[data-index="5"] { animation-delay: 0.4s; }
+  .partners-countries__card[data-index="6"] { animation-delay: 0.48s; }
+  .partners-countries__card[data-index="7"] { animation-delay: 0.56s; }
+  .partners-countries__card[data-index="8"] { animation-delay: 0.64s; }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .partners-countries__card:hover {
+    transform: translateY(-3px) scale(1.01);
+    border-color: #406E51;
+    background: #ffffff;
+    box-shadow: 0 8px 20px rgba(64, 110, 81, 0.12);
+  }
+
+  .partners-countries__flag {
+    margin-bottom: 0.75rem;
+    transition: transform 0.3s ease;
+    display: flex;
+    justify-content: center;
+  }
+
+  .partners-countries__card:hover .partners-countries__flag {
+    transform: scale(1.05);
+  }
+
+  .partners-countries__name {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: var(--font-size-body-sm);
+    color: #1a1a1a;
+    margin: 0;
+    text-align: center;
+  }
+
+  /* Tablet (< 1024px) */
+  @media (max-width: 1023px) {
+    .partners-countries__layout {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+
+    .partners-countries__header {
+      margin-bottom: 2.5rem;
+    }
+  }
+
+  /* Mobile (< 768px) */
+  @media (max-width: 767px) {
+    .partners-countries {
+      padding: 3rem var(--container-padding-mobile); /* WDA-294: Unificado a 20px */
+    }
+
+    .partners-countries__header {
+      margin-bottom: 2rem;
+    }
+
+    .partners-countries__layout {
+      gap: 2rem;
+    }
+
+    .partners-countries__grid {
+      gap: 0.75rem;
+    }
+
+    .partners-countries__card {
+      padding: 1.25rem 0.75rem;
+    }
+
+    .partners-countries__name {
+      font-size: var(--font-size-meta);
+    }
+  }
+
+  /* Reduced motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .partners-countries__card {
+      animation: none;
+      opacity: 1;
+    }
+
+    .partners-countries__card:hover,
+    .partners-countries__card:hover .partners-countries__flag {
+      transform: none;
+    }
+  }
+</style>

@@ -1,0 +1,501 @@
+---
+/**
+ * BlogPostsClient.astro
+ * Componente client-side para cargar posts dinámicamente desde WordPress
+ * Compatible con hosting compartido (sin Node.js)
+ */
+
+interface Props {
+  postsPerPage?: number;
+  showLoadMore?: boolean;
+}
+
+const { postsPerPage = 6, showLoadMore = true } = Astro.props;
+---
+
+<div class="blog-posts-wrapper">
+  <!-- Grid de posts -->
+  <div id="blog-posts-grid" class="blog-posts-grid">
+    <!-- Skeleton loading placeholders -->
+    {Array.from({ length: postsPerPage }).map(() => (
+      <article class="blog-card skeleton">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton-category"></div>
+          <div class="skeleton-title"></div>
+          <div class="skeleton-title short"></div>
+          <div class="skeleton-excerpt"></div>
+          <div class="skeleton-excerpt"></div>
+          <div class="skeleton-date"></div>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <!-- Error message (hidden by default) -->
+  <div id="blog-error" class="blog-error hidden">
+    <p class="error-message">Error al cargar los posts. Por favor, intenta de nuevo.</p>
+    <button id="retry-button" class="retry-button">Reintentar</button>
+  </div>
+
+  <!-- Load More button -->
+  {showLoadMore && (
+    <div class="load-more-wrapper">
+      <button id="load-more-button" class="load-more-button hidden">
+        <span class="button-text">Cargar más</span>
+        <span class="button-loading hidden">Cargando...</span>
+      </button>
+    </div>
+  )}
+</div>
+
+<script>
+  import { GraphQLClient } from '../../lib/wordpress/graphql-client.js';
+  import { QUERIES } from '../../lib/wordpress/queries.js';
+  import { GRAPHQL_CONFIG } from '../../lib/wordpress/config.js';
+
+  // State
+  let currentEndCursor = null;
+  let hasNextPage = false;
+  let isLoading = false;
+
+  // Initialize client
+  const client = new GraphQLClient();
+
+  /**
+   * Format date to readable string
+   */
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('es-ES', options);
+  }
+
+  /**
+   * Get current locale from URL
+   */
+  function getCurrentLocale() {
+    const path = window.location.pathname;
+    const match = path.match(/^\/(es|ca|en|fr)\//);
+    return match ? match[1] : 'es';
+  }
+
+  /**
+   * Create post card HTML
+   */
+  function createPostCard(post) {
+    const imageUrl = post.featuredImage?.node?.sourceUrl || GRAPHQL_CONFIG.defaultImagePlaceholder;
+    const imageAlt = post.featuredImage?.node?.altText || post.title;
+    const excerpt = post.excerpt?.replace(/<[^>]*>/g, '').substring(0, 150) || '';
+    const category = post.categories?.nodes?.[0];
+    const locale = getCurrentLocale();
+
+    return `
+      <article class="blog-card">
+        <a href="/${locale}/guia-sauwa-sauna/${post.slug}/" class="card-link">
+          <div class="card-image-wrapper">
+            <img
+              src="${imageUrl}"
+              alt="${imageAlt}"
+              loading="lazy"
+              class="card-image"
+            />
+          </div>
+          <div class="card-content">
+            ${category ? `
+              <span class="card-category">${category.name}</span>
+            ` : ''}
+            <h3 class="card-title">${post.title}</h3>
+            <p class="card-excerpt">${excerpt}...</p>
+            <time class="card-date" datetime="${post.date}">
+              ${formatDate(post.date)}
+            </time>
+          </div>
+        </a>
+      </article>
+    `;
+  }
+
+  /**
+   * Render posts to grid
+   */
+  function renderPosts(posts, append = false) {
+    const grid = document.getElementById('blog-posts-grid');
+    if (!grid) return;
+
+    const postsHTML = posts.map(post => createPostCard(post)).join('');
+
+    if (append) {
+      grid.insertAdjacentHTML('beforeend', postsHTML);
+    } else {
+      grid.innerHTML = postsHTML;
+    }
+  }
+
+  /**
+   * Show/hide error message
+   */
+  function toggleError(show) {
+    const errorDiv = document.getElementById('blog-error');
+    if (errorDiv) {
+      errorDiv.classList.toggle('hidden', !show);
+    }
+  }
+
+  /**
+   * Show/hide load more button
+   */
+  function toggleLoadMore(show) {
+    const button = document.getElementById('load-more-button');
+    if (button) {
+      button.classList.toggle('hidden', !show);
+    }
+  }
+
+  /**
+   * Toggle loading state on load more button
+   */
+  function toggleLoadingState(loading) {
+    const button = document.getElementById('load-more-button');
+    if (!button) return;
+
+    const text = button.querySelector('.button-text');
+    const loader = button.querySelector('.button-loading');
+
+    if (text && loader) {
+      text.classList.toggle('hidden', loading);
+      loader.classList.toggle('hidden', !loading);
+    }
+
+    button.disabled = loading;
+  }
+
+  /**
+   * Load posts from WordPress
+   */
+  async function loadPosts(append = false) {
+    if (isLoading) return;
+
+    isLoading = true;
+    toggleError(false);
+
+    try {
+      const variables = {
+        first: GRAPHQL_CONFIG.defaultPostsPerPage,
+        ...(append && currentEndCursor ? { after: currentEndCursor } : {}),
+      };
+
+      const data = await client.query(QUERIES.GET_POSTS, variables);
+
+      if (data?.posts?.nodes) {
+        renderPosts(data.posts.nodes, append);
+
+        // Update pagination state
+        hasNextPage = data.posts.pageInfo.hasNextPage;
+        currentEndCursor = data.posts.pageInfo.endCursor;
+
+        // Show/hide load more button
+        toggleLoadMore(hasNextPage);
+      }
+    } catch (error) {
+      console.error('[BlogPosts] Error loading posts:', error);
+      toggleError(true);
+    } finally {
+      isLoading = false;
+      toggleLoadingState(false);
+    }
+  }
+
+  /**
+   * Handle load more button click
+   */
+  function handleLoadMore() {
+    toggleLoadingState(true);
+    loadPosts(true);
+  }
+
+  /**
+   * Handle retry button click
+   */
+  function handleRetry() {
+    loadPosts(false);
+  }
+
+  // Event listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initial load
+    loadPosts();
+
+    // Load more button
+    const loadMoreButton = document.getElementById('load-more-button');
+    if (loadMoreButton) {
+      loadMoreButton.addEventListener('click', handleLoadMore);
+    }
+
+    // Retry button
+    const retryButton = document.getElementById('retry-button');
+    if (retryButton) {
+      retryButton.addEventListener('click', handleRetry);
+    }
+  });
+</script>
+
+<style>
+  /* Container */
+  .blog-posts-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  /* Grid Layout */
+  .blog-posts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (min-width: 768px) {
+    .blog-posts-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .blog-posts-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+    }
+  }
+
+  /* Blog Card */
+  .blog-card {
+    background: #ffffff;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Image */
+  .card-image-wrapper {
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .blog-card:hover .card-image {
+    transform: scale(1.05);
+  }
+
+  /* Content */
+  .card-content {
+    padding: 1.5rem;
+  }
+
+  .card-category {
+    display: inline-block;
+    background: #DB4529;
+    color: #ffffff;
+    font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  .card-title {
+    font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: #1a1a1a;
+    margin: 0 0 0.75rem 0;
+    transition: color 0.2s ease;
+  }
+
+  .blog-card:hover .card-title {
+    color: #BA2515;
+  }
+
+  .card-excerpt {
+    font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: #666666;
+    margin: 0 0 1rem 0;
+  }
+
+  .card-date {
+    font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    color: #999999;
+  }
+
+  /* Skeleton Loading */
+  .blog-card.skeleton {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .blog-card.skeleton:hover {
+    transform: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .skeleton-image,
+  .skeleton-category,
+  .skeleton-title,
+  .skeleton-excerpt,
+  .skeleton-date {
+    background: linear-gradient(
+      90deg,
+      #f0f0f0 0%,
+      #e0e0e0 50%,
+      #f0f0f0 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  .skeleton-image {
+    width: 100%;
+    height: 240px;
+    border-radius: 0;
+  }
+
+  .skeleton-content {
+    padding: 1.5rem;
+  }
+
+  .skeleton-category {
+    width: 80px;
+    height: 20px;
+    margin-bottom: 1rem;
+  }
+
+  .skeleton-title {
+    width: 100%;
+    height: 24px;
+    margin-bottom: 0.5rem;
+  }
+
+  .skeleton-title.short {
+    width: 70%;
+    margin-bottom: 0.75rem;
+  }
+
+  .skeleton-excerpt {
+    width: 100%;
+    height: 16px;
+    margin-bottom: 0.5rem;
+  }
+
+  .skeleton-date {
+    width: 120px;
+    height: 14px;
+    margin-top: 1rem;
+  }
+
+  /* Error Message */
+  .blog-error {
+    text-align: center;
+    padding: 3rem 1rem;
+  }
+
+  .error-message {
+    font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    color: #BA2515;
+    margin-bottom: 1.5rem;
+  }
+
+  .retry-button {
+    font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    background: #DB4529;
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem 2rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .retry-button:hover {
+    background: #BA2515;
+  }
+
+  /* Load More Button */
+  .load-more-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .load-more-button {
+    font-family: 'Avenir Next', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #DB4529;
+    background: transparent;
+    border: 2px solid #DB4529;
+    border-radius: 4px;
+    padding: 1rem 3rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .load-more-button:hover:not(:disabled) {
+    background: #DB4529;
+    color: #ffffff;
+  }
+
+  .load-more-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Utility Classes */
+  .hidden {
+    display: none;
+  }
+</style>

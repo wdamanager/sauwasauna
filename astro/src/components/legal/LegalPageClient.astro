@@ -1,0 +1,146 @@
+---
+/**
+ * Legal Page Client Component
+ * WDA-556: Componente reutilizable para cargar páginas legales dinámicamente
+ *
+ * Props:
+ * - pageId: ID de la página en WordPress (94, 96, 3)
+ * - pageType: Tipo de página (aviso-legal, politica-cookies, politica-privacidad)
+ * - lang: Código de idioma (ES, EN, FR, CA)
+ * - loadingText: Texto del loading state
+ * - errorTitle: Título del error state
+ * - errorMessage: Mensaje del error state
+ * - retryText: Texto del botón de retry
+ */
+
+interface Props {
+  pageId: number;
+  pageType: string;
+  lang: string;
+  loadingText?: string;
+  errorTitle?: string;
+  errorMessage?: string;
+  retryText?: string;
+}
+
+const {
+  pageId,
+  pageType,
+  lang,
+  loadingText = 'Loading content...',
+  errorTitle = 'Error loading content',
+  errorMessage = 'Could not load the legal content. Please try again.',
+  retryText = 'Retry'
+} = Astro.props;
+---
+
+<div
+  class="legal-container"
+  data-page-id={pageId}
+  data-page-type={pageType}
+  data-lang={lang}
+  data-loading-text={loadingText}
+  data-error-title={errorTitle}
+  data-error-message={errorMessage}
+  data-retry-text={retryText}
+>
+  <!-- Loading state -->
+  <div class="legal-loading">
+    <div class="legal-spinner"></div>
+    <p>{loadingText}</p>
+  </div>
+
+  <!-- Error state -->
+  <div class="legal-error hidden">
+    <h2>{errorTitle}</h2>
+    <p>{errorMessage}</p>
+    <button class="retry-btn">{retryText}</button>
+  </div>
+
+  <!-- Content container -->
+  <article class="legal-content hidden"></article>
+</div>
+
+<script>
+  import { PolylangClient } from '../../lib/wordpress/polylang-client.js';
+  import { formatDate } from '../../utils/language.js';
+
+  // Este script se ejecuta para cada instancia del componente
+  document.addEventListener('DOMContentLoaded', () => {
+    const containers = document.querySelectorAll('.legal-container[data-page-id]');
+
+    containers.forEach(container => {
+      const pageId = parseInt(container.getAttribute('data-page-id') || '0');
+      const lang = container.getAttribute('data-lang') || 'ES';
+      const pageType = container.getAttribute('data-page-type') || 'legal';
+
+      const loadingEl = container.querySelector('.legal-loading');
+      const errorEl = container.querySelector('.legal-error');
+      const contentEl = container.querySelector('.legal-content');
+      const retryBtn = container.querySelector('.retry-btn');
+
+      const client = new PolylangClient();
+
+      async function loadContent() {
+        try {
+          // Mostrar loading
+          loadingEl?.classList.remove('hidden');
+          errorEl?.classList.add('hidden');
+          contentEl?.classList.add('hidden');
+
+          // Cargar contenido desde WordPress
+          const result = await client.getLegalPageTranslated(pageId, lang);
+
+          if (!result.success || !result.data) {
+            throw new Error('No content received');
+          }
+
+          const post = result.data;
+
+          // Actualizar metadata SEO
+          if (post.seo?.title) {
+            document.title = `${post.seo.title} | SAUWA`;
+          }
+
+          if (post.seo?.metaDesc) {
+            let metaDesc = document.querySelector('meta[name="description"]');
+            if (!metaDesc) {
+              metaDesc = document.createElement('meta');
+              metaDesc.setAttribute('name', 'description');
+              document.head.appendChild(metaDesc);
+            }
+            metaDesc.setAttribute('content', post.seo.metaDesc);
+          }
+
+          // Renderizar contenido
+          if (contentEl) {
+            const updateDate = formatDate(post.modified, lang);
+
+            contentEl.innerHTML = `
+              <h1>${post.title}</h1>
+              <p class="update-date"><em>${updateDate}</em></p>
+              <div class="legal-body">${post.content}</div>
+            `;
+
+            // Mostrar contenido
+            loadingEl?.classList.add('hidden');
+            contentEl.classList.remove('hidden');
+          }
+
+        } catch (error) {
+          console.error(`[Legal Page ${pageType}] Error:`, error);
+
+          // Mostrar error
+          loadingEl?.classList.add('hidden');
+          errorEl?.classList.remove('hidden');
+        }
+      }
+
+      // Cargar contenido al iniciar
+      loadContent();
+
+      // Retry button
+      retryBtn?.addEventListener('click', loadContent);
+    });
+  });
+</script>

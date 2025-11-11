@@ -1,0 +1,166 @@
+---
+/**
+ * ScrollAnchor - Floating bottom arrow with smooth scroll
+ * - Centered below hero section
+ * - Subtle bounce animation
+ * - Smooth scroll to next section
+ */
+
+export interface Props {
+  targetId: string; // ID of section to scroll to
+  class?: string;
+}
+
+const { targetId, class: className = '' } = Astro.props;
+---
+
+<div class={`scroll-anchor-wrapper ${className}`}>
+  <button
+    class="scroll-anchor-button"
+    id="scroll-anchor"
+    data-target={targetId}
+    aria-label="Scroll to next section"
+  >
+    <svg
+      class="scroll-arrow"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .scroll-anchor-wrapper {
+    position: absolute;
+    bottom: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+
+  .scroll-anchor-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  .scroll-anchor-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-4px);
+  }
+
+  .scroll-anchor-button:active {
+    transform: translateY(0);
+  }
+
+  .scroll-anchor-button:focus-visible {
+    outline: none;
+    ring: 2px;
+    ring-color: #DB4529; /* sauwa-orange */
+    ring-offset: 2px;
+  }
+
+  .scroll-arrow {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Subtle bounce animation */
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  /* Pause animation on hover */
+  .scroll-anchor-button:hover {
+    animation-play-state: paused;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .scroll-anchor-wrapper {
+      bottom: 32px;
+    }
+
+    .scroll-anchor-button {
+      width: 40px;
+      height: 40px;
+    }
+
+    .scroll-arrow {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-anchor-button {
+      animation: none;
+    }
+
+    .scroll-anchor-button:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  class ScrollAnchorController {
+    private button: HTMLButtonElement;
+    private targetId: string;
+
+    constructor() {
+      this.button = document.getElementById('scroll-anchor') as HTMLButtonElement;
+      if (!this.button) return;
+
+      this.targetId = this.button.dataset.target || '';
+      this.init();
+    }
+
+    private init() {
+      this.button.addEventListener('click', () => this.scrollToTarget());
+    }
+
+    private scrollToTarget() {
+      const target = document.getElementById(this.targetId);
+      if (!target) return;
+
+      // Smooth scroll to target section
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+  }
+
+  // Initialize scroll anchor
+  let scrollAnchorController: ScrollAnchorController;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    scrollAnchorController = new ScrollAnchorController();
+  });
+</script>

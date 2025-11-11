@@ -1,0 +1,236 @@
+---
+/**
+ * Hero Section with Single Looping Video
+ * - Displays a continuous looping video background
+ * - Responsive: different videos for desktop and mobile
+ * - Auto-plays, muted, and loops seamlessly
+ * - Maintains overlay gradient for brand consistency
+ * - WebKit/Safari optimized for autoplay without controls
+ * - Safari 18.1+ compatible with graceful fallback
+ */
+
+export interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<div class={`hero-slider absolute inset-0 w-full h-full overflow-hidden ${className}`}>
+  <!-- Desktop Video -->
+  <video
+    class="hidden md:block absolute inset-0 w-full h-full object-cover"
+    autoplay
+    loop
+    muted
+    playsinline
+    preload="auto"
+    disablepictureinpicture
+    poster="/images/sauwa-sauna-en-andorra.webp"
+    aria-label="SAUWA Finnish sauna experience - background video"
+    style="pointer-events: none;"
+  >
+    <source src="/images/hero/desktop/sauwa-hero-desktop.webm" type="video/webm" />
+    <source src="/images/hero/desktop/sauwa-hero-desktop.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Mobile Video -->
+  <video
+    class="block md:hidden absolute inset-0 w-full h-full object-cover"
+    autoplay
+    loop
+    muted
+    playsinline
+    preload="auto"
+    disablepictureinpicture
+    aria-label="SAUWA Finnish sauna experience - background video"
+    style="pointer-events: none;"
+  >
+    <source src="/images/hero/mobile/sauwa-hero-mobile.webm" type="video/webm" />
+    <source src="/images/hero/mobile/sauwa-hero-mobile.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- Overlay Gradient -->
+  <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50 pointer-events-none z-10"></div>
+</div>
+
+<style>
+  /* Ensure video fills container and maintains proper z-index */
+  video {
+    z-index: 1;
+  }
+
+  /* Ensure overlay stays on top */
+  .hero-slider > div {
+    z-index: 10;
+  }
+
+  /* Hide video controls in all browsers (Safari/Mac fix) */
+  video::-webkit-media-controls {
+    display: none !important;
+  }
+  video::-webkit-media-controls-enclosure {
+    display: none !important;
+  }
+  video::-webkit-media-controls-panel {
+    display: none !important;
+  }
+  video::-webkit-media-controls-play-button {
+    display: none !important;
+  }
+  video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+  }
+</style>
+
+<script>
+  /**
+   * Hero Video Auto-play Handler
+   * Safari 18.1+ Compatible with graceful fallback
+   *
+   * WebKit-specific requirements:
+   * - Safari macOS requires immediate play() call
+   * - iOS Safari requires playsinline + muted
+   * - Safari 18.1 may block autoplay based on user preferences
+   * - Provides static poster fallback if autoplay is blocked
+   */
+  class HeroVideo {
+    private videos: NodeListOf<HTMLVideoElement>;
+
+    constructor() {
+      this.videos = document.querySelectorAll('.hero-slider video');
+      this.init();
+    }
+
+    private init() {
+      this.videos.forEach((video) => {
+        // WebKit Critical: Set properties BEFORE calling play()
+        video.muted = true;
+        video.playsInline = true;
+        video.controls = false;
+        video.defaultMuted = true; // Safari macOS specific
+        video.preload = 'auto'; // Changed from 'metadata' for Safari 18.1
+        video.setAttribute('muted', '');
+        video.setAttribute('playsinline', '');
+        video.removeAttribute('controls');
+
+        // Force load immediately
+        video.load();
+
+        // Retry play with exponential backoff
+        const attemptPlay = (attempt = 0) => {
+          const playPromise = video.play();
+
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                console.log('Video autoplay successful');
+                // Ensure controls never appear
+                video.controls = false;
+              })
+              .catch((error) => {
+                console.warn(`Video autoplay prevented (attempt ${attempt + 1}):`, error);
+
+                // Retry up to 3 times with increasing delays
+                if (attempt < 3) {
+                  setTimeout(() => attemptPlay(attempt + 1), 100 * (attempt + 1));
+                } else {
+                  // Safari 18.1 Final Fallback: Show static poster instead of native controls
+                  console.warn('Autoplay blocked by Safari 18.1. Showing static poster fallback.');
+
+                  // Hide video element
+                  video.style.display = 'none';
+
+                  // Create static poster fallback
+                  const posterFallback = document.createElement('picture');
+
+                  // WebP source with PNG fallback
+                  const sourceWebP = document.createElement('source');
+                  sourceWebP.srcset = '/images/sauwa-sauna-en-andorra.webp';
+                  sourceWebP.type = 'image/webp';
+
+                  const img = document.createElement('img');
+                  img.src = '/images/sauwa-sauna-en-andorra.png';
+                  img.className = video.className;
+                  img.alt = 'SAUWA Finnish sauna experience';
+                  img.style.cssText = 'position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;';
+
+                  posterFallback.appendChild(sourceWebP);
+                  posterFallback.appendChild(img);
+                  posterFallback.style.cssText = 'position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1;';
+
+                  video.parentElement?.insertBefore(posterFallback, video);
+
+                  // Still listen for user interaction to activate video
+                  const playOnInteraction = () => {
+                    video.muted = true;
+                    video.controls = false;
+
+                    // Try to play - only remove poster if successful
+                    video.play()
+                      .then(() => {
+                        console.log('Video playing after user interaction');
+                        // Success! Now we can safely remove poster and show video
+                        posterFallback.remove();
+                        video.style.display = 'block';
+                        video.controls = false;
+                      })
+                      .catch(e => {
+                        console.warn('Still blocked after interaction:', e);
+                        // Keep poster visible, don't show video controls
+                        video.style.display = 'none';
+                      });
+
+                    document.removeEventListener('click', playOnInteraction);
+                    document.removeEventListener('touchstart', playOnInteraction);
+                    document.removeEventListener('scroll', playOnInteraction);
+                  };
+
+                  document.addEventListener('click', playOnInteraction, { once: true });
+                  document.addEventListener('touchstart', playOnInteraction, { once: true });
+                  document.addEventListener('scroll', playOnInteraction, { once: true });
+                }
+              });
+          }
+        };
+
+        // Start play attempts immediately
+        attemptPlay();
+
+        // Log video errors for debugging
+        video.addEventListener('error', (e) => {
+          console.error('Video loading error:', e);
+          const target = e.target as HTMLVideoElement;
+          if (target.error) {
+            console.error('Error code:', target.error.code);
+            console.error('Error message:', target.error.message);
+          }
+        });
+
+        // Safari macOS: Ensure video stays muted and without controls on play event
+        video.addEventListener('play', () => {
+          video.muted = true;
+          video.controls = false;
+        });
+
+        // Additional Safari 18.1 safeguard: Remove controls if they appear
+        video.addEventListener('loadedmetadata', () => {
+          video.controls = false;
+        });
+      });
+    }
+  }
+
+  // Initialize IMMEDIATELY - don't wait for DOMContentLoaded
+  // Astro SSG: DOM is already ready when script runs
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      new HeroVideo();
+    });
+  } else {
+    // DOM already loaded (common in Astro SSG)
+    new HeroVideo();
+  }
+</script>

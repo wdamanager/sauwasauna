@@ -1,0 +1,794 @@
+---
+/**
+ * BlogGrid Component
+ * Responsive grid layout: 3 columns (desktop) → 2 (tablet) → 1 (mobile)
+ * Features: dynamic loading, pagination, filtering, skeleton states
+ */
+
+import type { Locale } from '../../lib/types/blog';
+import BlogCard from './BlogCard.astro';
+
+interface Props {
+  locale?: Locale;
+  postsPerPage?: number;
+  loadMoreText?: string;
+  loadingText?: string;
+  noPostsText?: string;
+  errorText?: string;
+  retryText?: string;
+  readMoreText?: string;
+}
+
+const {
+  locale = 'es',
+  postsPerPage = 9,
+  loadMoreText = 'Cargar más artículos',
+  loadingText = 'Cargando artículos...',
+  noPostsText = 'No hay artículos disponibles',
+  errorText = 'Error al cargar los artículos',
+  retryText = 'Intentar de nuevo',
+  readMoreText = 'Leer más',
+} = Astro.props;
+---
+
+<div class="blog-grid-container">
+  <!-- Loading Skeleton (shown initially) -->
+  <div id="blog-skeleton" class="blog-grid">
+    {Array.from({ length: postsPerPage }).map(() => (
+      <article class="blog-card skeleton" aria-hidden="true">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton-badge"></div>
+          <div class="skeleton-title"></div>
+          <div class="skeleton-title short"></div>
+          <div class="skeleton-excerpt"></div>
+          <div class="skeleton-excerpt"></div>
+          <div class="skeleton-footer"></div>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <!-- Posts Grid (populated by JavaScript) -->
+  <div id="blog-grid" class="blog-grid hidden">
+    <!-- Dynamic content loaded here -->
+  </div>
+
+  <!-- Empty State -->
+  <div id="blog-empty" class="empty-state hidden">
+    <svg class="empty-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z"></path>
+      <path d="M8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
+      <path d="m21 15-5-5L5 21"></path>
+    </svg>
+    <p class="empty-text">{noPostsText}</p>
+  </div>
+
+  <!-- Error State -->
+  <div id="blog-error" class="error-state hidden">
+    <svg class="error-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <p class="error-text">{errorText}</p>
+    <button id="retry-button" class="retry-button" type="button">
+      {retryText}
+    </button>
+  </div>
+
+  <!-- Load More Button -->
+  <div class="load-more-wrapper hidden" id="load-more-wrapper">
+    <button id="load-more-button" class="load-more-button" type="button">
+      <span class="button-text">{loadMoreText}</span>
+      <span class="button-loading hidden">{loadingText}</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  import { getBlogPosts } from '../../lib/blog-queries';
+  import type { BlogPost, BlogFilterState } from '../../lib/types/blog';
+
+  // Get DOM elements
+  const skeleton = document.getElementById('blog-skeleton');
+  const grid = document.getElementById('blog-grid');
+  const emptyState = document.getElementById('blog-empty');
+  const errorState = document.getElementById('blog-error');
+  const loadMoreWrapper = document.getElementById('load-more-wrapper');
+  const loadMoreButton = document.getElementById('load-more-button');
+  const retryButton = document.getElementById('retry-button');
+
+  // Get configuration from data attributes or props
+  const locale = document.documentElement.lang as 'es' | 'ca' | 'en' | 'fr' || 'es';
+  const postsPerPage = 9;
+
+  // State
+  const state: BlogFilterState = {
+    selectedCategory: null,
+    currentPage: 1,
+    postsPerPage,
+    endCursor: null,
+    hasNextPage: false,
+    isLoading: false,
+  };
+
+  /**
+   * Create post card HTML
+   */
+  function createPostCardHTML(post: BlogPost): string {
+    const imageUrl = post.featuredImage?.node?.sourceUrl || '/images/blog/placeholder.jpg';
+    const imageAlt = post.featuredImage?.node?.altText || post.title;
+    const excerpt = post.excerpt.replace(/<[^>]*>/g, '').substring(0, 150) + '...';
+    const category = post.categories?.nodes?.[0];
+    const date = new Date(post.date);
+
+    const localeMap = { es: 'es-ES', ca: 'ca-ES', en: 'en-US', fr: 'fr-FR' };
+    const formattedDate = date.toLocaleDateString(localeMap[locale], {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    const readMoreText = {
+      es: 'Leer más',
+      ca: 'Llegir més',
+      en: 'Read more',
+      fr: 'Lire plus',
+    }[locale];
+
+    // Category slug for filtering
+    const categorySlug = category?.slug || '';
+
+    return `
+      <article class="blog-card" data-post-id="${post.id}">
+        <div class="card-wrapper">
+          <a href="/${locale}/guia-sauwa-sauna/${post.slug}/" class="card-link" aria-label="${readMoreText}: ${post.title}">
+            <div class="card-image-wrapper">
+              <img
+                src="${imageUrl}"
+                alt="${imageAlt}"
+                loading="lazy"
+                decoding="async"
+                class="card-image"
+                width="400"
+                height="240"
+              />
+            </div>
+          </a>
+          <div class="card-content">
+            ${category ? `
+              <a href="/${locale}/guia-sauwa-sauna/?category=${categorySlug}" class="card-category-link" onclick="event.stopPropagation()">
+                <span class="card-category" aria-label="Categoría: ${category.name}">
+                  ${category.name}
+                </span>
+              </a>
+            ` : ''}
+            <a href="/${locale}/guia-sauwa-sauna/${post.slug}/" class="card-link-title">
+              <h3 class="card-title">${post.title}</h3>
+            </a>
+            <p class="card-excerpt">${excerpt}</p>
+            <div class="card-footer">
+              <time class="card-date" datetime="${post.date}">
+                ${formattedDate}
+              </time>
+              <a href="/${locale}/guia-sauwa-sauna/${post.slug}/" class="card-read-more-link">
+                <span class="card-read-more" aria-hidden="true">
+                  ${readMoreText}
+                  <svg class="arrow-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path d="M1 8h14M9 2l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  /**
+   * Render posts to grid
+   */
+  function renderPosts(posts: BlogPost[], append: boolean = false): void {
+    if (!grid) return;
+
+    const postsHTML = posts.map(post => createPostCardHTML(post)).join('');
+
+    if (append) {
+      grid.insertAdjacentHTML('beforeend', postsHTML);
+    } else {
+      grid.innerHTML = postsHTML;
+    }
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+      const cards = grid.querySelectorAll('.blog-card');
+      cards.forEach((card, index) => {
+        if (append && index < cards.length - posts.length) return;
+        card.classList.add('fade-in');
+      });
+    });
+  }
+
+  /**
+   * Toggle UI states
+   */
+  function toggleUI(show: 'skeleton' | 'grid' | 'empty' | 'error'): void {
+    skeleton?.classList.toggle('hidden', show !== 'skeleton');
+    grid?.classList.toggle('hidden', show !== 'grid');
+    emptyState?.classList.toggle('hidden', show !== 'empty');
+    errorState?.classList.toggle('hidden', show !== 'error');
+  }
+
+  /**
+   * Toggle load more button
+   */
+  function toggleLoadMore(show: boolean): void {
+    loadMoreWrapper?.classList.toggle('hidden', !show);
+  }
+
+  /**
+   * Toggle loading state
+   */
+  function toggleLoadingState(loading: boolean): void {
+    if (!loadMoreButton) return;
+
+    const text = loadMoreButton.querySelector('.button-text');
+    const loader = loadMoreButton.querySelector('.button-loading');
+
+    text?.classList.toggle('hidden', loading);
+    loader?.classList.toggle('hidden', !loading);
+    loadMoreButton.disabled = loading;
+  }
+
+  /**
+   * Load posts
+   */
+  async function loadPosts(append: boolean = false): Promise<void> {
+    if (state.isLoading) return;
+
+    state.isLoading = true;
+    toggleUI(append ? 'grid' : 'skeleton');
+
+    try {
+      const variables = {
+        first: state.postsPerPage,
+        after: append ? state.endCursor : null,
+        categoryName: state.selectedCategory || undefined,
+      };
+
+      const data = await getBlogPosts(variables);
+
+      if (data?.posts?.nodes && data.posts.nodes.length > 0) {
+        renderPosts(data.posts.nodes, append);
+        state.hasNextPage = data.posts.pageInfo.hasNextPage;
+        state.endCursor = data.posts.pageInfo.endCursor;
+        toggleUI('grid');
+        toggleLoadMore(state.hasNextPage);
+      } else {
+        toggleUI('empty');
+        toggleLoadMore(false);
+      }
+    } catch (error) {
+      console.error('[BlogGrid] Error loading posts:', error);
+      toggleUI('error');
+      toggleLoadMore(false);
+    } finally {
+      state.isLoading = false;
+      toggleLoadingState(false);
+    }
+  }
+
+  /**
+   * Handle category filter
+   */
+  function handleCategoryFilter(event: Event): void {
+    const customEvent = event as CustomEvent<{ category: string }>;
+    const category = customEvent.detail.category;
+
+    state.selectedCategory = category === 'all' ? null : category;
+    state.endCursor = null;
+    state.currentPage = 1;
+
+    loadPosts(false);
+  }
+
+  /**
+   * Handle load more
+   */
+  function handleLoadMore(): void {
+    toggleLoadingState(true);
+    loadPosts(true);
+  }
+
+  /**
+   * Handle retry
+   */
+  function handleRetry(): void {
+    loadPosts(false);
+  }
+
+  /**
+   * Initialize
+   */
+  function init(): void {
+    // Initial load
+    loadPosts();
+
+    // Event listeners
+    document.addEventListener('blog:filter', handleCategoryFilter);
+    loadMoreButton?.addEventListener('click', handleLoadMore);
+    retryButton?.addEventListener('click', handleRetry);
+  }
+
+  // Initialize on DOM load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>
+
+<style>
+  /* Container */
+  .blog-grid-container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  /* Grid Layout */
+  .blog-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (min-width: 768px) {
+    .blog-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .blog-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3rem;
+    }
+  }
+
+  /* Card Animations */
+  .blog-card {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .blog-card.fade-in {
+    animation: fadeInUp 0.5s ease forwards;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ========================================
+     BLOG CARD STYLES (WDA-298 GUIDELINE)
+     ======================================== */
+
+  /* Card Container */
+  :global(.blog-card:not(.skeleton)) {
+    background: #ffffff;
+    border-radius: 4px; /* GUIDELINE standard radius */
+    overflow: hidden;
+    transition: all 400ms ease-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  :global(.blog-card:not(.skeleton):hover) {
+    transform: scale(1.03);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Card wrapper */
+  :global(.card-wrapper) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  /* Link */
+  :global(.card-link) {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  :global(.card-link:focus-visible) {
+    outline: 3px solid #BA2515;
+    outline-offset: 2px;
+  }
+
+  :global(.card-link-title) {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  :global(.card-read-more-link) {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Category link */
+  :global(.card-category-link) {
+    display: inline-block;
+    text-decoration: none;
+    align-self: flex-start;
+  }
+
+  :global(.card-category-link:focus-visible) {
+    outline: 3px solid #BA2515;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Image */
+  :global(.card-image-wrapper) {
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+    background: #f5f5f5;
+    position: relative;
+  }
+
+  /* Add gradient overlay like GUIDELINE */
+  :global(.card-image-wrapper::after) {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+    z-index: 1;
+    transition: opacity 400ms ease-out;
+  }
+
+  :global(.blog-card:not(.skeleton):hover .card-image-wrapper::after) {
+    opacity: 0.7;
+  }
+
+  :global(.card-image) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms ease-out, filter 400ms ease-out;
+    will-change: transform;
+  }
+
+  :global(.blog-card:not(.skeleton):hover .card-image) {
+    transform: scale(1.08);
+    filter: brightness(1.05);
+  }
+
+  /* Content */
+  :global(.card-content) {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+  }
+
+  /* Category Badge */
+  :global(.card-category) {
+    display: inline-block;
+    align-self: flex-start;
+    background: #DB4529;
+    color: #ffffff;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px; /* GUIDELINE standard radius */
+    transition: background 400ms ease-out;
+  }
+
+  :global(.blog-card:not(.skeleton):hover .card-category) {
+    background: #BA2515;
+  }
+
+  /* Title */
+  :global(.card-title) {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 20px;
+    font-weight: 400; /* GUIDELINE card title weight */
+    line-height: 1.4;
+    color: #1a1a1a;
+    margin: 0;
+    transition: color 400ms ease-out;
+  }
+
+  :global(.blog-card:not(.skeleton):hover .card-title) {
+    color: #BA2515;
+  }
+
+  /* Excerpt */
+  :global(.card-excerpt) {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: #666666;
+    margin: 0;
+    flex: 1;
+  }
+
+  /* Footer */
+  :global(.card-footer) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.5rem;
+    margin-top: auto;
+  }
+
+  /* Date */
+  :global(.card-date) {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    color: #999999;
+  }
+
+  /* Read More */
+  :global(.card-read-more) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #BA2515;
+    transition: gap 400ms ease-out;
+  }
+
+  :global(.blog-card:not(.skeleton):hover .card-read-more) {
+    gap: 0.75rem;
+  }
+
+  :global(.arrow-icon) {
+    transition: transform 400ms ease-out;
+  }
+
+  :global(.blog-card:not(.skeleton):hover .arrow-icon) {
+    transform: translateX(4px);
+  }
+
+  /* Responsive for cards */
+  @media (max-width: 768px) {
+    :global(.card-image-wrapper) {
+      height: 200px;
+    }
+
+    :global(.card-content) {
+      padding: 1.25rem;
+    }
+
+    :global(.card-title) {
+      font-size: 18px;
+    }
+
+    :global(.card-excerpt) {
+      font-size: 14px;
+    }
+  }
+
+  /* Skeleton Loading */
+  .blog-card.skeleton {
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .skeleton-image,
+  .skeleton-badge,
+  .skeleton-title,
+  .skeleton-excerpt,
+  .skeleton-footer {
+    background: linear-gradient(90deg, #f0f0f0 0%, #e0e0e0 50%, #f0f0f0 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .skeleton-image {
+    width: 100%;
+    height: 240px;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .skeleton-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .skeleton-badge {
+    width: 80px;
+    height: 22px;
+  }
+
+  .skeleton-title {
+    width: 100%;
+    height: 24px;
+  }
+
+  .skeleton-title.short {
+    width: 70%;
+  }
+
+  .skeleton-excerpt {
+    width: 100%;
+    height: 16px;
+  }
+
+  .skeleton-footer {
+    width: 120px;
+    height: 14px;
+    margin-top: 0.5rem;
+  }
+
+  /* Empty State */
+  .empty-state,
+  .error-state {
+    text-align: center;
+    padding: 4rem 1rem;
+  }
+
+  .empty-icon,
+  .error-icon {
+    color: #cccccc;
+    margin: 0 auto 1.5rem;
+  }
+
+  .error-icon {
+    color: #BA2515;
+  }
+
+  .empty-text,
+  .error-text {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: #666666;
+    margin: 0;
+  }
+
+  .retry-button {
+    margin-top: 1.5rem;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffffff;
+    background: #DB4529;
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem 2rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .retry-button:hover {
+    background: #BA2515;
+  }
+
+  /* Load More */
+  .load-more-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-bottom: 4rem;
+  }
+
+  .load-more-button {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #DB4529;
+    background: transparent;
+    border: 2px solid #DB4529;
+    border-radius: 4px;
+    padding: 1rem 3rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .load-more-button:hover:not(:disabled) {
+    background: #DB4529;
+    color: #ffffff;
+  }
+
+  .load-more-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Utility */
+  .hidden {
+    display: none !important;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .blog-card {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+
+    .skeleton-image,
+    .skeleton-badge,
+    .skeleton-title,
+    .skeleton-excerpt,
+    .skeleton-footer {
+      animation: none;
+    }
+
+    /* Blog cards reduced motion */
+    :global(.blog-card:not(.skeleton)),
+    :global(.card-image),
+    :global(.card-image-wrapper::after),
+    :global(.card-category),
+    :global(.card-title),
+    :global(.card-read-more),
+    :global(.arrow-icon) {
+      transition: none;
+    }
+
+    :global(.blog-card:not(.skeleton):hover) {
+      transform: none;
+    }
+
+    :global(.blog-card:not(.skeleton):hover .card-image) {
+      transform: none;
+      filter: none;
+    }
+
+    :global(.blog-card:not(.skeleton):hover .card-image-wrapper::after) {
+      opacity: 0.3;
+    }
+
+    :global(.blog-card:not(.skeleton):hover .arrow-icon) {
+      transform: none;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    :global(.blog-card:not(.skeleton)) {
+      border: 2px solid currentColor;
+    }
+
+    :global(.card-category) {
+      border: 1px solid #ffffff;
+    }
+  }
+</style>

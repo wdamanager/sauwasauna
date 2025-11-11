@@ -1,0 +1,183 @@
+---
+/**
+ * Footer Component - SAUWA
+ * Multiidioma (es/ca/en/fr)
+ */
+
+import { getTranslation } from '../../i18n/utils';
+import { getAllLegalUrls } from '../../lib/wordpress/legal-slugs.js';
+
+export interface Props {
+  locale: 'es' | 'ca' | 'en' | 'fr';
+}
+
+const { locale } = Astro.props;
+const t = getTranslation(locale);
+const currentYear = new Date().getFullYear();
+
+// Legal pages URLs - Usando el sistema centralizado de mapeo
+const legalUrls = getAllLegalUrls(locale);
+
+// Navigation links
+const navLinks = [
+  { href: `/${locale}/#experiencia`, label: t('nav.experience') },
+  { href: `/${locale}/#beneficios`, label: t('nav.benefits') },
+  { href: `/${locale}/guia-sauwa-sauna/`, label: t('nav.blog') },
+  { href: `/${locale}/#contacto`, label: t('nav.contact') },
+];
+---
+
+<footer class="footer">
+  <div class="footer-container">
+    <!-- Logo & Tagline -->
+    <div class="footer-brand">
+      <img src="/logos/sauwa-full-white.svg" alt="SAUWA" class="footer-logo" width="120" height="40" />
+      <p class="footer-tagline">{t('footer.tagline')}</p>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="footer-nav" aria-label="Footer navigation">
+      <h3 class="footer-heading sr-only">Navegación</h3>
+      <ul class="footer-links">
+        {navLinks.map((link) => (
+          <li><a href={link.href} class="footer-link">{link.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <!-- Legal Links -->
+    <div class="footer-legal">
+      <h3 class="footer-heading">Legal</h3>
+      <ul class="footer-links">
+        <li><a href={legalUrls.privacy} class="footer-link">{t('footer.legal.privacy')}</a></li>
+        <li><a href={legalUrls.terms} class="footer-link">{t('footer.legal.terms')}</a></li>
+        <li><a href={legalUrls.cookies} class="footer-link">{t('footer.legal.cookies')}</a></li>
+      </ul>
+    </div>
+
+    <!-- Social Links -->
+    <div class="footer-social">
+      <h3 class="footer-heading">{t('footer.social')}</h3>
+      <a href="https://www.instagram.com/sauwa.sauna/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Copyright -->
+  <div class="footer-bottom">
+    <p class="footer-copyright">{t('footer.copyright').replace('{year}', currentYear.toString())}</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--color-bg-dark);
+    color: var(--color-bg-white);
+    padding: 4rem 2rem 2rem;
+    font-family: var(--font-family-secondary);
+  }
+  .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  @media (min-width: 768px) {
+    .footer-container { grid-template-columns: 2fr 1fr 1fr 1fr; }
+  }
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .footer-logo {
+    width: auto;
+    height: 40px;
+  }
+  .footer-tagline {
+    font-size: var(--font-size-body-sm); /* WDA-531: 14px→15px responsive */
+    opacity: 0.8;
+    margin: 0;
+    font-weight: 300;
+  }
+  .footer-heading {
+    font-weight: 500;
+    font-size: var(--font-size-heading); /* WDA-531: 16px→17px responsive */
+    margin: 0 0 1rem 0;
+    color: var(--color-bg-white);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border-width: 0;
+  }
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .footer-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: var(--font-size-body-sm); /* WDA-531: 14px→15px responsive */
+    font-weight: 300;
+    transition: all 0.2s ease;
+  }
+  .footer-link:hover {
+    color: var(--color-bg-white);
+    transform: translateX(2px);
+  }
+  .footer-social {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .social-link {
+    color: var(--color-bg-white);
+    opacity: 0.8;
+    transition: all 0.2s ease;
+    width: 24px;
+    height: 24px;
+  }
+  .social-link:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 2rem;
+    text-align: center;
+  }
+  .footer-copyright {
+    font-size: var(--font-size-copyright); /* WDA-531: 12px→13px responsive */
+    opacity: 0.6;
+    margin: 0;
+    font-weight: 300;
+  }
+  @media (max-width: 767px) {
+    .footer {
+      padding: 3rem 1.5rem 1.5rem;
+    }
+    .footer-container {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+</style>

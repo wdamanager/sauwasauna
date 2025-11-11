@@ -1,0 +1,355 @@
+---
+/**
+ * Blog Index Page - Spanish (ES)
+ * Main blog page with category filter and post grid
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import NavbarScroll from '../../components/NavbarScroll.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
+import Breadcrumb from '../../components/ui/Breadcrumb.astro';
+import CategoryFilter from '../../components/blog/CategoryFilter.astro';
+import BlogGrid from '../../components/blog/BlogGrid.astro';
+import { useTranslations } from '../../i18n/utils';
+import { getCategories } from '../../lib/blog-queries';
+import type { BreadcrumbItem } from '../../lib/types/blog';
+
+const locale = 'es';
+const t = useTranslations(locale);
+
+// Page metadata
+const title = `${t('blog.title')} | SAUWA`;
+const description = t('blog.description');
+
+// Breadcrumb items
+const breadcrumbItems: BreadcrumbItem[] = [
+  { label: t('blog.breadcrumb.home'), href: `/${locale}/` },
+  { label: t('blog.breadcrumb.blog') },
+];
+
+// WDA-537: Categories are now loaded client-side in CategoryFilter component
+---
+
+<Layout
+  title={title}
+  description={description}
+  lang={locale}
+  pageType="blog"
+>
+  <!-- Navbar Scroll -->
+  <NavbarScroll locale={locale} />
+
+  <main class="blog-page">
+    <!-- Header Section -->
+    <section class="blog-header">
+      <!-- Background Image -->
+      <div class="hero-background">
+        <picture>
+          <source srcset="/images/sauwa-sauna-cold-plunge.webp" type="image/webp">
+          <img
+            src="/images/sauwa-sauna-cold-plunge.jpg"
+            alt="SAUWA Sauna Blog"
+            class="hero-image"
+            loading="eager"
+          />
+        </picture>
+        <div class="hero-overlay" aria-hidden="true"></div>
+      </div>
+
+      <!-- Content Container -->
+      <div class="container">
+        <div class="header-content">
+          <h1 class="blog-title">{t('blog.title')}</h1>
+          <h2 class="blog-subtitle">{t('blog.subtitle')}</h2>
+          <Breadcrumb items={breadcrumbItems} locale={locale} variant="dark" />
+        </div>
+      </div>
+
+      <!-- Scroll Indicator -->
+      <a href="#blog-filters" class="scroll-indicator" aria-label="Scroll to content">
+        <div class="scroll-icon"></div>
+      </a>
+    </section>
+
+    <!-- Category Filter -->
+    <section id="blog-filters" class="blog-filters">
+      <CategoryFilter
+        allCategoriesText={t('blog.category.all')}
+        locale={locale}
+      />
+    </section>
+
+    <!-- Blog Grid -->
+    <section class="blog-content">
+      <BlogGrid
+        locale={locale}
+        postsPerPage={9}
+        loadMoreText={t('blog.loadmore')}
+        loadingText={t('blog.loading')}
+        noPostsText={t('blog.noposts')}
+        errorText={t('blog.error')}
+        retryText={t('blog.retry')}
+        readMoreText={t('blog.readmore')}
+      />
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <FooterBlack locale={locale} />
+</Layout>
+
+<style>
+  /* Page Container */
+  .blog-page {
+    min-height: 100vh;
+    background: #ffffff;
+    padding-top: 0; /* Removed padding, header has its own */
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Header Section */
+  .blog-header {
+    position: relative;
+    width: 100%;
+    max-width: 100vw;
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for iOS Safari */
+    min-height: 600px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Background Image */
+  .hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Dark Gradient Overlay */
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.6) 50%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    width: 100%;
+  }
+
+  .header-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  /* Invertir jerarquía como en home: h1 pequeño, h2 grande */
+  .blog-title {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+  }
+
+  .blog-subtitle {
+    font-family: 'Helvetica Neue', 'Avenir Next', sans-serif;
+    font-size: 56px;
+    font-weight: 100;
+    line-height: 1.2;
+    color: #FFFFFF;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Filters Section */
+  .blog-filters {
+    padding: 2rem 0 0 0;
+    position: relative;
+    z-index: 100; /* Ensure dropdown appears above blog content */
+  }
+
+  /* Content Section */
+  .blog-content {
+    padding: 0 0 3rem;
+  }
+
+  /* Scroll Indicator */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bounce 2s infinite;
+    z-index: 2;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .scroll-icon {
+    width: 24px;
+    height: 36px;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    position: relative;
+  }
+
+  .scroll-icon::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 2px;
+    animation: scroll 1.5s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateX(-50%) translateY(0);
+    }
+    40% {
+      transform: translateX(-50%) translateY(-10px);
+    }
+    60% {
+      transform: translateX(-50%) translateY(-5px);
+    }
+  }
+
+  @keyframes scroll {
+    0% {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(-50%) translateY(12px);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 1024px) and (min-width: 769px) {
+    .blog-page {
+      padding-top: 70px;
+    }
+
+    .blog-title {
+      font-size: 40px;
+    }
+
+    .blog-subtitle {
+      font-size: 20px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .blog-header {
+      min-height: 500px;
+    }
+
+    .container {
+      padding: 0 1.5rem;
+    }
+
+    .header-content {
+      gap: 1.5rem;
+    }
+
+    /* WDA-295: Jerarquía correcta como home - h1 pequeño, h2 grande */
+    .blog-title {
+      font-size: 16px;
+      letter-spacing: 3px;
+    }
+
+    .blog-subtitle {
+      font-size: 40px;
+      font-weight: 300;
+      line-height: 1.3;
+    }
+
+    .blog-filters {
+      padding: 2rem 0 0 0;
+    }
+
+    .blog-content {
+      padding: 0 0 3rem;
+    }
+
+    .scroll-indicator {
+      bottom: 2rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .blog-header {
+      min-height: 450px;
+    }
+
+    /* WDA-295: Mantener jerarquía correcta - h1 pequeño, h2 grande */
+    .blog-title {
+      font-size: 14px;
+      letter-spacing: 2px;
+    }
+
+    .blog-subtitle {
+      font-size: 32px;
+      line-height: 1.3;
+    }
+  }
+
+  /* High contrast mode */
+  @media (prefers-contrast: high) {
+    .blog-header {
+      border-bottom-width: 2px;
+    }
+
+    .blog-title,
+    .blog-subtitle {
+      font-weight: 500;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-indicator {
+      animation: none;
+    }
+
+    .scroll-icon::before {
+      animation: none;
+    }
+  }
+</style>

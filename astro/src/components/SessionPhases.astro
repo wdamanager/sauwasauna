@@ -1,0 +1,580 @@
+---
+/**
+ * SessionPhases Component - WDA-265
+ * Rediseño elegante de la sección "¿Cómo es una sesión en SAUWA?"
+ * - Diseño con imágenes de fondo + overlay
+ * - 3 columnas en desktop con hover effects
+ * - Animaciones scroll y hover
+ * - SEO optimizado con h2 + h3
+ */
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  class?: string;
+}
+
+const { locale = 'es', class: className = '' } = Astro.props;
+
+// Contenido de las fases por idioma
+const phasesContent = {
+  es: {
+    titleSeo: 'Sesión de sauna',
+    titleMain: '¿Cómo es una sesión en SAUWA?',
+    phases: [
+      {
+        number: '01',
+        title: 'Sauna de leña',
+        description: 'Calor intenso y vapor natural en nuestra sauna finlandesa auténtica.',
+        image: '/images/hero/desktop/3.interior-2-sauna-finlandesa-sauwa-andorra.webp',
+        imageFallback: '/images/hero/desktop/3.interior-2-sauna-finlandesa-sauwa-andorra.webp',
+        alt: 'Interior de sauna finlandesa de leña SAUWA en Andorra'
+      },
+      {
+        number: '02',
+        title: 'Inmersión en agua fría',
+        description: 'Contraste térmico con baños de agua fría en plena naturaleza.',
+        image: '/images/hero/desktop/4.bano-frio-sauna-finlandesa-sauwa-andorra.webp',
+        imageFallback: '/images/hero/desktop/4.bano-frio-sauna-finlandesa-sauwa-andorra.webp',
+        alt: 'Baño frío en naturaleza después de sauna'
+      },
+      {
+        number: '03',
+        title: 'Relax y conexión',
+        description: 'Descanso profundo y conexión con uno/a mismo/a.',
+        image: '/images/hero/desktop/2.interior-sauna-finlandesa-sauwa-andorra.webp',
+        imageFallback: '/images/hero/desktop/2.interior-sauna-finlandesa-sauwa-andorra.webp',
+        alt: 'Área de recuperación y descanso SAUWA'
+      },
+    ],
+  },
+  ca: {
+    titleSeo: 'Sessió de sauna',
+    titleMain: 'Com és una sessió a SAUWA?',
+    phases: [
+      {
+        number: '01',
+        title: 'Sauna de llenya',
+        description: 'Calor intensa i vapor natural a la nostra sauna finlandesa autèntica.',
+        image: '/images/hero/desktop/3.interior-2-sauna-finlandesa-sauwa-andorra.webp',
+        imageFallback: '/images/hero/desktop/3.interior-2-sauna-finlandesa-sauwa-andorra.webp',
+        alt: 'Interior de sauna finlandesa de llenya SAUWA a Andorra'
+      },
+      {
+        number: '02',
+        title: 'Immersió en aigua freda',
+        description: 'Contrast tèrmic amb banys d\'aigua freda en plena natura.',
+        image: '/images/hero/desktop/4.bano-frio-sauna-finlandesa-sauwa-andorra.webp',
+        imageFallback: '/images/hero/desktop/4.bano-frio-sauna-finlandesa-sauwa-andorra.webp',
+        alt: 'Bany fred a la natura després de sauna'
+      },
+      {
+        number: '03',
+        title: 'Relax i connexió',
+        description: 'Descans profund i connexió amb un/a mateix/a.',
+        image: '/images/hero/desktop/2.interior-sauna-finlandesa-sauwa-andorra.webp',
+        imageFallback: '/images/hero/desktop/2.interior-sauna-finlandesa-sauwa-andorra.webp',
+        alt: 'Àrea de recuperació i descans SAUWA'
+      },
+    ],
+  },
+  en: {
+    titleSeo: 'Sauna session',
+    titleMain: 'What is a SAUWA session like?',
+    phases: [
+      {
+        number: '01',
+        title: 'Wood-fired sauna',
+        description: 'Intense heat and natural steam in our authentic Finnish sauna.',
+        image: '/images/hero/desktop/3.interior-2-sauna-finlandesa-sauwa-andorra.webp',
+        imageFallback: '/images/hero/desktop/3.interior-2-sauna-finlandesa-sauwa-andorra.webp',
+        alt: 'Interior of SAUWA wood-fired Finnish sauna in Andorra'
+      },
+      {
+        number: '02',
+        title: 'Cold water immersion',
+        description: 'Thermal contrast with cold water baths in the heart of nature.',
+        image: '/images/hero/desktop/4.bano-frio-sauna-finlandesa-sauwa-andorra.webp',
+        imageFallback: '/images/hero/desktop/4.bano-frio-sauna-finlandesa-sauwa-andorra.webp',
+        alt: 'Cold bath in nature after sauna'
+      },
+      {
+        number: '03',
+        title: 'Rest & connection',
+        description: 'Deep rest and connection with yourself.',
+        image: '/images/hero/desktop/2.interior-sauna-finlandesa-sauwa-andorra.webp',
+        imageFallback: '/images/hero/desktop/2.interior-sauna-finlandesa-sauwa-andorra.webp',
+        alt: 'SAUWA recovery and rest area'
+      },
+    ],
+  },
+  fr: {
+    titleSeo: 'Séance de sauna',
+    titleMain: 'Comment se déroule une séance chez SAUWA?',
+    phases: [
+      {
+        number: '01',
+        title: 'Sauna au bois',
+        description: 'Chaleur intense et vapeur naturelle dans notre sauna finlandais authentique.',
+        image: '/images/hero/desktop/3.interior-2-sauna-finlandesa-sauwa-andorra.webp',
+        imageFallback: '/images/hero/desktop/3.interior-2-sauna-finlandesa-sauwa-andorra.webp',
+        alt: 'Intérieur du sauna finlandais au bois SAUWA en Andorre'
+      },
+      {
+        number: '02',
+        title: 'Immersion en eau froide',
+        description: 'Contraste thermique avec bains d\'eau froide en pleine nature.',
+        image: '/images/hero/desktop/4.bano-frio-sauna-finlandesa-sauwa-andorra.webp',
+        imageFallback: '/images/hero/desktop/4.bano-frio-sauna-finlandesa-sauwa-andorra.webp',
+        alt: 'Bain froid dans la nature après le sauna'
+      },
+      {
+        number: '03',
+        title: 'Repos et connexion',
+        description: 'Repos profond et connexion avec soi-même.',
+        image: '/images/hero/desktop/2.interior-sauna-finlandesa-sauwa-andorra.webp',
+        imageFallback: '/images/hero/desktop/2.interior-sauna-finlandesa-sauwa-andorra.webp',
+        alt: 'Espace de récupération et de repos SAUWA'
+      },
+    ],
+  },
+};
+
+const content = phasesContent[locale];
+---
+
+<section id="session-phases" class={`session-phases-section ${className}`}>
+  <div class="phases-container">
+
+    <!-- Títulos con jerarquía SEO -->
+    <div class="section-header">
+      <h2 class="title-seo">
+        {content.titleSeo}
+      </h2>
+      <h3 class="title-main">
+        {content.titleMain}
+      </h3>
+    </div>
+
+    <!-- Grid de fases con imágenes -->
+    <div class="phases-grid">
+      {content.phases.map((phase, index) => (
+        <article
+          class="phase-card"
+          data-phase={index + 1}
+          data-aos="fade-up"
+          data-aos-delay={index * 150}
+        >
+          <!-- Imagen de fondo con lazy loading -->
+          <picture class="phase-image-wrapper">
+            <source srcset={phase.image} type="image/webp" />
+            <source srcset={phase.imageFallback} type="image/jpeg" />
+            <img
+              src={phase.imageFallback}
+              alt={phase.alt}
+              class="phase-image"
+              loading="lazy"
+              width="600"
+              height="800"
+            />
+          </picture>
+
+          <!-- Número de fase (fuera del phase-content para z-index correcto) -->
+          <span class="phase-number">
+            {phase.number}
+          </span>
+
+          <!-- Overlay gradient -->
+          <div class="phase-overlay"></div>
+
+          <!-- Contenido -->
+          <div class="phase-content">
+            <h4 class="phase-title">
+              {phase.title}
+            </h4>
+            <p class="phase-description">
+              {phase.description}
+            </p>
+          </div>
+        </article>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<style>
+  /* WDA-272: Scroll offset para compensar sticky headers */
+  #session-phases {
+    scroll-margin-top: 80px;
+  }
+
+  /* Sección principal */
+  .session-phases-section {
+    padding: 5rem 0;
+    background-color: #897162;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Container con padding responsive */
+  .phases-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--container-padding); /* Desktop: 24px */
+  }
+
+  /* Header de la sección */
+  .section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  /* h2 SEO - Keyword principal */
+  .title-seo {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    margin: 0 0 1rem;
+  }
+
+  /* h3 Título principal */
+  .title-main {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 300;
+    line-height: 1.3;
+    color: #FFFFFF;
+    margin: 0 0 1.5rem;
+  }
+
+  /* Grid de fases */
+  .phases-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(320px, 1fr));
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Card de fase */
+  .phase-card {
+    position: relative;
+    height: 480px;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: all 400ms ease-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 0;
+  }
+
+  /* Hover state del card */
+  .phase-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .phase-card:hover .phase-image {
+    transform: scale(1.08);
+    filter: brightness(1.05);
+  }
+
+  .phase-card:hover .phase-number {
+    color: #DB4529;
+    opacity: 0.5;
+    transform: translateY(-4px) scale(1.05);
+  }
+
+  /* Wrapper de imagen */
+  .phase-image-wrapper {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Imagen de fondo */
+  .phase-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms ease-out, filter 400ms ease-out;
+    will-change: transform;
+  }
+
+  /* Overlay gradient */
+  .phase-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.4) 0%,
+      rgba(0, 0, 0, 0.75) 100%
+    );
+    transition: background 0.4s ease;
+    z-index: 1;
+  }
+
+  .phase-card:hover .phase-overlay {
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.3) 0%,
+      rgba(0, 0, 0, 0.65) 100%
+    );
+  }
+
+  /* Contenido de la fase */
+  .phase-content {
+    position: relative;
+    z-index: 2;
+    padding: 40px;
+    padding-top: 120px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  /* Número de fase */
+  .phase-number {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-weight: 100;
+    font-size: 64px;
+    color: #DB4529;
+    opacity: 0.35;
+    text-shadow:
+      0 0 30px rgba(219, 69, 41, 0.8),
+      0 0 60px rgba(219, 69, 41, 0.4),
+      2px 2px 12px rgba(0, 0, 0, 0.8);
+    line-height: 1;
+    margin-bottom: 1rem;
+    transition: all 300ms ease-out;
+    display: block;
+    position: absolute;
+    z-index: 10;
+    top: 40px;
+    left: 40px;
+    pointer-events: none;
+  }
+
+  /* Título de fase */
+  .phase-title {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: clamp(1.375rem, 1.6vw, 1.75rem); /* WDA-531: 22px → 28px (fue 20px → 26px) */
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    color: #FFFFFF;
+    margin: 0 0 0.75rem;
+    line-height: 1.35;
+    word-wrap: break-word;
+    hyphens: none;
+  }
+
+  /* Descripción de fase */
+  .phase-description {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1.25rem; /* WDA-531: 20px (aumentado de 18px) */
+    font-weight: 400;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    max-width: 90%;
+  }
+
+  /* Large Screens (1400px+) - Prevent title line breaks */
+  @media (min-width: 1400px) {
+    .phases-grid {
+      gap: 2.5rem;
+      max-width: 1520px;
+    }
+
+    .phase-card {
+      height: 500px;
+    }
+
+    .phase-title {
+      font-size: 1.75rem; /* WDA-531: 28px (fue 26px) */
+    }
+  }
+
+  /* Tablet (768px - 1024px) */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .phases-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .phase-card {
+      height: 420px;
+    }
+
+    .phase-content {
+      padding-top: 110px;
+    }
+
+    .phase-number {
+      font-size: 56px;
+      top: 36px;
+      left: 36px;
+    }
+
+    .title-main {
+      font-size: 36px;
+    }
+  }
+
+  /* Mobile (< 768px) */
+  @media (max-width: 767px) {
+    .session-phases-section {
+      padding: 3rem 0;
+    }
+
+    .phases-container {
+      padding: 0 var(--container-padding-mobile); /* WDA-535: 20px unificado */
+    }
+
+    .title-main {
+      font-size: 32px;
+    }
+
+    .phases-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .phase-card {
+      height: 360px;
+    }
+
+    .phase-content {
+      padding: 32px 24px;
+      padding-top: 100px;
+    }
+
+    .phase-number {
+      font-size: 48px;
+      top: 32px;
+      left: 32px;
+    }
+
+    .phase-title {
+      font-size: 22px;
+    }
+
+    .phase-description {
+      font-size: 17px; /* WDA-531: Aumentado de 15px para mejor legibilidad en mobile */
+      max-width: 100%;
+    }
+  }
+
+  /* Animación de entrada al scroll */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  [data-aos="fade-up"] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 500ms ease-out;
+  }
+
+  [data-aos="fade-up"].aos-animate {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Accesibilidad - reducir movimiento */
+  @media (prefers-reduced-motion: reduce) {
+    .phase-card,
+    .phase-image,
+    .phase-number,
+    [data-aos] {
+      transition: none;
+      animation: none;
+    }
+
+    .phase-card:hover {
+      transform: none;
+    }
+
+    .phase-card:hover .phase-image {
+      transform: none;
+    }
+
+    .phase-card:hover .phase-number {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // Intersection Observer para animaciones de scroll
+  class SessionPhasesController {
+    private observer: IntersectionObserver;
+    private cards: NodeListOf<Element>;
+
+    constructor() {
+      this.cards = document.querySelectorAll('.phase-card');
+
+      if (!this.cards.length) return;
+
+      this.setupObserver();
+    }
+
+    private setupObserver() {
+      const options = {
+        threshold: 0.2,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
+          if (entry.isIntersecting) {
+            // Añadir delay escalonado
+            setTimeout(() => {
+              entry.target.classList.add('aos-animate');
+            }, index * 150);
+
+            // Dejar de observar una vez animado
+            this.observer.unobserve(entry.target);
+          }
+        });
+      }, options);
+
+      // Observar cada card
+      this.cards.forEach(card => {
+        this.observer.observe(card);
+      });
+    }
+  }
+
+  // Inicializar controlador
+  document.addEventListener('DOMContentLoaded', () => {
+    new SessionPhasesController();
+  });
+
+  // Precarga de imágenes para mejorar performance
+  document.addEventListener('DOMContentLoaded', () => {
+    const images = [
+      '/images/hero/desktop/2.interior-sauna-finlandesa-sauwa-andorra.webp',
+      '/images/hero/desktop/3.interior-2-sauna-finlandesa-sauwa-andorra.webp',
+      '/images/hero/desktop/4.bano-frio-sauna-finlandesa-sauwa-andorra.webp'
+    ];
+
+    images.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  });
+</script>

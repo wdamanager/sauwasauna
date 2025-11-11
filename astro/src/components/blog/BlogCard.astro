@@ -1,0 +1,297 @@
+---
+/**
+ * BlogCard Component
+ * Card design for individual blog post preview
+ * Features: featured image, category badge, title, excerpt, date, read more link
+ * Includes hover effects and WCAG 2.1 AA accessibility
+ */
+
+import type { BlogPost, Locale } from '../../lib/types/blog';
+import { formatDate, truncateText, getDefaultImage } from '../../lib/blog-queries';
+import { Image } from 'astro:assets';
+
+interface Props {
+  post: BlogPost;
+  locale?: Locale;
+  readMoreText?: string;
+}
+
+const { post, locale = 'es', readMoreText = 'Leer más' } = Astro.props;
+
+// Extract post data
+const imageUrl = post.featuredImage?.node?.sourceUrl || getDefaultImage();
+const imageAlt = post.featuredImage?.node?.altText || post.title;
+const excerpt = truncateText(post.excerpt, 150);
+const category = post.categories?.nodes?.[0];
+const formattedDate = formatDate(post.date, locale);
+const postUrl = `/${locale}/guia-sauwa-sauna/${post.slug}/`;
+---
+
+<article class="blog-card" data-post-id={post.id}>
+  <a href={postUrl} class="card-link" aria-label={`${readMoreText}: ${post.title}`}>
+    <!-- Featured Image -->
+    <div class="card-image-wrapper">
+      <img
+        src={imageUrl}
+        alt={imageAlt}
+        loading="lazy"
+        decoding="async"
+        class="card-image"
+        width="400"
+        height="240"
+      />
+    </div>
+
+    <!-- Content -->
+    <div class="card-content">
+      <!-- Category Badge -->
+      {category && (
+        <span class="card-category" aria-label={`Categoría: ${category.name}`}>
+          {category.name}
+        </span>
+      )}
+
+      <!-- Title -->
+      <h3 class="card-title">{post.title}</h3>
+
+      <!-- Excerpt -->
+      <p class="card-excerpt">{excerpt}</p>
+
+      <!-- Footer with Date and Read More -->
+      <div class="card-footer">
+        <time class="card-date" datetime={post.date}>
+          {formattedDate}
+        </time>
+        <span class="card-read-more" aria-hidden="true">
+          {readMoreText}
+          <svg class="arrow-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M1 8h14M9 2l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  /* Card Container */
+  .blog-card {
+    background: #ffffff;
+    border-radius: 4px; /* GUIDELINE standard radius */
+    overflow: hidden;
+    transition: all 400ms ease-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .blog-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Link */
+  .card-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .card-link:focus-visible {
+    outline: 3px solid #BA2515;
+    outline-offset: 2px;
+  }
+
+  /* Image */
+  .card-image-wrapper {
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+    background: #f5f5f5;
+    position: relative;
+  }
+
+  /* Add gradient overlay like GUIDELINE */
+  .card-image-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+    z-index: 1;
+    transition: opacity 400ms ease-out;
+  }
+
+  .blog-card:hover .card-image-wrapper::after {
+    opacity: 0.7;
+  }
+
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms ease-out, filter 400ms ease-out;
+    will-change: transform;
+  }
+
+  .blog-card:hover .card-image {
+    transform: scale(1.08);
+    filter: brightness(1.05);
+  }
+
+  /* Content */
+  .card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+  }
+
+  /* Category Badge */
+  .card-category {
+    display: inline-block;
+    align-self: flex-start;
+    background: #DB4529;
+    color: #ffffff;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: var(--font-size-badge); /* WDA-531: 11px→12px responsive */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px; /* GUIDELINE standard radius */
+    transition: background 400ms ease-out;
+  }
+
+  .blog-card:hover .card-category {
+    background: #BA2515;
+  }
+
+  /* Title */
+  .card-title {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: var(--font-size-card-title); /* WDA-531: 19px→22px responsive */
+    font-weight: 400; /* GUIDELINE card title weight */
+    line-height: 1.4;
+    color: #1a1a1a;
+    margin: 0;
+    transition: color 400ms ease-out;
+  }
+
+  .blog-card:hover .card-title {
+    color: #BA2515;
+  }
+
+  /* Excerpt */
+  .card-excerpt {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: var(--font-size-body); /* WDA-531: 15px→16px responsive */
+    font-weight: 300;
+    line-height: 1.6;
+    color: #666666;
+    margin: 0;
+    flex: 1;
+  }
+
+  /* Footer */
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.5rem;
+    margin-top: auto;
+  }
+
+  /* Date */
+  .card-date {
+    font-family: 'Avenir Next', sans-serif;
+    font-size: var(--font-size-meta); /* WDA-531: 13px→14px responsive */
+    font-weight: 300;
+    color: #999999;
+  }
+
+  /* Read More */
+  .card-read-more {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Avenir Next', sans-serif;
+    font-size: var(--font-size-body-sm); /* WDA-531: 14px→15px responsive */
+    font-weight: 500;
+    color: #BA2515;
+    transition: gap 400ms ease-out;
+  }
+
+  .blog-card:hover .card-read-more {
+    gap: 0.75rem;
+  }
+
+  .arrow-icon {
+    transition: transform 400ms ease-out;
+  }
+
+  .blog-card:hover .arrow-icon {
+    transform: translateX(4px);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .card-image-wrapper {
+      height: 200px;
+    }
+
+    .card-content {
+      padding: 1.25rem;
+    }
+
+    /* WDA-531: Font sizes ahora usan clamp() - no need responsive overrides */
+  }
+
+  /* Reduced motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .blog-card,
+    .card-image,
+    .card-image-wrapper::after,
+    .card-category,
+    .card-title,
+    .card-read-more,
+    .arrow-icon {
+      transition: none;
+    }
+
+    .blog-card:hover {
+      transform: none;
+    }
+
+    .blog-card:hover .card-image {
+      transform: none;
+      filter: none;
+    }
+
+    .blog-card:hover .card-image-wrapper::after {
+      opacity: 0.3;
+    }
+
+    .blog-card:hover .arrow-icon {
+      transform: none;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .blog-card {
+      border: 2px solid currentColor;
+    }
+
+    .card-category {
+      border: 1px solid #ffffff;
+    }
+  }
+</style>

@@ -1,0 +1,163 @@
+---
+/**
+ * HeroContent - Text overlay for hero section
+ * - Displays H1, H2, and commercial text
+ * - Positioned over HeroSlider
+ * - Multilingual support
+ */
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  class?: string;
+}
+
+const { locale = 'es', class: className = '' } = Astro.props;
+
+// Hero content by language (from Contenido landing.txt)
+const heroContent = {
+  es: {
+    h1: 'Sauna en Andorra',
+    h1Subtitle: '(sauna finlandesa de leña + baños fríos)',
+    h2: 'SAUWA es la única sauna finlandesa de leña y móvil en Andorra',
+    text: 'Vive un rito nórdico con contrastes de calor y agua fría, al aire libre, pensado para devolver equilibrio al cuerpo y silencio a la mente poniendo a flor de piel tus sentidos.',
+  },
+  ca: {
+    h1: 'Sauna a Andorra',
+    h1Subtitle: '(sauna finlandesa de llenya + banys freds)',
+    h2: 'SAUWA és l\'única sauna finlandesa de llenya i mòbil a Andorra',
+    text: 'Viu un ritual nòrdic amb contrastos de calor i aigua freda, a l\'aire lliure, pensat per tornar equilibri al cos i silenci a la ment posant a flor de pell els teus sentits.',
+  },
+  en: {
+    h1: 'Sauna in Andorra',
+    h1Subtitle: '(wood-fired Finnish sauna + cold baths)',
+    h2: 'SAUWA is the only mobile wood-fired Finnish sauna in Andorra',
+    text: 'Experience a Nordic ritual with heat and cold water contrasts, outdoors, designed to restore balance to your body and silence to your mind, awakening your senses.',
+  },
+  fr: {
+    h1: 'Sauna à Andorre',
+    h1Subtitle: '(sauna finlandais au bois + bains froids)',
+    h2: 'SAUWA est le seul sauna finlandais au bois et mobile en Andorre',
+    text: 'Vivez un rituel nordique avec des contrastes de chaleur et d\'eau froide, en plein air, conçu pour rendre l\'équilibre au corps et le silence à l\'esprit en éveillant vos sens.',
+  },
+};
+
+const content = heroContent[locale];
+---
+
+<div class={`hero-content ${className}`}>
+  <div class="container mx-auto px-4 md:px-6 lg:px-8">
+    <div class="hero-text-wrapper">
+      <!-- H1 with subtitle -->
+      <h1 class="hero-h1">
+        {content.h1}
+        <span class="hero-h1-subtitle">{content.h1Subtitle}</span>
+      </h1>
+
+      <!-- H2 commercial -->
+      <h2 class="hero-h2">
+        {content.h2}
+      </h2>
+
+      <!-- Commercial text -->
+      <p class="hero-text">
+        {content.text}
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .hero-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    pointer-events: none; /* Allow clicks to pass through to slider */
+  }
+
+  .hero-text-wrapper {
+    max-width: 900px;
+    text-align: center;
+    color: white;
+    animation: fadeInUp 1s ease-out 0.3s both;
+  }
+
+  .hero-h1 {
+    font-family: var(--font-helvetica, 'Inter', 'Helvetica Neue', sans-serif);
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    font-weight: 100;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    margin: 0 0 0.5rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-h1-subtitle {
+    display: block;
+    font-size: clamp(1.25rem, 3.5vw, 2.5rem);
+    font-weight: 300;
+    margin-top: 0.5rem;
+    opacity: 0.9;
+  }
+
+  .hero-h2 {
+    font-family: var(--font-avenir, 'Nunito Sans', 'Avenir Next', sans-serif);
+    font-size: clamp(1rem, 2.5vw, 1.75rem);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    line-height: 1.4;
+    margin: 1.5rem 0;
+    color: #DB4529; /* sauwa-orange */
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .hero-text {
+    font-family: var(--font-avenir, 'Nunito Sans', sans-serif);
+    font-size: clamp(0.95rem, 2vw, 1.25rem);
+    font-weight: 400;
+    line-height: 1.6;
+    margin: 1.5rem auto 0;
+    max-width: 700px;
+    opacity: 0.95;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .hero-text-wrapper {
+      padding: 0 1rem;
+    }
+
+    .hero-h1 {
+      margin-bottom: 1rem;
+    }
+
+    .hero-h2 {
+      margin: 1rem 0;
+    }
+
+    .hero-text {
+      margin-top: 1rem;
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-text-wrapper {
+      animation: none;
+    }
+  }
+</style>

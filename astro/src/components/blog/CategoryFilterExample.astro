@@ -1,0 +1,145 @@
+---
+/**
+ * CategoryFilterExample Component
+ * Example integration showing how to use both CategoryFilter (desktop)
+ * and CategoryDropdown (mobile) together with fetched categories
+ *
+ * This example demonstrates:
+ * 1. Fetching categories from WordPress GraphQL
+ * 2. Using the same data for both components
+ * 3. Responsive display (filter buttons on desktop, dropdown on mobile)
+ */
+
+import CategoryFilter from './CategoryFilter.astro';
+import CategoryDropdown from './CategoryDropdown.astro';
+import { createClient, QUERIES } from '../../lib/wordpress';
+import type { Category } from '../../lib/types/blog';
+
+// Fetch categories from WordPress
+let categories: Category[] = [];
+let error: string | null = null;
+
+try {
+  const client = createClient();
+  const response = await client.query(QUERIES.GET_CATEGORIES, {
+    first: 50,
+    hideEmpty: true
+  });
+
+  if (response?.categories?.nodes) {
+    categories = response.categories.nodes;
+    console.log(`Fetched ${categories.length} categories from WordPress`);
+  }
+} catch (e) {
+  console.error('Error fetching categories:', e);
+  error = 'Error loading categories';
+}
+
+// Get locale from Astro.params or default to 'es'
+const locale = Astro.params.locale || 'es';
+
+// Translations for "All categories" text
+const allCategoriesText = {
+  es: 'Todas las categorías',
+  ca: 'Totes les categories',
+  en: 'All categories',
+  fr: 'Toutes les catégories'
+}[locale] || 'Todas las categorías';
+---
+
+<div class="category-filter-container">
+  {!error && categories.length > 0 ? (
+    <>
+      <!-- Desktop: Horizontal filter buttons -->
+      <div class="desktop-filter">
+        <CategoryFilter
+          categories={categories}
+          allCategoriesText={allCategoriesText}
+          locale={locale}
+        />
+      </div>
+
+      <!-- Mobile: Dropdown selector -->
+      <div class="mobile-filter">
+        <CategoryDropdown
+          allCategoriesText={allCategoriesText}
+          locale={locale}
+        />
+      </div>
+    </>
+  ) : error ? (
+    <div class="error-container">
+      <p>{error}</p>
+    </div>
+  ) : (
+    <div class="no-categories-container">
+      <p>No categories available</p>
+    </div>
+  )}
+</div>
+
+<!-- Example usage in a blog page -->
+<script>
+  /**
+   * Example: Listen for filter events from both components
+   * Both CategoryFilter and CategoryDropdown dispatch the same event
+   */
+  document.addEventListener('blog:filter', (event) => {
+    const { category } = event.detail;
+    console.log('Category selected:', category);
+
+    // Here you would typically:
+    // 1. Update the blog posts display
+    // 2. Fetch filtered posts from WordPress
+    // 3. Update the UI accordingly
+
+    // Example: Update a data attribute on the blog grid
+    const blogGrid = document.querySelector('.blog-grid');
+    if (blogGrid) {
+      blogGrid.setAttribute('data-category', category);
+    }
+  });
+</script>
+
+<style>
+  .category-filter-container {
+    margin-bottom: 3rem;
+  }
+
+  /* Desktop filter - visible on larger screens */
+  .desktop-filter {
+    display: block;
+  }
+
+  /* Mobile filter - hidden on desktop */
+  .mobile-filter {
+    display: none;
+    position: relative;
+    /* z-index handled by custom dropdown itself */
+  }
+
+  /* Responsive switching */
+  @media (max-width: 768px) {
+    .desktop-filter {
+      display: none;
+    }
+
+    .mobile-filter {
+      display: block;
+    }
+  }
+
+  /* Error and empty states */
+  .error-container,
+  .no-categories-container {
+    padding: 2rem;
+    text-align: center;
+    color: #636464;
+  }
+
+  .error-container {
+    background-color: rgba(219, 69, 41, 0.05);
+    border-radius: 4px;
+    color: #DB4529;
+  }
+</style>

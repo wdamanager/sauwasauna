@@ -1,0 +1,531 @@
+---
+/**
+ * Homepage ES - SAUWA Landing Page - Opción 3
+ * Modified version with:
+ * - No audio playback
+ * - Modified hero slider (no video, static fire image)
+ * - Steam animation on page load
+ */
+
+import Layout from '../../../layouts/LayoutTransparent.astro';
+import HeroSliderOpcion3 from '../../../components/HeroSliderOpcion3.astro';
+import VaporIntroOpcion3 from '../../../components/VaporIntroOpcion3.astro';
+
+const lang = 'es';
+
+// SEO metadata
+const title = 'Sauna finlandesa en Andorra | SAUWA: leña + baños fríos';
+const description = 'Vive la auténtica sauna finlandesa de leña y baños de agua fría en plena naturaleza de Andorra. Ritual nórdico guiado para recuperar cuerpo y mente tras la nieve.';
+---
+
+<Layout title={title} description={description} lang={lang} pageType="homepage">
+  <!-- Steam Animation (shows on page load) -->
+  <VaporIntroOpcion3 />
+
+  <!-- Hero Section - Full Screen -->
+  <section class="hero-section">
+    <!-- Background Slider (modified version) -->
+    <HeroSliderOpcion3 />
+
+    <!-- Centered Content -->
+    <div class="hero-content-wrapper">
+      <!-- Logo -->
+      <img
+        src="/logos/sauwa-full-white.svg"
+        alt="SAUWA"
+        class="logo"
+      />
+
+      <!-- H1 - Smaller -->
+      <h1 class="heading-primary">Sauna en Andorra</h1>
+
+      <!-- H2 - Larger, Main headline -->
+      <h2 class="heading-secondary">
+        La primera experiencia de auténtica sauna finlandesa de leña y baños de agua helada en plena naturaleza.
+      </h2>
+
+      <!-- CTA Text -->
+      <p class="cta-text">Recibe acceso prioritario en nuestra apertura:</p>
+
+      <!-- Newsletter Form -->
+      <form class="newsletter-form" id="newsletter-form">
+        <!-- Email Input -->
+        <input
+          type="email"
+          name="email"
+          placeholder="Introduce tu email…"
+          required
+          class="email-input"
+        />
+
+        <!-- Privacy Checkbox -->
+        <label class="privacy-label">
+          <input type="checkbox" name="privacy" required class="privacy-checkbox" />
+          <span class="privacy-text">
+            He leído y acepto la
+            <a href="/es/privacidad/" class="privacy-link">política de privacidad</a>
+            <span class="required-asterisk">*</span>
+          </span>
+        </label>
+
+        <!-- Submit Button -->
+        <button type="submit" class="submit-button">
+          AVISADME
+        </button>
+      </form>
+    </div>
+
+    <!-- Fixed UI Elements -->
+    <!-- Language Selector - Top Left -->
+    <div class="language-selector">
+      <a href="/opcion-3/ca/" class="lang-option">CA</a>
+      <span class="separator">/</span>
+      <a href="/opcion-3/es/" class="lang-option active">ES</a>
+      <span class="separator">/</span>
+      <a href="/opcion-3/fr/" class="lang-option">FR</a>
+      <span class="separator">/</span>
+      <a href="/opcion-3/en/" class="lang-option">EN</a>
+    </div>
+
+    <!-- Instagram Icon - Top Right -->
+    <a href="https://www.instagram.com/sauwa.ad/" target="_blank" rel="noopener noreferrer" class="instagram-link">
+      <svg class="instagram-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+      </svg>
+    </a>
+
+    <!-- Copyright - Bottom Center -->
+    <div class="copyright">
+      © 2025 SAUWA. Todos los derechos reservados.
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* CSS Variables */
+  :root {
+    --blanco-puro: #FFFFFF;
+    --rojo-fuego: #BA2515;
+    --rojo-brillante-hover: #DB4529;
+  }
+
+  /* Hero Section - Full Viewport */
+  .hero-section {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Ensure slider takes full viewport */
+  .hero-section :global(.hero-slider) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Centered Content Wrapper */
+  .hero-content-wrapper {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem 2rem 4rem;
+    max-width: 1100px;
+    width: 100%;
+    gap: 0.5rem;
+    margin: 0 auto;
+  }
+
+  /* Logo */
+  .logo {
+    width: auto;
+    height: 15rem;
+    margin-bottom: 0.25rem;
+    animation: fadeInUp 0.8s ease-out both;
+  }
+
+  /* H1 - Smaller than H2 */
+  .heading-primary {
+    color: var(--blanco-puro);
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin: 0 0 0.125rem 0;
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+  }
+
+  /* H2 - Larger, Main headline, opacity 0.9 */
+  .heading-secondary {
+    color: var(--blanco-puro);
+    opacity: 0.9;
+    font-size: 2.5rem;
+    font-weight: 400;
+    line-height: 1.3;
+    margin: 0 0 3rem 0; /* Increased from 1.25rem to 3rem for much better breathing room */
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+  }
+
+  /* CTA Text */
+  .cta-text {
+    color: var(--blanco-puro);
+    font-size: 1.125rem;
+    margin: 0 0 0.25rem 0;
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+  }
+
+  /* Newsletter Form */
+  .newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 400px;
+    animation: fadeInUp 0.8s ease-out 0.8s both;
+  }
+
+  /* Email Input */
+  .email-input {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 4px;
+    color: var(--blanco-puro);
+    transition: border-color 0.3s ease;
+  }
+
+  .email-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .email-input:focus {
+    outline: none;
+    border-color: var(--blanco-puro);
+  }
+
+  /* Privacy Label */
+  .privacy-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .privacy-checkbox {
+    margin-top: 0.25rem;
+    cursor: pointer;
+  }
+
+  .privacy-text {
+    color: var(--blanco-puro);
+    opacity: 0.8;
+  }
+
+  .privacy-link {
+    color: var(--blanco-puro);
+    opacity: 1;
+    text-decoration: underline;
+  }
+
+  .privacy-link:hover {
+    opacity: 0.9;
+  }
+
+  .required-asterisk {
+    color: var(--rojo-fuego);
+    margin-left: 0.125rem;
+  }
+
+  /* Submit Button */
+  .submit-button {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    background-color: var(--rojo-fuego);
+    color: var(--blanco-puro);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .submit-button:hover {
+    background-color: var(--rojo-brillante-hover);
+  }
+
+  /* Language Selector - Fixed Top Left */
+  .language-selector {
+    position: fixed;
+    top: 2rem;
+    left: 2rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    z-index: 20;
+  }
+
+  .lang-option {
+    color: var(--blanco-puro);
+    opacity: 0.7;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: opacity 0.3s ease;
+  }
+
+  .lang-option:hover {
+    opacity: 1;
+  }
+
+  .lang-option.active {
+    opacity: 1;
+    text-decoration: underline;
+  }
+
+  .separator {
+    color: var(--blanco-puro);
+    opacity: 0.5;
+  }
+
+  /* Instagram Icon - Fixed Top Right */
+  .instagram-link {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 20;
+  }
+
+  .instagram-icon {
+    width: 24px;
+    height: 24px;
+    fill: var(--blanco-puro);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+
+  .instagram-link:hover .instagram-icon {
+    opacity: 1;
+  }
+
+  /* Copyright - Fixed Bottom Center */
+  .copyright {
+    position: fixed;
+    bottom: 0.5rem;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: var(--blanco-puro);
+    opacity: 0.6;
+    font-size: 0.75rem;
+    z-index: 5;
+  }
+
+  /* Fade-in Animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .logo,
+    .heading-primary,
+    .heading-secondary,
+    .cta-text,
+    .newsletter-form {
+      animation: none;
+    }
+  }
+
+  /* Responsive Design */
+
+  /* 24" and larger screens (1920px+) */
+  @media (min-width: 1920px) {
+    .hero-content-wrapper {
+      padding: 3rem 3rem 5rem;
+      gap: 0.75rem;
+    }
+
+    .logo {
+      height: 18rem;
+    }
+
+    .heading-primary {
+      font-size: 1.75rem;
+    }
+
+    .heading-secondary {
+      font-size: 3rem;
+    }
+  }
+
+  /* 21" screens (1680px) */
+  @media (max-width: 1680px) {
+    .logo {
+      height: 14rem;
+    }
+
+    .heading-secondary {
+      font-size: 2.25rem;
+    }
+  }
+
+  /* 17" screens (1440px) */
+  @media (max-width: 1440px) {
+    .hero-content-wrapper {
+      padding: 1.75rem 2rem 3.5rem;
+      gap: 0.5rem;
+    }
+
+    .logo {
+      height: 12rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .heading-primary {
+      font-size: 1.375rem;
+    }
+
+    .heading-secondary {
+      font-size: 2rem;
+      line-height: 1.4;
+    }
+  }
+
+  /* 15" screens (1366px) */
+  @media (max-width: 1366px) {
+    .hero-content-wrapper {
+      padding: 1.5rem 1.5rem 3rem;
+      max-width: 900px;
+      gap: 0.4rem;
+    }
+
+    .logo {
+      height: 10rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .heading-primary {
+      font-size: 1.25rem;
+      margin-bottom: 0.1rem;
+    }
+
+    .heading-secondary {
+      font-size: 1.75rem;
+      margin-bottom: 2.5rem; /* Proportionally increased for better breathing room */
+    }
+
+    .cta-text {
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .newsletter-form {
+      max-width: 380px;
+    }
+  }
+
+  /* 13" screens and tablets (1024px) */
+  @media (max-width: 1024px) {
+    .hero-content-wrapper {
+      padding: 1.25rem 1rem 2.5rem;
+      max-width: 700px;
+      gap: 0.375rem;
+    }
+
+    .logo {
+      height: 8rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .heading-primary {
+      font-size: 1.125rem;
+      margin-bottom: 0.1rem;
+    }
+
+    .heading-secondary {
+      font-size: 1.5rem;
+      margin-bottom: 2.25rem; /* Proportionally increased for better breathing room */
+    }
+
+    .cta-text {
+      margin-bottom: 0.2rem;
+    }
+
+    .language-selector,
+    .instagram-link {
+      top: 1.5rem;
+    }
+
+    .language-selector {
+      left: 1.5rem;
+    }
+
+    .instagram-link {
+      right: 1.5rem;
+    }
+  }
+
+  /* Mobile devices */
+  @media (max-width: 768px) {
+    .hero-content-wrapper {
+      padding: 1rem 1rem 2rem;
+      gap: 0.3rem;
+    }
+
+    .logo {
+      height: 6rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .heading-primary {
+      font-size: 1rem;
+      margin-bottom: 0.1rem;
+    }
+
+    .heading-secondary {
+      font-size: 1.25rem;
+      margin-bottom: 2rem; /* Proportionally increased for better breathing room */
+    }
+
+    .cta-text {
+      font-size: 0.875rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .language-selector,
+    .instagram-link {
+      top: 1rem;
+    }
+
+    .language-selector {
+      left: 1rem;
+    }
+
+    .instagram-link {
+      right: 1rem;
+    }
+
+    .copyright {
+      font-size: 0.625rem;
+    }
+  }
+</style>

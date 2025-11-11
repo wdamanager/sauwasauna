@@ -1,0 +1,195 @@
+---
+/**
+ * Navbar - Minimal navigation bar
+ * - Logo SAUWA (grande, legible)
+ * - Instagram icon
+ * - Language selector (minimalista - solo ES, CA, EN, FR)
+ */
+
+import LanguageSelector from '../ui/LanguageSelector.astro';
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  class?: string;
+}
+
+const { locale = 'es', class: className = '' } = Astro.props;
+---
+
+<nav
+  class={`navbar fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${className}`}
+  id="main-navbar"
+>
+  <div class="container mx-auto px-6 md:px-8 lg:px-12">
+    <div class="flex items-center justify-between h-24 md:h-32">
+      <!-- Logo -->
+      <a href={`/${locale}/`} class="logo-container relative flex items-center">
+        <img
+          src="/images/logo/sauwa-full-white.svg"
+          alt="SAUWA"
+          class="logo-full navbar-logo-white transition-opacity duration-300"
+          id="logo-white"
+        />
+        <img
+          src="/images/logo/sauwa-black.svg"
+          alt="SAUWA"
+          class="logo-symbol navbar-logo-black opacity-0 absolute transition-opacity duration-300"
+          id="logo-black"
+        />
+      </a>
+
+      <!-- Right side: Instagram + Language -->
+      <div class="flex items-center gap-6 md:gap-8">
+        <!-- Instagram Icon -->
+        <a
+          href="https://www.instagram.com/sauwa.sauna/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="instagram-link transition-all duration-200 hover:scale-110"
+          aria-label="Instagram"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="instagram-icon">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+        </a>
+
+        <!-- Language Selector -->
+        <LanguageSelector currentLang={locale} />
+      </div>
+    </div>
+  </div>
+</nav>
+
+<style>
+  /* Transparent navbar (default at top) */
+  .navbar {
+    background: transparent;
+  }
+
+  .instagram-icon {
+    color: white;
+  }
+
+  /* Logo Container - Ensure proper positioning */
+  .logo-container {
+    min-height: 3rem; /* Minimum height to prevent layout shift */
+  }
+
+  /* Logo Full (White) - Larger logo with text */
+  .logo-full {
+    height: 3rem; /* 48px - Mobile */
+    width: auto;
+  }
+
+  /* Logo Symbol (Black) - Smaller compact logo */
+  .logo-symbol {
+    height: 2rem; /* 32px - Mobile */
+    width: auto;
+    /* Center the smaller logo vertically */
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* Tablet breakpoint */
+  @media (min-width: 768px) {
+    .logo-container {
+      min-height: 4rem;
+    }
+
+    .logo-full {
+      height: 4rem; /* 64px - Tablet */
+    }
+
+    .logo-symbol {
+      height: 2.5rem; /* 40px - Tablet */
+    }
+  }
+
+  /* Desktop breakpoint */
+  @media (min-width: 1024px) {
+    .logo-container {
+      min-height: 5rem;
+    }
+
+    .logo-full {
+      height: 5rem; /* 80px - Desktop */
+    }
+
+    .logo-symbol {
+      height: 3rem; /* 48px - Desktop */
+    }
+  }
+
+  /* Large Desktop breakpoint */
+  @media (min-width: 1536px) {
+    .logo-container {
+      min-height: 6rem;
+    }
+
+    .logo-full {
+      height: 6rem; /* 96px - Large Desktop */
+    }
+
+    .logo-symbol {
+      height: 3.5rem; /* 56px - Large Desktop */
+    }
+  }
+
+  /* Scrolled navbar */
+  .navbar.scrolled {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  .navbar.scrolled .navbar-logo-white {
+    opacity: 0;
+    pointer-events: none; /* Prevent clicks on invisible logo */
+  }
+
+  .navbar.scrolled .navbar-logo-black {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .navbar.scrolled .instagram-icon {
+    color: #1a1a1a;
+  }
+
+  .navbar.scrolled .instagram-link:hover .instagram-icon {
+    color: #DB4529;
+  }
+</style>
+
+<script>
+  class NavbarController {
+    private navbar: HTMLElement;
+    private readonly SCROLL_THRESHOLD = 50;
+
+    constructor() {
+      this.navbar = document.getElementById('main-navbar') as HTMLElement;
+      if (!this.navbar) return;
+      this.init();
+    }
+
+    private init() {
+      window.addEventListener('scroll', () => this.handleScroll());
+      this.handleScroll();
+    }
+
+    private handleScroll() {
+      const scrollY = window.scrollY;
+      if (scrollY > this.SCROLL_THRESHOLD) {
+        this.navbar.classList.add('scrolled');
+      } else {
+        this.navbar.classList.remove('scrolled');
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    new NavbarController();
+  });
+</script>

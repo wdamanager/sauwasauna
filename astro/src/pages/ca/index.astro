@@ -1,0 +1,149 @@
+---
+/**
+ * Homepage CA - SAUWA Landing Page
+ * Opcion-2 hero + additional sections with opcion-2 typography
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import NavbarScroll from '../../components/NavbarScroll.astro';
+import HeroSlider from '../../components/HeroSlider.astro';
+import BenefitsSection from '../../components/BenefitsSection.astro';
+import BenefitsBlogSection from '../../components/BenefitsBlogSection.astro';
+import BenefitsImageSection from '../../components/BenefitsImageSection.astro';
+import ExperienceSection from '../../components/ExperienceSection.astro';
+import SessionPhases from '../../components/SessionPhases.astro';
+import CTANewsletter from '../../components/CTANewsletter.astro';
+import Footer from '../../components/layout/Footer.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
+import CookieBanner from '../../components/CookieBanner.astro';
+import { cookieBannerTexts } from '../../data/cookieBannerTexts';
+import '../../styles/landing.css';
+
+const lang = 'ca';
+
+// SEO metadata
+const title = 'Sauna finlandesa a Andorra | SAUWA: llenya + banys freds';
+const description = 'Viu l\'autèntica sauna finlandesa de llenya i banys d\'aigua freda en plena natura d\'Andorra. Ritual nòrdic guiat per recuperar cos i ment després de la neu.';
+---
+
+<Layout title={title} description={description} lang={lang} pageType="homepage">
+
+  <!-- Navbar Scroll -->
+  <NavbarScroll locale={lang} />
+
+  <!-- Ambient Audio - DESACTIVADO TEMPORALMENTE
+  <audio autoplay muted id="ambient-audio">
+    <source src="/audio/fire-crackling.mp3" type="audio/mpeg" />
+  </audio>
+  -->
+
+  <!-- Hero Section - Full Screen with opcion-2 style -->
+  <section class="hero-section">
+    <!-- Background Slider -->
+    <HeroSlider />
+
+    <!-- Centered Content -->
+    <div class="hero-content-wrapper">
+      <!-- Logo -->
+      <img
+        src="/logos/sauwa-full-white.svg"
+        alt="SAUWA"
+        class="logo"
+      />
+
+      <!-- H1 - Smaller -->
+      <h1 class="heading-primary text-2xl mb-1 animate-fade-in-up animation-delay-200">Sauna a Andorra</h1>
+
+      <!-- H2 - Larger, Main headline -->
+      <h2 class="heading-secondary text-4xl md:text-5xl leading-tight mb-12 animate-fade-in-up animation-delay-400">
+        La primera experiència d'autèntica sauna finlandesa de llenya i banys d'aigua gelada en plena natura.
+      </h2>
+
+      <!-- CTA Text -->
+      <p class="text-cta text-lg mb-1 animate-fade-in-up animation-delay-600">Rep accés prioritari en la nostra obertura:</p>
+
+      <!-- Newsletter Form -->
+      <form class="newsletter-form" id="newsletter-form">
+        <!-- Email Input -->
+        <input
+          type="email"
+          name="email"
+          placeholder="Introdueix el teu email…"
+          required
+          class="email-input"
+        />
+
+        <!-- Privacy Checkbox -->
+        <label class="privacy-label">
+          <input type="checkbox" name="privacy" required class="privacy-checkbox" />
+          <span class="privacy-text">
+            He llegit i accepto la
+            <a href="/ca/politica-de-privacitat/" class="privacy-link">política de privadesa</a>
+            <span class="required-asterisk">*</span>
+          </span>
+        </label>
+
+        <!-- Submit Button -->
+        <button type="submit" class="submit-button">
+          AVISEU-ME
+        </button>
+      </form>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <a href="#beneficios-imagen" class="scroll-indicator" aria-label="Descobrir beneficis">
+      <div class="scroll-icon"></div>
+    </a>
+  </section>
+
+  <!-- WDA-271: Nova estructura -->
+  <!-- WDA-267: Imatge 50/50 + Beneficis -->
+  <BenefitsImageSection locale={lang} />
+
+  <!-- SessionPhases Millorat (WDA-265) -->
+  <SessionPhases locale={lang} />
+
+  <!-- Benefits + Blog Section with Sticky Scroll -->
+  <BenefitsBlogSection locale={lang} />
+
+  <!-- CTA Newsletter Millorat (WDA-269) -->
+  <CTANewsletter locale={lang} />
+
+  <!-- Footer Negre (WDA-268) -->
+  <FooterBlack locale={lang} />
+
+  <!-- Cookie Banner -->
+  <CookieBanner {...cookieBannerTexts[lang]} />
+</Layout>
+
+<!-- SCRIPT AUDIO DESACTIVADO TEMPORALMENTE
+<script>
+  // Handle ambient audio with user interaction for browsers that require it
+  document.addEventListener('DOMContentLoaded', () => {
+    const audio = document.getElementById('ambient-audio') as HTMLAudioElement;
+
+    if (audio) {
+      // Remove muted attribute and set low volume for ambient effect
+      audio.muted = false;
+      audio.volume = 0.3; // 30% volume for ambient background
+
+      // Try to play immediately
+      const playPromise = audio.play();
+
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // If autoplay fails, play on first user interaction
+          const playOnInteraction = () => {
+            audio.play();
+            document.removeEventListener('click', playOnInteraction);
+            document.removeEventListener('touchstart', playOnInteraction);
+          };
+
+          document.addEventListener('click', playOnInteraction);
+          document.addEventListener('touchstart', playOnInteraction);
+        });
+      }
+    }
+  });
+</script>
+-->

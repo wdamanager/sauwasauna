@@ -1,0 +1,306 @@
+/* SAUWA Landing Page Components - Reusable Styles */
+
+/* Hero Section Layout */
+.hero-section {
+  @apply relative w-full overflow-hidden flex items-center justify-center;
+  position: relative !important;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile browsers */
+}
+
+.hero-section :global(.hero-slider) {
+  @apply absolute inset-0 w-full h-full;
+}
+
+.hero-content-wrapper {
+  @apply relative z-10 flex flex-col items-center justify-center text-center;
+  @apply px-8 pb-16 pt-8 max-w-[1100px] w-full gap-2 mx-auto;
+}
+
+/* Logo Animation */
+.logo {
+  @apply w-auto h-60 mb-1 animate-fade-in-up;
+}
+
+/* Newsletter Form */
+.newsletter-form {
+  @apply flex flex-col gap-4 w-full max-w-md animate-fade-in-up animation-delay-800;
+}
+
+.email-input {
+  @apply w-full px-5 py-3.5 text-base bg-black/20 border border-white/40 rounded text-white;
+  @apply transition-colors duration-300;
+  @apply placeholder:text-white/60 focus:outline-none focus:border-white;
+}
+
+.privacy-label {
+  @apply flex items-start gap-2 text-sm text-left cursor-pointer;
+}
+
+.privacy-checkbox {
+  @apply mt-1 cursor-pointer;
+}
+
+.privacy-text {
+  @apply text-white/80;
+}
+
+.privacy-link {
+  @apply text-white underline hover:opacity-90;
+}
+
+.required-asterisk {
+  @apply text-sauwa-red ml-0.5;
+}
+
+.submit-button {
+  @apply w-full px-8 py-4 text-base font-semibold tracking-wide;
+  @apply bg-sauwa-red text-white border-none rounded cursor-pointer;
+  @apply transition-colors duration-300 hover:bg-sauwa-orange;
+}
+
+/* Fixed UI Elements */
+.language-selector {
+  @apply fixed top-8 left-8 flex gap-2 items-center z-20;
+}
+
+.lang-option {
+  @apply text-white/70 no-underline text-sm transition-opacity duration-300;
+  @apply hover:opacity-100;
+}
+
+.lang-option.active {
+  @apply opacity-100 underline;
+}
+
+.separator {
+  @apply text-white/50;
+}
+
+.instagram-link {
+  @apply fixed top-8 right-8 z-20;
+}
+
+.instagram-icon {
+  @apply w-6 h-6 fill-white opacity-70 transition-opacity duration-300;
+}
+
+.instagram-link:hover .instagram-icon {
+  @apply opacity-100;
+}
+
+.copyright {
+  @apply fixed bottom-2 left-0 right-0 text-center text-white/60 text-xs z-[5];
+}
+
+/* Scroll Indicator */
+.hero-section .scroll-indicator {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  text-decoration: none;
+  animation: bounce 2s infinite;
+  z-index: 100;
+}
+
+.hero-section .scroll-icon {
+  width: 24px;
+  height: 36px;
+  border: 2px solid #ffffff;
+  border-radius: 12px;
+  position: relative;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.hero-section .scroll-icon::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 2px;
+  animation: scroll 1.5s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  40% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+  60% {
+    transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+@keyframes scroll {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .hero-section .scroll-indicator {
+    animation: none;
+  }
+
+  .hero-section .scroll-icon::before {
+    animation: none;
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .hero-section .scroll-indicator {
+    bottom: 2rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out both;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.animation-delay-600 {
+  animation-delay: 0.6s;
+}
+
+.animation-delay-800 {
+  animation-delay: 0.8s;
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .logo,
+  .animate-fade-in-up {
+    animation: none;
+  }
+}
+
+/* Responsive Design */
+@media (min-width: 1920px) {
+  .hero-content-wrapper {
+    @apply px-12 pb-20 pt-12 gap-3;
+  }
+  .logo {
+    @apply h-72;
+  }
+}
+
+@media (max-width: 1680px) {
+  .logo {
+    @apply h-56;
+  }
+}
+
+@media (max-width: 1440px) {
+  .hero-content-wrapper {
+    @apply px-8 pb-14 pt-7 gap-2;
+  }
+  .logo {
+    @apply h-48 mb-1;
+  }
+}
+
+@media (max-width: 1366px) {
+  .hero-content-wrapper {
+    @apply px-6 pb-12 pt-6 max-w-[900px] gap-1.5;
+  }
+  .logo {
+    @apply h-40 mb-0.5;
+  }
+  .newsletter-form {
+    @apply max-w-[380px];
+  }
+}
+
+@media (max-width: 1024px) {
+  .hero-content-wrapper {
+    @apply px-4 pb-10 pt-5 max-w-[700px] gap-1.5;
+  }
+  .logo {
+    @apply h-32 mb-0.5;
+  }
+  .language-selector,
+  .instagram-link {
+    @apply top-6;
+  }
+  .language-selector {
+    @apply left-6;
+  }
+  .instagram-link {
+    @apply right-6;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-content-wrapper {
+    @apply px-4 pb-4 pt-2 gap-0.5;
+  }
+  .logo {
+    @apply h-28 mb-0;
+  }
+
+  /* Reducir H1 en mobile */
+  .hero-section .heading-primary {
+    font-size: 1.125rem !important; /* text-lg */
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Reducir texto H2 en mobile para que quepa scroll-icon */
+  .hero-section .heading-secondary {
+    font-size: 1.25rem !important; /* Reducir más: text-xl */
+    line-height: 1.35 !important;
+    margin-bottom: 1.5rem !important; /* Reducir aún más */
+  }
+
+  /* Mover scroll-icon más arriba en mobile */
+  .hero-section .scroll-indicator {
+    bottom: 1rem !important;
+  }
+
+  .language-selector,
+  .instagram-link {
+    @apply top-4;
+  }
+  .language-selector {
+    @apply left-4;
+  }
+  .instagram-link {
+    @apply right-4;
+  }
+  .copyright {
+    @apply text-[10px];
+  }
+}

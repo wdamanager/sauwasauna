@@ -1,0 +1,55 @@
+---
+interface Props {
+  gtmId: string;
+  locale?: string;
+  pageType?: string;
+}
+
+const { gtmId, locale = 'es', pageType = 'page' } = Astro.props;
+const isDevelopment = import.meta.env.PUBLIC_ENV === 'development';
+
+// Only load GTM in production or if explicitly enabled in dev
+const shouldLoadGTM = !isDevelopment || import.meta.env.PUBLIC_ENABLE_GTM_IN_DEV === 'true';
+---
+
+{shouldLoadGTM && gtmId && (
+  <>
+    <!-- Google Tag Manager DataLayer Initialization -->
+    <script is:inline define:vars={{ locale, pageType, isDevelopment }}>
+      window.dataLayer = window.dataLayer || [];
+
+      // Push initial context data
+      window.dataLayer.push({
+        'event': 'pageview',
+        'pageLocale': locale,
+        'pageType': pageType,
+        'environment': isDevelopment ? 'development' : 'production',
+        'timestamp': new Date().toISOString()
+      });
+    </script>
+
+    <!-- Google Tag Manager -->
+    <script is:inline define:vars={{ gtmId }}>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer',gtmId);
+    </script>
+    <!-- End Google Tag Manager -->
+  </>
+)}
+
+{isDevelopment && !shouldLoadGTM && (
+  <script is:inline>
+    console.info('%c🔍 GTM Debug Mode', 'background: #f0f0f0; color: #333; padding: 2px 6px; border-radius: 3px;');
+    console.info('GTM is disabled in development. Set PUBLIC_ENABLE_GTM_IN_DEV=true in .env to enable.');
+
+    // Mock dataLayer for development
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push = function(...args) {
+      console.log('[GTM Mock]', ...args);
+      return Array.prototype.push.apply(this, args);
+    };
+  </script>
+)}

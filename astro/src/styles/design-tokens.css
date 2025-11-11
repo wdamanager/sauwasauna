@@ -1,0 +1,313 @@
+/* ==========================================================================
+   SAUWA Design Tokens - CSS Custom Properties
+   Sistema de diseño único y centralizado
+
+   Fecha creación: 2025-11-09
+   Versión: 1.0.0
+   Refactorización: WDA-531
+   ========================================================================== */
+
+:root {
+  /* ==========================================================================
+     COLORES - Paleta de marca SAUWA
+     ========================================================================== */
+
+  /* Primarios - Identidad B2C */
+  --color-primary: #BA2515;           /* Rojo SAUWA - Acción principal */
+  --color-primary-hover: #DB4529;     /* Naranja SAUWA - Hover/accent */
+
+  /* B2B/Partners - Identidad corporativa */
+  --color-b2b: #406E51;               /* Verde Partners */
+  --color-b2b-hover: #4a7e5c;         /* Verde Partners hover */
+  --color-b2b-light: #5a8e6c;         /* Verde Partners light */
+
+  /* Neutros - Textos y fondos */
+  --color-text-primary: #1a1a1a;      /* Negro texto principal */
+  --color-text-secondary: #636464;    /* Gris texto secundario */
+  --color-text-tertiary: #8a8a8a;     /* Gris texto terciario */
+
+  --color-bg-white: #ffffff;          /* Fondo blanco puro */
+  --color-bg-light: #f4f4f4;          /* Fondo gris claro */
+  --color-bg-dark: #1a1a1a;           /* Fondo negro */
+
+  /* Estados */
+  --color-success: #4caf50;           /* Verde éxito */
+  --color-warning: #ff9800;           /* Naranja advertencia */
+  --color-error: #f44336;             /* Rojo error */
+  --color-info: #2196f3;              /* Azul info */
+
+  /* Opacidades */
+  --opacity-disabled: 0.5;
+  --opacity-hover: 0.9;
+  --opacity-subtle: 0.7;
+
+  /* ==========================================================================
+     TIPOGRAFÍA - Sistema modular escalable
+     ========================================================================== */
+
+  /* Familias tipográficas */
+  --font-family-primary: 'Helvetica Neue', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-secondary: 'Avenir Next', 'Avenir', system-ui, -apple-system, sans-serif;
+
+  /* Escalas de tamaño - Fluid Typography con clamp() */
+  /* Escala base: 16px móvil → 18px desktop */
+  --font-scale-xxs: clamp(0.875rem, 0.8vw + 0.8rem, 1rem);          /* 14-16px */
+  --font-scale-xs: clamp(0.9375rem, 0.9vw + 0.85rem, 1.0625rem);    /* 15-17px */
+  --font-scale-sm: clamp(1rem, 1vw + 0.9rem, 1.125rem);             /* 16-18px */
+  --font-scale-base: clamp(1.125rem, 1.2vw + 1rem, 1.25rem);        /* 18-20px */
+  --font-scale-md: clamp(1.25rem, 1.4vw + 1.1rem, 1.5rem);          /* 20-24px */
+  --font-scale-lg: clamp(1.5rem, 2vw + 1.2rem, 2rem);               /* 24-32px */
+  --font-scale-xl: clamp(1.75rem, 2.5vw + 1.4rem, 2.5rem);          /* 28-40px */
+  --font-scale-2xl: clamp(2rem, 3vw + 1.5rem, 3rem);                /* 32-48px */
+  --font-scale-3xl: clamp(2.5rem, 4vw + 2rem, 4rem);                /* 40-64px */
+
+  /* Pesos tipográficos */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line heights */
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.3;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.7;
+  --line-height-loose: 2;
+
+  /* Letter spacing */
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.05em;
+  --letter-spacing-wider: 0.1em;
+
+  /* ==========================================================================
+     ESPACIADO - Sistema 8pt base
+     ========================================================================== */
+
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;   /* 4px */
+  --spacing-2: 0.5rem;    /* 8px */
+  --spacing-3: 0.75rem;   /* 12px */
+  --spacing-4: 1rem;      /* 16px */
+  --spacing-5: 1.5rem;    /* 24px */
+  --spacing-6: 2rem;      /* 32px */
+  --spacing-7: 2.5rem;    /* 40px */
+  --spacing-8: 3rem;      /* 48px */
+  --spacing-9: 3.5rem;    /* 56px */
+  --spacing-10: 4rem;     /* 64px */
+  --spacing-12: 5rem;     /* 80px */
+  --spacing-14: 6rem;     /* 96px */
+  --spacing-16: 8rem;     /* 128px */
+  --spacing-20: 10rem;    /* 160px */
+
+  /* Espaciado de sección */
+  --section-padding: var(--spacing-12);
+  --section-padding-mobile: var(--spacing-8);
+  --section-gap: var(--spacing-10);
+  --section-gap-mobile: var(--spacing-6);
+
+  /* Contenedor */
+  --container-max-width: 1400px;
+  --container-max-width-narrow: 1200px;
+  --container-max-width-wide: 1600px;
+  --container-padding: var(--spacing-5);
+  --container-padding-mobile: 1.25rem; /* WDA-535: 20px estándar mobile (fue 16px) */
+
+  /* ==========================================================================
+     COMPONENTES - Tokens de diseño
+     ========================================================================== */
+
+  /* Border radius */
+  --radius-none: 0;
+  --radius-sm: 4px;
+  --radius-base: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-base: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.2);
+
+  /* Borders */
+  --border-width-thin: 1px;
+  --border-width-base: 2px;
+  --border-width-thick: 4px;
+
+  --border-color-light: rgba(255, 255, 255, 0.2);
+  --border-color-base: rgba(0, 0, 0, 0.1);
+  --border-color-dark: rgba(0, 0, 0, 0.2);
+
+  /* Transitions */
+  --transition-fast: 150ms ease-out;
+  --transition-base: 300ms ease-out;
+  --transition-slow: 500ms ease-out;
+  --transition-slower: 800ms ease-out;
+
+  /* Timing functions */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ==========================================================================
+     LAYOUT - Sistema de grid y breakpoints
+     ========================================================================== */
+
+  /* Breakpoints */
+  --breakpoint-mobile: 768px;
+  --breakpoint-tablet: 1024px;
+  --breakpoint-desktop: 1280px;
+  --breakpoint-wide: 1920px;
+
+  /* Grid */
+  --grid-columns: 12;
+  --grid-gap: var(--spacing-6);
+  --grid-gap-mobile: var(--spacing-4);
+
+  /* Header */
+  --header-height-mobile: 60px;
+  --header-height-desktop: 80px;
+
+  /* Z-index scale */
+  --z-base: 1;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-navbar: 50;
+  --z-modal-backdrop: 100;
+  --z-modal: 200;
+  --z-popover: 300;
+  --z-tooltip: 400;
+  --z-notification: 500;
+
+  /* ==========================================================================
+     COMPONENTES ESPECÍFICOS - Botones
+     ========================================================================== */
+
+  /* Botón primario */
+  --btn-primary-bg: var(--color-primary);
+  --btn-primary-bg-hover: var(--color-primary-hover);
+  --btn-primary-text: var(--color-bg-white);
+  --btn-primary-padding: var(--spacing-4) var(--spacing-8);
+  --btn-primary-radius: var(--radius-base);
+
+  /* Botón secundario */
+  --btn-secondary-bg: transparent;
+  --btn-secondary-bg-hover: rgba(255, 255, 255, 0.1);
+  --btn-secondary-border: var(--border-color-light);
+  --btn-secondary-text: var(--color-bg-white);
+  --btn-secondary-padding: var(--spacing-3) var(--spacing-6);
+  --btn-secondary-radius: var(--radius-base);
+
+  /* Botón B2B */
+  --btn-b2b-bg: var(--color-b2b);
+  --btn-b2b-bg-hover: var(--color-b2b-hover);
+  --btn-b2b-text: var(--color-bg-white);
+
+  /* ==========================================================================
+     COMPONENTES ESPECÍFICOS - Forms
+     ========================================================================== */
+
+  --input-bg: rgba(0, 0, 0, 0.2);
+  --input-bg-focus: rgba(0, 0, 0, 0.3);
+  --input-border: var(--border-color-light);
+  --input-border-focus: var(--color-bg-white);
+  --input-text: var(--color-bg-white);
+  --input-placeholder: rgba(255, 255, 255, 0.6);
+  --input-padding: var(--spacing-3) var(--spacing-5);
+  --input-radius: var(--radius-base);
+  --input-height: 48px;
+
+  /* ==========================================================================
+     ANIMACIONES
+     ========================================================================== */
+
+  --animation-duration-fast: 200ms;
+  --animation-duration-base: 300ms;
+  --animation-duration-slow: 600ms;
+  --animation-duration-slower: 1000ms;
+
+  /* Delays para animaciones escalonadas */
+  --animation-delay-1: 100ms;
+  --animation-delay-2: 200ms;
+  --animation-delay-3: 300ms;
+  --animation-delay-4: 400ms;
+  --animation-delay-5: 500ms;
+}
+
+/* ==========================================================================
+   RESPONSIVE OVERRIDES - Ajustes por breakpoint
+   ========================================================================== */
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+  :root {
+    --section-padding: var(--spacing-8);
+    --section-gap: var(--spacing-6);
+    --container-padding: var(--container-padding-mobile); /* WDA-535: 20px */
+    --grid-gap: var(--spacing-4);
+  }
+}
+
+/* Tablet (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --section-padding: var(--spacing-10);
+    --section-gap: var(--spacing-8);
+  }
+}
+
+/* Desktop (>= 1024px) */
+@media (min-width: 1024px) {
+  :root {
+    --section-padding: var(--spacing-12);
+    --section-gap: var(--spacing-10);
+  }
+}
+
+/* Wide screens (>= 1920px) */
+@media (min-width: 1920px) {
+  :root {
+    --section-padding: var(--spacing-14);
+    --section-gap: var(--spacing-12);
+  }
+}
+
+/* ==========================================================================
+   DARK MODE (Preparado para futuro)
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Invertir colores cuando sea necesario */
+    /* --color-text-primary: #ffffff; */
+    /* --color-text-secondary: #a0a0a0; */
+    /* --color-bg-white: #1a1a1a; */
+    /* --color-bg-light: #2a2a2a; */
+  }
+}
+
+/* ==========================================================================
+   NOTAS DE USO
+
+   1. SIEMPRE usar variables CSS en lugar de valores hardcodeados
+   2. Si necesitas un nuevo token, añádelo aquí primero
+   3. Usa la nomenclatura semántica (--color-primary, no --red)
+   4. Las variables responsive se ajustan automáticamente
+   5. No sobrescribir variables en componentes, crear nuevas si es necesario
+
+   Ejemplo de uso:
+   .mi-componente {
+     color: var(--color-text-primary);
+     font-size: var(--font-scale-base);
+     padding: var(--spacing-4);
+     border-radius: var(--radius-base);
+     transition: var(--transition-base);
+   }
+   ========================================================================== */

@@ -1,0 +1,452 @@
+---
+/**
+ * FooterBlack Component - WDA-268 (Updated per client feedback)
+ * Footer elegante con fondo negro y logo blanco
+ * Layout simplificado: 2 columnas (Logo + Tagline | Contacto + Social)
+ * Logo 2x más grande
+ * Solo email + Instagram
+ * Sin Términos y Condiciones
+ * Multiidioma (es/ca/en/fr)
+ */
+
+import { getLegalUrl } from '../../lib/wordpress/legal-slugs.js';
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+}
+
+const { locale = 'es' } = Astro.props;
+const currentYear = new Date().getFullYear();
+
+// Contenido del footer por idioma
+const footerContent = {
+  es: {
+    // Logo + Tagline
+    tagline: 'La auténtica experiencia de sauna finlandesa en Andorra',
+
+    // Contacto
+    contact: {
+      title: 'CONTACTO',
+      email: 'info@sauwasauna.com',
+      social: 'Síguenos'
+    },
+
+    // Legal links (copyright section) - SIN Términos y Condiciones
+    legal: [
+      { href: getLegalUrl('POLITICA_PRIVACIDAD', 'es'), label: 'Política de Privacidad' },
+      { href: getLegalUrl('POLITICA_COOKIES', 'es'), label: 'Política de Cookies' },
+      { href: getLegalUrl('AVISO_LEGAL', 'es'), label: 'Aviso Legal' },
+    ],
+
+    copyright: `© ${currentYear} SAUWA - PCR Europe, S.L. Todos los derechos reservados.`
+  },
+  ca: {
+    tagline: 'L\'autèntica experiència de sauna finlandesa a Andorra',
+    contact: {
+      title: 'CONTACTE',
+      email: 'info@sauwasauna.com',
+      social: 'Segueix-nos'
+    },
+    legal: [
+      { href: getLegalUrl('POLITICA_PRIVACIDAD', 'ca'), label: 'Política de Privacitat' },
+      { href: getLegalUrl('POLITICA_COOKIES', 'ca'), label: 'Política de Cookies' },
+      { href: getLegalUrl('AVISO_LEGAL', 'ca'), label: 'Avís Legal' },
+    ],
+    copyright: `© ${currentYear} SAUWA - PCR Europe, S.L. Tots els drets reservats.`
+  },
+  en: {
+    tagline: 'The authentic Finnish sauna experience in Andorra',
+    contact: {
+      title: 'CONTACT',
+      email: 'info@sauwasauna.com',
+      social: 'Follow us'
+    },
+    legal: [
+      { href: getLegalUrl('POLITICA_PRIVACIDAD', 'en'), label: 'Privacy Policy' },
+      { href: getLegalUrl('POLITICA_COOKIES', 'en'), label: 'Cookie Policy' },
+      { href: getLegalUrl('AVISO_LEGAL', 'en'), label: 'Legal Notice' },
+    ],
+    copyright: `© ${currentYear} SAUWA - PCR Europe, S.L. All rights reserved.`
+  },
+  fr: {
+    tagline: 'L\'authentique expérience de sauna finlandais en Andorre',
+    contact: {
+      title: 'CONTACT',
+      email: 'info@sauwasauna.com',
+      social: 'Suivez-nous'
+    },
+    legal: [
+      { href: getLegalUrl('POLITICA_PRIVACIDAD', 'fr'), label: 'Politique de Confidentialité' },
+      { href: getLegalUrl('POLITICA_COOKIES', 'fr'), label: 'Politique de Cookies' },
+      { href: getLegalUrl('AVISO_LEGAL', 'fr'), label: 'Mentions Légales' },
+    ],
+    copyright: `© ${currentYear} SAUWA - PCR Europe, S.L. Tous droits réservés.`
+  }
+};
+
+const content = footerContent[locale];
+---
+
+<footer class="footer-black">
+  <!-- Main Footer Content -->
+  <div class="footer-container">
+
+    <!-- Column 1: Logo + Tagline -->
+    <div class="footer-brand">
+      <img
+        src="/images/logo/sauwa-full-white.svg"
+        alt="SAUWA"
+        class="footer-logo"
+        width="280"
+        height="96"
+        loading="lazy"
+      />
+      <p class="footer-tagline">
+        {content.tagline}
+      </p>
+    </div>
+
+    <!-- Column 2: Contact + Social -->
+    <div class="footer-column footer-contact">
+      <h3 class="footer-heading">{content.contact.title}</h3>
+      <div class="contact-info">
+        <a href={`mailto:${content.contact.email}`} class="footer-link contact-link">
+          <svg class="contact-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="m22 7-10 5L2 7"></path>
+          </svg>
+          {content.contact.email}
+        </a>
+      </div>
+
+      <!-- Social Media -->
+      <div class="social-section">
+        <p class="social-label">{content.contact.social}</p>
+        <div class="social-links">
+          <a
+            href="https://www.instagram.com/sauwa.sauna/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            aria-label="Instagram"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Copyright Section -->
+  <div class="footer-bottom">
+    <div class="footer-bottom-content">
+      <p class="copyright-text">
+        {content.copyright}
+      </p>
+      <nav class="legal-links" aria-label="Legal navigation">
+        {content.legal.map((link, index) => (
+          <>
+            <a href={link.href} class="legal-link">
+              {link.label}
+            </a>
+            {index < content.legal.length - 1 && <span class="legal-separator">·</span>}
+          </>
+        ))}
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* Footer principal */
+  .footer-black {
+    background-color: #000000;
+    color: #FFFFFF;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    margin-top: 0;
+  }
+
+  /* Container principal - 2 columnas desktop */
+  .footer-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 5rem 2rem 3rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  /* Columna Brand (Logo + Tagline) */
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* Logo 2x más grande: 140px → 280px */
+  .footer-logo {
+    width: 280px;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .footer-tagline {
+    font-size: var(--font-size-body-sm); /* WDA-531: 14px→15px responsive */
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    max-width: 380px;
+  }
+
+  /* Columnas generales */
+  .footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* Headings */
+  .footer-heading {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: var(--font-size-heading); /* WDA-531: 16px→17px responsive */
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #FFFFFF;
+    margin: 0;
+    padding-bottom: 0.5rem;
+  }
+
+  /* Links */
+  .footer-link {
+    font-size: var(--font-size-body-sm); /* WDA-531: 14px→15px responsive */
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: all 200ms ease;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .footer-link:hover {
+    color: #DB4529;
+    transform: translateX(2px);
+  }
+
+  /* Contacto */
+  .footer-contact {
+    gap: 1.5rem;
+    justify-self: end;
+  }
+
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .contact-link {
+    gap: 0.5rem;
+  }
+
+  .contact-icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Social Media */
+  .social-section {
+    margin-top: 1.5rem;
+  }
+
+  .social-label {
+    font-size: var(--font-size-label); /* WDA-531: 14px→15px responsive */
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0 0 1rem 0;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 1rem;
+    overflow: hidden; /* Fix overflow horizontal */
+  }
+
+  .social-link {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    transition: all 300ms ease;
+    flex-shrink: 0; /* Prevenir compresión del botón */
+  }
+
+  .social-link:hover {
+    background-color: #DB4529;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(219, 69, 41, 0.4);
+  }
+
+  .social-link svg {
+    width: 20px;
+    height: 20px;
+    max-width: 100%; /* Asegurar que SVG no desborde */
+    max-height: 100%;
+  }
+
+  /* Copyright Section */
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2rem 0;
+  }
+
+  .footer-bottom-content {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--container-padding); /* Desktop: 24px */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .copyright-text {
+    font-size: var(--font-size-copyright); /* WDA-531: 12px→13px responsive */
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+  }
+
+  .legal-links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .legal-link {
+    font-size: var(--font-size-meta); /* WDA-531: 13px→14px responsive */
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color 200ms ease;
+  }
+
+  .legal-link:hover {
+    color: #DB4529;
+  }
+
+  .legal-separator {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: var(--font-size-meta); /* WDA-531: 13px→14px responsive */
+  }
+
+  /* Tablet (768px - 1023px) */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .footer-container {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+
+    .footer-logo {
+      width: 240px;
+    }
+  }
+
+  /* Mobile (< 768px) */
+  @media (max-width: 767px) {
+    .footer-container {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      padding: 3rem var(--container-padding-mobile) 2rem; /* WDA-535: 20px unificado */
+      text-align: center; /* Asegurar centrado general */
+    }
+
+    .footer-brand {
+      align-items: center;
+      text-align: center;
+    }
+
+    .footer-logo {
+      width: 200px;
+      margin: 0 auto; /* Centrar logo horizontalmente */
+    }
+
+    .footer-tagline {
+      text-align: center;
+      max-width: 100%;
+    }
+
+    .footer-column {
+      align-items: center;
+      text-align: center;
+    }
+
+    .footer-contact {
+      justify-self: center; /* Centrar columna de contacto */
+    }
+
+    .footer-heading {
+      text-align: center;
+      width: 100%; /* Asegurar ancho completo */
+    }
+
+    .contact-info {
+      align-items: center;
+    }
+
+    .social-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%; /* Asegurar ancho completo */
+    }
+
+    .footer-bottom-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 1.5rem;
+      align-items: center; /* Centrar contenido verticalmente */
+      padding: 0 var(--container-padding-mobile); /* WDA-535: 20px unificado */
+    }
+
+    .copyright-text {
+      text-align: center;
+      width: 100%; /* Asegurar ancho completo */
+    }
+
+    .legal-links {
+      justify-content: center;
+      width: 100%; /* Asegurar ancho completo */
+    }
+  }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .footer-black {
+    animation: fadeInUp 600ms ease-out;
+  }
+</style>

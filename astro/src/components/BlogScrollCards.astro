@@ -1,0 +1,530 @@
+---
+/**
+ * BlogScrollCards - Cards de blog con scroll vertical
+ * Columna derecha del layout sticky
+ */
+
+import { getLatestPosts } from '../lib/graphql';
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  limit?: number;
+  verticalScroll?: boolean;
+}
+
+const { locale = 'es', limit = 3, verticalScroll = false } = Astro.props;
+
+// Traducciones para el botón "Ver más"
+const translations = {
+  es: { seeMore: 'Ver más' },
+  ca: { seeMore: 'Veure més' },
+  en: { seeMore: 'See more' },
+  fr: { seeMore: 'Voir plus' },
+};
+
+// Fetch latest posts from WordPress
+let posts = [];
+try {
+  posts = await getLatestPosts(limit);
+} catch (error) {
+  console.error('Error fetching blog posts:', error);
+  posts = [];
+}
+
+// Función helper para formatear fecha
+function formatDate(dateString: string, locale: string): string {
+  const date = new Date(dateString);
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  };
+
+  const localeMap: Record<string, string> = {
+    es: 'es-ES',
+    ca: 'ca-ES',
+    en: 'en-US',
+    fr: 'fr-FR',
+  };
+
+  return date.toLocaleDateString(localeMap[locale] || 'es-ES', options);
+}
+
+// Función helper para limpiar excerpt
+function cleanExcerpt(excerpt: string): string {
+  return excerpt
+    .replace(/<[^>]*>/g, '')
+    .replace(/&hellip;/g, '...')
+    .replace(/&[^;]+;/g, '')
+    .trim()
+    .substring(0, 150) + '...';
+}
+---
+
+<div class={`blog-scroll-container ${verticalScroll ? 'vertical-scroll-mode' : ''}`}>
+  {posts.length === 0 ? (
+    <div class="no-posts">
+      <p>No hay artículos disponibles en este momento.</p>
+    </div>
+  ) : (
+    <>
+      {posts.map((post, index) => (
+        <article class="blog-card" data-index={index}>
+          {post.featuredImage?.node?.sourceUrl && (
+            <a href={`/${locale}/guia-sauwa-sauna/${post.slug}/`} class="card-image-link">
+              <div class="card-image-wrapper">
+                <img
+                  src={post.featuredImage.node.sourceUrl}
+                  alt={post.featuredImage.node.altText || post.title}
+                  loading="lazy"
+                  class="card-image"
+                />
+              </div>
+            </a>
+          )}
+
+          <div class="card-content">
+            {post.categories?.nodes?.length > 0 && (
+              <div class="card-category">
+                {post.categories.nodes[0].name}
+              </div>
+            )}
+
+            <h3 class="card-title">
+              <a href={`/${locale}/guia-sauwa-sauna/${post.slug}/`}>
+                {post.title}
+              </a>
+            </h3>
+
+            {post.excerpt && (
+              <p class="card-excerpt">
+                {cleanExcerpt(post.excerpt)}
+              </p>
+            )}
+
+            <div class="card-meta">
+              <time datetime={post.date} class="card-date">
+                {formatDate(post.date, locale)}
+              </time>
+            </div>
+          </div>
+        </article>
+      ))}
+
+      <div class="cta-container">
+        <a href={`/${locale}/guia-sauwa-sauna/`} class="cta-more">
+          {translations[locale].seeMore}
+          <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+    </>
+  )}
+</div>
+
+<style>
+  .blog-scroll-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem; /* Increased gap for better sticky scroll effect */
+    padding: 4rem 3rem;
+    background-color: transparent; /* Parent .scroll-column handles #f4f4f4 background */
+    min-height: 150vh; /* Increased to ensure enough scroll height for sticky effect */
+  }
+
+  /* Vertical scroll mode styles */
+  .vertical-scroll-mode {
+    padding: 2rem 3rem;
+    gap: 0;
+  }
+
+  .no-posts {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1.25rem; /* WDA-531: 20px (fue 18px) */
+    color: #666;
+  }
+
+  .blog-card {
+    position: relative; /* Establecer contexto de apilamiento */
+    z-index: var(--z-base); /* Z-index base para prevenir overlap */
+    background: #FFFFFF;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s ease;
+    opacity: 0;
+    transform: translateY(30px);
+    min-height: 600px;
+  }
+
+  /* Vertical scroll mode card styles */
+  .vertical-scroll-mode .blog-card {
+    min-height: 90vh;
+    margin-bottom: 10vh;
+    padding: 4rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 0.3;
+    transform: translateY(50px) scale(0.95);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .vertical-scroll-mode .blog-card:first-child {
+    margin-top: 5vh;
+  }
+
+  .vertical-scroll-mode .blog-card:last-of-type {
+    margin-bottom: 50vh;
+  }
+
+  .vertical-scroll-mode .blog-card.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .vertical-scroll-mode .blog-card.is-centered {
+    transform: translateY(0) scale(1.02);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  }
+
+  .vertical-scroll-mode .card-image-wrapper {
+    height: 400px;
+  }
+
+  .vertical-scroll-mode .card-content {
+    padding: 3rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .vertical-scroll-mode .cta-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+  }
+
+  /* Regular mode styles */
+  .blog-card.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .blog-card:hover {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+  }
+
+  .vertical-scroll-mode .blog-card:hover {
+    transform: translateY(0) scale(1.02);
+  }
+
+  .card-image-link {
+    display: block;
+    overflow: hidden;
+  }
+
+  .card-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+  }
+
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .blog-card:hover .card-image {
+    transform: scale(1.08);
+  }
+
+  .card-content {
+    padding: 2rem;
+  }
+
+  .card-category {
+    display: inline-block;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 0.875rem; /* WDA-531: 14px (fue 12px) */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #FFFFFF;
+    background-color: #DB4529;
+    padding: 0.375rem 0.875rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    transition: background-color 0.3s ease;
+  }
+
+  .card-category:hover {
+    background-color: #BA2515;
+  }
+
+  .card-title {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: clamp(1.5rem, 2.2vw, 1.75rem); /* WDA-531: 24px → 28px (fue 22px → 26px) */
+    font-weight: 400;
+    line-height: 1.4;
+    margin: 0 0 1rem;
+  }
+
+  .card-title a {
+    color: #1a1a1a;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .card-title a:hover {
+    color: #DB4529;
+  }
+
+  .card-excerpt {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1.0625rem; /* WDA-531: 17px (fue 15.2px) */
+    font-weight: 400;
+    line-height: 1.7;
+    color: #555;
+    margin: 0 0 1.5rem;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E5E5E5;
+  }
+
+  .card-date {
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 0.9375rem; /* WDA-531: 15px (fue 14px) */
+    font-weight: 400;
+    color: #888;
+  }
+
+  .cta-container {
+    position: relative; /* Establecer contexto de apilamiento */
+    z-index: var(--z-base); /* Z-index base para prevenir overlap */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 600px; /* Height matching blog-card for consistent spacing */
+    margin-top: 0;
+  }
+
+  .cta-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #DB4529;
+    text-decoration: none;
+    padding: 1rem 3.5rem;
+    border: 1px solid #DB4529;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .cta-more:hover {
+    background-color: #DB4529;
+    color: #FFFFFF;
+  }
+
+  .arrow-icon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  .cta-more:hover .arrow-icon {
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 1024px) {
+    .blog-scroll-container {
+      gap: 2.5rem;
+      padding: 3rem 2rem;
+    }
+
+    .vertical-scroll-mode .blog-card {
+      min-height: 70vh;
+      margin-bottom: 5vh;
+    }
+
+    .vertical-scroll-mode .card-image-wrapper {
+      height: 300px;
+    }
+
+    .card-image-wrapper {
+      height: 240px;
+    }
+
+    .card-content {
+      padding: 1.5rem;
+    }
+
+    .cta-container {
+      min-height: 520px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .blog-scroll-container {
+      gap: 2rem;
+      padding: 1.25rem var(--container-padding-mobile); /* WDA-294: Reducido margen superior a 20px */
+    }
+
+    .vertical-scroll-mode .blog-card {
+      min-height: auto;
+      margin-bottom: 3rem;
+      padding: 0;
+    }
+
+    .vertical-scroll-mode .card-image-wrapper {
+      height: 240px;
+    }
+
+    .vertical-scroll-mode .card-content {
+      padding: 1.25rem;
+    }
+
+    .vertical-scroll-mode .cta-container {
+      min-height: auto;
+      margin-top: 2rem;
+      padding: 0 var(--container-padding-mobile) 2rem; /* WDA-535: 20px estándar */
+    }
+
+    .card-image-wrapper {
+      height: 200px;
+    }
+
+    .card-content {
+      padding: 1.25rem;
+    }
+
+    .cta-container {
+      min-height: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem var(--container-padding-mobile); /* WDA-535: 20px estándar */
+    }
+
+    .cta-more {
+      width: 100%; /* Full width en mobile */
+      align-self: auto;
+      justify-content: center;
+      padding: 1rem 2rem;
+      font-size: 0.9375rem;
+    }
+
+    .blog-card:hover {
+      transform: none;
+    }
+
+    .blog-card:hover .card-image {
+      transform: scale(1.04);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blog-card,
+    .card-image,
+    .cta-more,
+    .arrow-icon {
+      transition: none;
+    }
+
+    .blog-card:hover {
+      transform: none;
+    }
+
+    .blog-card:hover .card-image {
+      transform: none;
+    }
+
+    .cta-more:hover .arrow-icon {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // Intersection Observer para animaciones de entrada
+  document.addEventListener('DOMContentLoaded', () => {
+    const container = document.querySelector('.blog-scroll-container');
+    const isVerticalMode = container?.classList.contains('vertical-scroll-mode');
+    const cards = document.querySelectorAll('.blog-card');
+
+    if (isVerticalMode) {
+      // Vertical scroll mode - cards appear one by one
+      const observerOptions = {
+        root: null,
+        rootMargin: '-25% 0px -25% 0px',
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          const ratio = entry.intersectionRatio;
+
+          if (ratio > 0.5) {
+            // Card is centered
+            entry.target.classList.add('is-visible', 'is-centered');
+          } else if (ratio > 0.25) {
+            // Card is partially visible
+            entry.target.classList.add('is-visible');
+            entry.target.classList.remove('is-centered');
+          } else {
+            // Card is barely visible
+            entry.target.classList.remove('is-centered');
+          }
+        });
+      }, observerOptions);
+
+      cards.forEach(card => {
+        observer.observe(card);
+      });
+    } else {
+      // Regular mode - existing fade-in animation
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1,
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      cards.forEach((card, index) => {
+        // Delay progresivo para efecto cascada
+        const delay = index * 100;
+        setTimeout(() => {
+          observer.observe(card);
+        }, delay);
+      });
+    }
+  });
+</script>
