@@ -1,9 +1,14 @@
 ---
 /**
- * Root index - Auto-detección de idioma y redirect
- * 1. Revisa localStorage (preferencia guardada)
- * 2. Detecta idioma navegador
- * 3. Fallback a español
+ * Root index - Language detection and redirect
+ *
+ * Primary: .htaccess redirects at server level (instant, no flash)
+ * Fallback: JavaScript redirect (if .htaccess fails or disabled)
+ *
+ * Priority:
+ * 1. localStorage (user preference)
+ * 2. Browser language (navigator.language)
+ * 3. Default to Spanish (es)
  */
 ---
 
@@ -12,37 +17,36 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SAUWA - Sauna finlandesa en Andorra</title>
-  </head>
-  <body>
+    <meta http-equiv="refresh" content="0; url=/es/" />
+    <title>SAUWA</title>
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href="https://sauwasauna.com/es/" />
+    <style>body{display:none}</style>
     <script>
-      // Idiomas soportados
-      const supportedLanguages = ['es', 'ca', 'en', 'fr'];
-      const defaultLang = 'es';
+      // Immediate redirect (before body loads)
+      (function() {
+        const supportedLanguages = ['es', 'ca', 'en', 'fr'];
+        const defaultLang = 'es';
 
-      function detectLanguage() {
-        // 1. Preferencia guardada en localStorage
+        // 1. Check localStorage (user preference)
         const savedLang = localStorage.getItem('preferredLanguage');
         if (savedLang && supportedLanguages.includes(savedLang)) {
-          return savedLang;
+          window.location.replace(`/${savedLang}/`);
+          return;
         }
 
-        // 2. Detectar idioma del navegador
+        // 2. Detect browser language
         const browserLang = navigator.language.toLowerCase();
-
-        // Mapeo exacto (es-ES → es, ca-ES → ca, etc.)
         const langCode = browserLang.split('-')[0];
         if (supportedLanguages.includes(langCode)) {
-          return langCode;
+          window.location.replace(`/${langCode}/`);
+          return;
         }
 
-        // 3. Fallback a español
-        return defaultLang;
-      }
-
-      // Detectar y redirigir (con trailing slash para consistencia)
-      const targetLang = detectLanguage();
-      window.location.href = `/${targetLang}/`;
+        // 3. Fallback to Spanish
+        window.location.replace(`/${defaultLang}/`);
+      })();
     </script>
-  </body>
+  </head>
+  <body></body>
 </html>

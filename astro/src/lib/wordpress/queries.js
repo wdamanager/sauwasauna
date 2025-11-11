@@ -173,4 +173,35 @@ export const QUERIES = {
       }
     }
   `,
+
+  /**
+   * Get all published posts for sitemap generation
+   * WDA-555: Dynamic sitemap implementation
+   * Fetches posts with SEO metadata to build frontend sitemap
+   * Excludes posts marked as noindex in Yoast SEO
+   */
+  GET_ALL_POSTS_FOR_SITEMAP: `
+    query GetAllPostsForSitemap($first: Int = 1000) {
+      posts(
+        first: $first,
+        where: {
+          status: PUBLISH,
+          orderby: { field: MODIFIED, order: DESC }
+        }
+      ) {
+        nodes {
+          id
+          slug
+          modified
+          date
+          seo {
+            metaRobotsNoindex
+            metaRobotsNofollow
+            canonical
+            opengraphModifiedTime
+          }
+        }
+      }
+    }
+  `,
 };
