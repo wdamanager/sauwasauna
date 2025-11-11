@@ -14,6 +14,93 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Asistente IA 24/7
 - Panel de gestión completo
 
+## [0.6.0] - 2025-11-12
+
+### Added
+- **Dynamic SEO System** (WDA-555):
+  - Sitemap.xml dinámico con integración WordPress
+  - Robots.txt con configuración SEO
+  - Proxy PHP para sitemap en hosting compartido
+  - Plugin WordPress SAUWA Dynamic Sitemap
+  - Documentación completa de arquitectura SEO
+- **Dynamic Blog System** (WDA-558):
+  - BlogScrollCards con carga dinámica desde WordPress
+  - Client-side fetching sin necesidad de rebuild
+  - Cache de 5 minutos para optimización
+  - Diseño idéntico a producción preservado
+  - Patrón reutilizable para otros componentes
+
+### Fixed
+- Global styles (`is:global`) para contenido dinámico
+- GraphQL type error: `LanguageCodeFilterEnum!` en queries
+- Scoped styles no aplicaban a DOM generado dinámicamente
+
+## [0.5.0] - 2025-11-11
+
+### Added
+- **Partners Section Updates**:
+  - Contenido actualizado para hoteles
+  - Safari 18.1 video autoplay fix implementado
+- **Hero Section Improvements** (WDA-402):
+  - Typography responsive adjustments para laptops
+  - Mejor escalado en pantallas medianas
+
+### Changed
+- `.gitignore` actualizado para excluir archivos temporales y Playwright MCP
+
+### Fixed
+- Video autoplay en Safari 18.1 y posteriores
+- Responsive typography en hero section
+
+## [0.4.0] - 2025-11-10
+
+### Added
+- **Legal Pages System** (WDA-556):
+  - Páginas legales multiidioma con Polylang
+  - Integración completa con WordPress GraphQL
+  - Política de Privacidad, Términos y Condiciones, Cookies
+  - SEO metadata y canonical URLs
+- **Benefits Section Enhancement** (WDA-554):
+  - SVG icons con width/height explícitos
+  - Icon size aumentado a 36px para mejor visibilidad
+
+### Fixed
+- Horizontal scroll issues eliminados
+- Benefits section icon rendering mejorado
+- UI issues en home y blog corregidos
+
+### Changed
+- Audio de fuego deshabilitado temporalmente
+
+## [0.3.1] - 2025-11-09
+
+### Added
+- **CSS Architecture Overhaul**:
+  - Sistema de diseño modular implementado
+  - Design tokens centralizados (`design-tokens.css`)
+  - Utilities CSS reutilizables (`utilities.css`)
+  - Documentación de arquitectura CSS completa
+  - Sistema de favicons implementado
+- **Blog Rename**: Blog section renombrada a "Guía SAUWA SAUNA"
+- **Mobile Optimization** (WDA-294, WDA-531, WDA-535):
+  - Márgenes laterales unificados a 20px estándar
+  - Sistema de z-index optimizado
+  - Espaciado del menú móvil mejorado
+  - 5 problemas críticos de mobile resueltos
+
+### Fixed
+- Sticky scroll restaurado en sección blog (critical fix)
+- Sistema de diseño y márgenes mobile unificados
+- Z-index en mobile corregido
+- PostCSS @import warnings resueltos
+- Image extensions corregidas (.jpg → .webp)
+- Scroll horizontal en móvil eliminado (WDA-294)
+
+### Changed
+- Font sizes aumentados para mejor legibilidad
+- CSS classes unificadas globalmente
+- Orden CSS reorganizado para evitar warnings
+
 ## [0.3.0] - 2025-10-31
 
 ### Added
@@ -146,11 +233,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Todas las páginas traducidas
 - Testing E2E completo
 
-### [0.4.0] - Próximo Sprint
-- Páginas legales (Política de Privacidad, Términos y Condiciones)
+### [0.7.0] - Próximo Sprint
 - Formulario de contacto funcional
 - Mejoras de accesibilidad WCAG 2.1 AA
 - Optimización Core Web Vitals
+- Performance audits y mejoras Lighthouse
+- Cookie consent banner
 
 ## Enlaces
 
