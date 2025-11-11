@@ -46,3 +46,16 @@ wordpress/wp-content/backups/
 
 # MCP config (may contain sensitive keys)
 .mcp.json
+
+# Playwright MCP
+.playwright-mcp/
+
+# Local settings
+settings.local.json
+
+# Temporary files
+temp_*
+test-*.js
+*.ps1
+*.bat
+stacking-context-diagram.txt
