@@ -1,0 +1,9 @@
+# SAUWA - Sitemap PHP Proxy Configuration
+# Rewrites /sitemap.xml to execute sitemap-proxy.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Rewrite sitemap.xml to PHP proxy script
+    RewriteRule ^sitemap\.xml$ sitemap-proxy.php [L]
+</IfModule>
