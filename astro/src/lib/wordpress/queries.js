@@ -5,11 +5,15 @@
 
 export const QUERIES = {
   /**
-   * Get latest posts with pagination
+   * Get latest posts with pagination and Polylang language support
+   * WDA-561: Added language filtering for production deployment
    */
   GET_POSTS: `
-    query GetPosts($first: Int = 6, $after: String) {
-      posts(first: $first, after: $after, where: { orderby: { field: DATE, order: DESC } }) {
+    query GetPosts($first: Int = 6, $after: String, $lang: LanguageCodeFilterEnum!) {
+      posts(first: $first, after: $after, where: {
+        orderby: { field: DATE, order: DESC },
+        language: $lang
+      }) {
         pageInfo {
           hasNextPage
           endCursor
@@ -20,6 +24,11 @@ export const QUERIES = {
           excerpt
           slug
           date
+          language {
+            code
+            locale
+            name
+          }
           featuredImage {
             node {
               sourceUrl
@@ -32,22 +41,35 @@ export const QUERIES = {
               slug
             }
           }
+          translations {
+            id
+            slug
+            language {
+              code
+            }
+          }
         }
       }
     }
   `,
 
   /**
-   * Get single post by slug
+   * Get single post by slug with Polylang language support
+   * WDA-562: Added language support for individual post pages
    */
   GET_POST_BY_SLUG: `
-    query GetPostBySlug($slug: ID!) {
+    query GetPostBySlug($slug: ID!, $lang: LanguageCodeEnum) {
       post(id: $slug, idType: SLUG) {
         id
         title
         content
         date
         excerpt
+        language {
+          code
+          locale
+          name
+        }
         featuredImage {
           node {
             sourceUrl
@@ -62,6 +84,14 @@ export const QUERIES = {
           nodes {
             name
             slug
+          }
+        }
+        translations {
+          id
+          slug
+          language {
+            code
+            locale
           }
         }
       }

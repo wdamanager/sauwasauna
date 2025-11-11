@@ -1,10 +1,9 @@
 ---
 /**
  * BlogScrollCards - Cards de blog con scroll vertical
- * Columna derecha del layout sticky
+ * WDA-560: Client-side fetching para contenido dinámico
+ * Usa el mismo patrón que BlogGrid.astro - DISEÑO IDÉNTICO A PRODUCCIÓN
  */
-
-import { getLatestPosts } from '../lib/graphql';
 
 export interface Props {
   locale?: 'es' | 'ca' | 'en' | 'fr';
@@ -16,114 +15,26 @@ const { locale = 'es', limit = 3, verticalScroll = false } = Astro.props;
 
 // Traducciones para el botón "Ver más"
 const translations = {
-  es: { seeMore: 'Ver más' },
-  ca: { seeMore: 'Veure més' },
-  en: { seeMore: 'See more' },
-  fr: { seeMore: 'Voir plus' },
+  es: { seeMore: 'Ver más', noPostsMessage: 'No hay artículos disponibles en este momento.' },
+  ca: { seeMore: 'Veure més', noPostsMessage: 'No hi ha articles disponibles en aquest moment.' },
+  en: { seeMore: 'See more', noPostsMessage: 'There are no articles available at the moment.' },
+  fr: { seeMore: 'Voir plus', noPostsMessage: 'Il n\'y a aucun article disponible pour le moment.' },
 };
 
-// Fetch latest posts from WordPress
-let posts = [];
-try {
-  posts = await getLatestPosts(limit);
-} catch (error) {
-  console.error('Error fetching blog posts:', error);
-  posts = [];
-}
-
-// Función helper para formatear fecha
-function formatDate(dateString: string, locale: string): string {
-  const date = new Date(dateString);
-  const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  };
-
-  const localeMap: Record<string, string> = {
-    es: 'es-ES',
-    ca: 'ca-ES',
-    en: 'en-US',
-    fr: 'fr-FR',
-  };
-
-  return date.toLocaleDateString(localeMap[locale] || 'es-ES', options);
-}
-
-// Función helper para limpiar excerpt
-function cleanExcerpt(excerpt: string): string {
-  return excerpt
-    .replace(/<[^>]*>/g, '')
-    .replace(/&hellip;/g, '...')
-    .replace(/&[^;]+;/g, '')
-    .trim()
-    .substring(0, 150) + '...';
-}
+const t = translations[locale];
 ---
 
-<div class={`blog-scroll-container ${verticalScroll ? 'vertical-scroll-mode' : ''}`}>
-  {posts.length === 0 ? (
-    <div class="no-posts">
-      <p>No hay artículos disponibles en este momento.</p>
-    </div>
-  ) : (
-    <>
-      {posts.map((post, index) => (
-        <article class="blog-card" data-index={index}>
-          {post.featuredImage?.node?.sourceUrl && (
-            <a href={`/${locale}/guia-sauwa-sauna/${post.slug}/`} class="card-image-link">
-              <div class="card-image-wrapper">
-                <img
-                  src={post.featuredImage.node.sourceUrl}
-                  alt={post.featuredImage.node.altText || post.title}
-                  loading="lazy"
-                  class="card-image"
-                />
-              </div>
-            </a>
-          )}
-
-          <div class="card-content">
-            {post.categories?.nodes?.length > 0 && (
-              <div class="card-category">
-                {post.categories.nodes[0].name}
-              </div>
-            )}
-
-            <h3 class="card-title">
-              <a href={`/${locale}/guia-sauwa-sauna/${post.slug}/`}>
-                {post.title}
-              </a>
-            </h3>
-
-            {post.excerpt && (
-              <p class="card-excerpt">
-                {cleanExcerpt(post.excerpt)}
-              </p>
-            )}
-
-            <div class="card-meta">
-              <time datetime={post.date} class="card-date">
-                {formatDate(post.date, locale)}
-              </time>
-            </div>
-          </div>
-        </article>
-      ))}
-
-      <div class="cta-container">
-        <a href={`/${locale}/guia-sauwa-sauna/`} class="cta-more">
-          {translations[locale].seeMore}
-          <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </a>
-      </div>
-    </>
-  )}
+<div
+  class={`blog-scroll-container ${verticalScroll ? 'vertical-scroll-mode' : ''}`}
+  data-locale={locale}
+  data-limit={limit}
+  data-see-more={t.seeMore}
+  data-no-posts={t.noPostsMessage}
+>
+  <!-- Content will be loaded dynamically by client-side script -->
 </div>
 
-<style>
+<style is:global>
   .blog-scroll-container {
     display: flex;
     flex-direction: column;
@@ -466,14 +377,97 @@ function cleanExcerpt(excerpt: string): string {
 </style>
 
 <script>
-  // Intersection Observer para animaciones de entrada
-  document.addEventListener('DOMContentLoaded', () => {
-    const container = document.querySelector('.blog-scroll-container');
-    const isVerticalMode = container?.classList.contains('vertical-scroll-mode');
-    const cards = document.querySelectorAll('.blog-card');
+  /**
+   * Client-side fetching usando el mismo patrón que BlogGrid.astro
+   * Importa funciones de blog-queries.ts para mantener consistencia
+   */
+  import { getBlogPosts, formatDate, truncateText } from '../lib/blog-queries';
+  import { toPolylangCode } from '../utils/language';
+
+  // Función para renderizar los posts (produce el MISMO HTML que el SSG)
+  function renderPosts(posts: any[], locale: string, container: HTMLElement) {
+    const seeMore = container.getAttribute('data-see-more') || 'Ver más';
+    const noPostsMsg = container.getAttribute('data-no-posts') || 'No hay artículos disponibles.';
+
+    if (!posts || posts.length === 0) {
+      container.innerHTML = `
+        <div class="no-posts">
+          <p>${noPostsMsg}</p>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+
+    // Renderizar cada post (MISMO HTML que el SSG)
+    posts.forEach((post, index) => {
+      const imageHTML = post.featuredImage?.node?.sourceUrl
+        ? `<a href="/${locale}/guia-sauwa-sauna/${post.slug}/" class="card-image-link">
+            <div class="card-image-wrapper">
+              <img
+                src="${post.featuredImage.node.sourceUrl}"
+                alt="${post.featuredImage.node.altText || post.title}"
+                loading="lazy"
+                class="card-image"
+              />
+            </div>
+          </a>`
+        : '';
+
+      const categoryHTML = post.categories?.nodes?.length > 0
+        ? `<div class="card-category">${post.categories.nodes[0].name}</div>`
+        : '';
+
+      const excerptHTML = post.excerpt
+        ? `<p class="card-excerpt">${truncateText(post.excerpt, 150)}</p>`
+        : '';
+
+      html += `
+        <article class="blog-card" data-index="${index}">
+          ${imageHTML}
+          <div class="card-content">
+            ${categoryHTML}
+            <h3 class="card-title">
+              <a href="/${locale}/guia-sauwa-sauna/${post.slug}/">
+                ${post.title}
+              </a>
+            </h3>
+            ${excerptHTML}
+            <div class="card-meta">
+              <time datetime="${post.date}" class="card-date">
+                ${formatDate(post.date, locale)}
+              </time>
+            </div>
+          </div>
+        </article>
+      `;
+    });
+
+    // CTA "Ver más" (MISMO HTML que el SSG)
+    html += `
+      <div class="cta-container">
+        <a href="/${locale}/guia-sauwa-sauna/" class="cta-more">
+          ${seeMore}
+          <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+    `;
+
+    container.innerHTML = html;
+
+    // Setup animations
+    setupAnimations(container);
+  }
+
+  // Intersection Observer para animaciones (igual que antes)
+  function setupAnimations(container: HTMLElement) {
+    const isVerticalMode = container.classList.contains('vertical-scroll-mode');
+    const cards = container.querySelectorAll('.blog-card');
 
     if (isVerticalMode) {
-      // Vertical scroll mode - cards appear one by one
       const observerOptions = {
         root: null,
         rootMargin: '-25% 0px -25% 0px',
@@ -485,24 +479,18 @@ function cleanExcerpt(excerpt: string): string {
           const ratio = entry.intersectionRatio;
 
           if (ratio > 0.5) {
-            // Card is centered
             entry.target.classList.add('is-visible', 'is-centered');
           } else if (ratio > 0.25) {
-            // Card is partially visible
             entry.target.classList.add('is-visible');
             entry.target.classList.remove('is-centered');
           } else {
-            // Card is barely visible
             entry.target.classList.remove('is-centered');
           }
         });
       }, observerOptions);
 
-      cards.forEach(card => {
-        observer.observe(card);
-      });
+      cards.forEach(card => observer.observe(card));
     } else {
-      // Regular mode - existing fade-in animation
       const observerOptions = {
         root: null,
         rootMargin: '0px',
@@ -519,12 +507,42 @@ function cleanExcerpt(excerpt: string): string {
       }, observerOptions);
 
       cards.forEach((card, index) => {
-        // Delay progresivo para efecto cascada
         const delay = index * 100;
-        setTimeout(() => {
-          observer.observe(card);
-        }, delay);
+        setTimeout(() => observer.observe(card), delay);
       });
     }
-  });
+  }
+
+  // Cargar posts desde WordPress (MISMO PATRÓN que BlogGrid.astro)
+  async function loadBlogScrollPosts() {
+    const container = document.querySelector('.blog-scroll-container[data-locale]') as HTMLElement;
+    if (!container) return;
+
+    const locale = container.getAttribute('data-locale') || 'es';
+    const limit = parseInt(container.getAttribute('data-limit') || '3');
+
+    try {
+      const lang = toPolylangCode(locale);
+      const data = await getBlogPosts({
+        first: limit,
+        language: lang,
+      });
+
+      if (data?.posts?.nodes) {
+        renderPosts(data.posts.nodes, locale, container);
+      } else {
+        renderPosts([], locale, container);
+      }
+    } catch (error) {
+      console.error('[BlogScrollCards] Error loading posts:', error);
+      renderPosts([], locale, container);
+    }
+  }
+
+  // Initialize on DOM load (MISMO PATRÓN que BlogGrid.astro)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadBlogScrollPosts);
+  } else {
+    loadBlogScrollPosts();
+  }
 </script>
