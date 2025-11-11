@@ -57,16 +57,18 @@ function setCachedData<T>(key: string, data: T): void {
 }
 
 /**
- * GraphQL Query: Get blog posts with optional filtering
+ * GraphQL Query: Get blog posts with optional filtering and Polylang support
+ * WDA-564: Added language parameter for production deployment
  */
 export const GET_POSTS_QUERY = `
-  query GetBlogPosts($first: Int = 9, $after: String, $categoryName: String) {
+  query GetBlogPosts($first: Int = 9, $after: String, $categoryName: String, $lang: LanguageCodeFilterEnum!) {
     posts(
       first: $first
       after: $after
       where: {
         orderby: { field: DATE, order: DESC }
         categoryName: $categoryName
+        language: $lang
       }
     ) {
       nodes {
@@ -76,6 +78,11 @@ export const GET_POSTS_QUERY = `
         excerpt
         date
         modified
+        language {
+          code
+          locale
+          name
+        }
         featuredImage {
           node {
             sourceUrl
@@ -91,6 +98,13 @@ export const GET_POSTS_QUERY = `
             id
             name
             slug
+          }
+        }
+        translations {
+          id
+          slug
+          language {
+            code
           }
         }
       }
@@ -168,6 +182,7 @@ export const GET_POST_BY_SLUG_QUERY = `
 
 /**
  * Fetch blog posts with caching
+ * WDA-564: Added language parameter for Polylang support
  */
 export async function getBlogPosts(
   variables: BlogQueryVariables = {}
@@ -184,6 +199,7 @@ export async function getBlogPosts(
       first: variables.first || 9,
       after: variables.after || null,
       categoryName: variables.categoryName || null,
+      lang: variables.language || 'ES', // Default to Spanish if not provided
     });
 
     setCachedData(cacheKey, data);

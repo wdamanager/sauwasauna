@@ -244,6 +244,7 @@ const {
 
   /**
    * Load posts
+   * WDA-564: Added language parameter for Polylang support
    */
   async function loadPosts(append: boolean = false): Promise<void> {
     if (state.isLoading) return;
@@ -252,10 +253,14 @@ const {
     toggleUI(append ? 'grid' : 'skeleton');
 
     try {
+      // Convert locale to Polylang language code
+      const langCode = locale.toUpperCase(); // Convert 'es' to 'ES', 'en' to 'EN', etc.
+
       const variables = {
         first: state.postsPerPage,
         after: append ? state.endCursor : null,
         categoryName: state.selectedCategory || undefined,
+        language: langCode, // Pass language parameter
       };
 
       const data = await getBlogPosts(variables);
