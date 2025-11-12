@@ -735,49 +735,48 @@ const { locale, title, subtitle } = Astro.props;
     }
 
     private async submitToBackend(formData: FormData): Promise<void> {
-      // Simulate API call (replace with real GraphQL mutation)
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          console.log('Form data:', Object.fromEntries(formData));
-          resolve();
-        }, 1500);
-      });
+      const { submitContactForm, uploadFile } = await import('../../lib/services/contact-form');
 
-      /* GraphQL mutation example (implement when backend ready):
-      const mutation = `
-        mutation CreateJobApplication($input: JobApplicationInput!) {
-          createJobApplication(input: $input) {
-            id
-            success
-            message
-          }
+      // Upload CV file first
+      const cvFile = formData.get('cv') as File;
+      let cvUrl = '';
+
+      if (cvFile && cvFile.size > 0) {
+        try {
+          cvUrl = await uploadFile(cvFile);
+        } catch (error) {
+          console.error('CV upload failed:', error);
+          throw new Error(
+            this.locale === 'es'
+              ? 'No se pudo cargar el CV. Por favor, inténtalo de nuevo.'
+              : 'Could not upload CV. Please try again.'
+          );
         }
-      `;
+      }
 
-      const variables = {
-        input: {
-          name: formData.get('name'),
+      // Submit form via GraphQL
+      const input = {
+        formId: 126, // RRHH form ID
+        name: formData.get('name') as string,
+        email: formData.get('email') as string,
+        phone: formData.get('phone') as string,
+        message: `Solicitud de empleo de ${formData.get('name')} ${formData.get('surname')}`,
+        language: this.locale,
+        gdprConsent: true,
+        newsletter: false,
+        customFields: {
           surname: formData.get('surname'),
-          email: formData.get('email'),
-          phone: formData.get('phone'),
           age: parseInt(formData.get('age') as string),
+          cv_url: cvUrl,
           motivation: formData.get('motivation'),
-          locale: this.locale,
-          cv: formData.get('cv'), // Handle file upload separately
-        }
+        },
       };
 
-      const response = await fetch('/graphql', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: mutation, variables }),
-      });
+      const result = await submitContactForm(input);
 
-      const result = await response.json();
-      if (result.errors) {
-        throw new Error(result.errors[0].message);
+      if (!result.success) {
+        throw new Error(result.message);
       }
-      */
     }
 
     private showMessage(type: 'success' | 'error'): void {

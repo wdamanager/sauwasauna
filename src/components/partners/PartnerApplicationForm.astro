@@ -765,13 +765,33 @@ const { locale, title, subtitle } = Astro.props;
     }
 
     private async submitToBackend(formData: FormData): Promise<void> {
-      // Simulate API call (replace with real GraphQL mutation)
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          console.log('Partner form data:', Object.fromEntries(formData));
-          resolve();
-        }, 1500);
-      });
+      const { submitContactForm } = await import('../../lib/services/contact-form');
+
+      // Submit form via GraphQL
+      const input = {
+        formId: 128, // Partners form ID
+        name: formData.get('contactName') as string,
+        email: formData.get('email') as string,
+        phone: formData.get('phone') as string,
+        message: `Solicitud de partnership de ${formData.get('establishmentName')}`,
+        language: this.locale,
+        gdprConsent: true,
+        newsletter: false,
+        customFields: {
+          establishment_name: formData.get('establishmentName'),
+          property_type: formData.get('propertyType'),
+          address: formData.get('address'),
+          website: formData.get('website'),
+          contact_position: formData.get('position'),
+          motivation: formData.get('motivation'),
+        },
+      };
+
+      const result = await submitContactForm(input);
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
     }
 
     private showMessage(type: 'success' | 'error'): void {
