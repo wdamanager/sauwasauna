@@ -14,6 +14,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Asistente IA 24/7
 - Panel de gestión completo
 
+## [0.7.1] - 2025-11-28
+
+### Fixed
+- **Booking API Integration** (WDA-909):
+  - Fix crítico: payload de reserva ahora envía `attendees` como array de objetos
+  - Cada asistente incluye: `name`, `email`, y `consents` (privacy, terms, health)
+  - Primer asistente usa email del contacto principal como fallback
+  - Corregido error "attendees array is required" del backend
+- **Calendar Timezone Fix** (WDA-909):
+  - Corregido bug de timezone que mostraba fecha incorrecta al seleccionar día
+  - Fechas ahora se parsean manualmente evitando conversión UTC
+  - Formato correcto: "martes, 2 de diciembre" en lugar de "lunes, 1 de diciembre"
+
+### Changed
+- Tipo `CreateBookingRequest.attendees` cambiado de `number` a `BookingAttendee[]`
+- Interface `AttendeeConsents` ahora incluye `terms` y `health` además de `privacy`
+- Single checkbox de privacidad implica aceptación de todos los términos requeridos
+
 ## [0.7.0] - 2025-11-28
 
 ### Added
@@ -260,12 +278,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Todas las páginas traducidas
 - Testing E2E completo
 
-### [0.7.0] - Próximo Sprint
+### [0.8.0] - Próximo Sprint
 - Formulario de contacto funcional
 - Mejoras de accesibilidad WCAG 2.1 AA
 - Optimización Core Web Vitals
 - Performance audits y mejoras Lighthouse
 - Cookie consent banner
+- Testing E2E del flujo de reservas
 
 ## Enlaces
 
