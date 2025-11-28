@@ -165,6 +165,32 @@ export interface DayAvailabilityResponse {
 // =============================================================================
 
 /**
+ * Attendee consents for booking
+ */
+export interface AttendeeConsents {
+  /** Accept privacy policy */
+  privacy: boolean;
+  /** Accept terms and conditions */
+  terms: boolean;
+  /** Accept health declaration */
+  health: boolean;
+  /** Accept marketing communications (optional) */
+  marketing?: boolean;
+}
+
+/**
+ * Individual attendee for booking
+ */
+export interface BookingAttendee {
+  /** Attendee full name */
+  name: string;
+  /** Attendee email (required) */
+  email: string;
+  /** Attendee consents */
+  consents: AttendeeConsents;
+}
+
+/**
  * Request payload for creating a booking
  * REST API: POST /wp-json/sauwa/v1/book
  */
@@ -175,8 +201,8 @@ export interface CreateBookingRequest {
   slot_date: string;
   /** Time in HH:MM format */
   slot_time: string;
-  /** Number of attendees */
-  attendees: number;
+  /** Array of attendees with name and optional email */
+  attendees: BookingAttendee[];
   /** Customer full name */
   customer_name: string;
   /** Customer email */

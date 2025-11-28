@@ -2120,17 +2120,26 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       // Prepare data
       const formData = new FormData(form);
 
-      // WDA-909: Collect all attendees data
+      // WDA-909: Collect all attendees data with required email and consents
       const attendeeRows = form.querySelectorAll('.attendee-row');
-      const attendees: Array<{ name: string; email: string }> = [];
+      const privacyChecked = (form.querySelector('input[name="privacy"]') as HTMLInputElement)?.checked || false;
+      const customerEmail = formData.get('customer_email') as string;
+      const attendees: Array<{ name: string; email: string; consents: { privacy: boolean; terms: boolean; health: boolean } }> = [];
 
       attendeeRows.forEach((row, index) => {
         const nameInput = row.querySelector(`input[name="attendee_name_${index}"]`) as HTMLInputElement;
         const emailInput = row.querySelector(`input[name="attendee_email_${index}"]`) as HTMLInputElement;
         if (nameInput?.value.trim()) {
+          // For first attendee (primary contact), use main form email if attendee email empty
+          const attendeeEmail = emailInput?.value.trim() || (index === 0 ? customerEmail : '');
           attendees.push({
             name: nameInput.value.trim(),
-            email: emailInput?.value.trim() || '',
+            email: attendeeEmail,
+            consents: {
+              privacy: privacyChecked,
+              terms: privacyChecked, // Single checkbox implies acceptance of all terms
+              health: privacyChecked, // Health declaration accepted with privacy checkbox
+            },
           });
         }
       });
@@ -2153,7 +2162,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         session_id: this.state.sessionId,
         slot_date: this.state.selectedDate!,
         slot_time: formatTime(this.state.selectedSlot!.startTime),
-        attendees: attendees.length,
+        attendees: attendees,
         customer_name: mainContact.name,
         customer_email: formData.get('customer_email') as string,
         customer_phone: formData.get('customer_phone') as string || undefined,

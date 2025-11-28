@@ -29,6 +29,7 @@ export type {
   DayAvailability,
   DayAvailabilityResponse,
   // Booking
+  BookingAttendee,
   CreateBookingRequest,
   CreateBookingResponse,
   // UI State
