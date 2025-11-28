@@ -1,0 +1,276 @@
+---
+/**
+ * WDA-903: Page "Open Days" - EN
+ * WDA-899: Frontend Booking - Free introductory event
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import NavbarScroll from '../../components/NavbarScroll.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
+import SessionHero from '../../components/booking/SessionHero.astro';
+import BookingWidget from '../../components/booking/BookingWidget.astro';
+import { getBookingContent } from '../../lib/i18n/booking';
+import { BOOKING_CONFIG } from '../../lib/booking/config';
+import { fetchSessionServer } from '../../lib/booking/api';
+
+const locale = 'en';
+const content = getBookingContent(locale, 'puertasAbiertas');
+
+const seoTitle = content.seoTitle;
+const seoDescription = content.seoDescription;
+
+// Fetch session from WordPress
+const sessionId = BOOKING_CONFIG.defaultSessionId; // 167
+const session = await fetchSessionServer(sessionId);
+
+// Get session details from WordPress or use defaults
+const duration = session?.sessionDetails?.sessionDuration ?? 60;
+const capacity = session?.sessionDetails?.sessionCapacity ?? 6;
+const price = session?.sessionDetails?.sessionPrice ?? 0;
+
+// Featured image from WordPress or fallback
+const backgroundImage = session?.featuredImage?.node?.sourceUrl
+  ?? '/images/sauwa-sauna-puertas-abiertas-hero.webp';
+---
+
+<Layout title={seoTitle} description={seoDescription} lang={locale} pageType="booking">
+  <NavbarScroll locale={locale} />
+
+  <main>
+    <SessionHero
+      title={content.hero.title}
+      heading={content.hero.heading}
+      subtitle={content.hero.subtitle}
+      duration={duration}
+      capacity={capacity}
+      price={price}
+      ctaText={content.hero.ctaText}
+      ctaHref="#reserva"
+      backgroundImage={backgroundImage}
+      locale={locale}
+    />
+
+    <!-- About Section -->
+    <section class="section section--bg-white">
+      <div class="container container--narrow">
+        <header class="section-header section-header--center">
+          <h2 class="section-label section-label--primary">{content.about.title}</h2>
+          <h3 class="section-title section-title--center">{content.about.heading}</h3>
+        </header>
+
+        <div class="about-content">
+          {content.about.description.map((paragraph) => (
+            <p class="about-text">{paragraph}</p>
+          ))}
+
+          <ul class="highlights-list">
+            {content.about.highlights.map((item) => (
+              <li class="highlights-item">
+                <svg
+                  class="highlights-icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M5 13L9 17L19 7"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section id="reserva" class="section section--bg-light booking-section">
+      <div class="container">
+        <header class="section-header section-header--center">
+          <h2 class="section-label section-label--primary">{content.booking.sectionTitle}</h2>
+          <h3 class="section-title section-title--center">{content.booking.sectionSubtitle}</h3>
+        </header>
+
+        <BookingWidget sessionId={sessionId} locale={locale} />
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section section--bg-white">
+      <div class="container container--narrow">
+        <header class="section-header section-header--center">
+          <h2 class="section-label section-label--primary">{content.faq.title}</h2>
+          <h3 class="section-title section-title--center">{content.faq.heading}</h3>
+        </header>
+
+        <div class="faq-list">
+          {content.faq.items.map((item, index) => (
+            <details class="faq-item" open={index === 0}>
+              <summary class="faq-question">
+                <span>{item.question}</span>
+                <svg
+                  class="faq-chevron"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6 9L12 15L18 9"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </summary>
+              <p class="faq-answer">{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <FooterBlack locale={locale} />
+</Layout>
+
+<style>
+  /* About Section */
+  .about-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .about-text {
+    font-family: var(--font-family-secondary);
+    font-weight: var(--font-weight-light);
+    font-size: var(--font-scale-md);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-primary);
+    margin-bottom: 1.5rem;
+  }
+
+  .highlights-list {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .highlights-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-family: var(--font-family-secondary);
+    font-size: var(--font-scale-base);
+    color: var(--color-text-primary);
+    line-height: 1.5;
+  }
+
+  .highlights-icon {
+    flex-shrink: 0;
+    color: #DB4529;
+    margin-top: 2px;
+  }
+
+  /* Booking Section */
+  .booking-section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  /* FAQ Section */
+  .faq-list {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .faq-item {
+    background: var(--color-bg-light);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: background 0.2s ease;
+  }
+
+  .faq-item[open] {
+    background: white;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    font-family: var(--font-family-secondary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-scale-md);
+    color: var(--color-text-primary);
+    list-style: none;
+  }
+
+  .faq-question::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-question:hover {
+    color: #DB4529;
+  }
+
+  .faq-chevron {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    color: var(--color-text-secondary);
+  }
+
+  .faq-item[open] .faq-chevron {
+    transform: rotate(180deg);
+  }
+
+  .faq-answer {
+    padding: 0 1.5rem 1.25rem;
+    font-family: var(--font-family-secondary);
+    font-weight: var(--font-weight-light);
+    font-size: var(--font-scale-base);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    .about-text {
+      font-size: var(--font-scale-base);
+    }
+
+    .faq-question {
+      font-size: var(--font-scale-base);
+      padding: 1rem 1.25rem;
+    }
+
+    .faq-answer {
+      padding: 0 1.25rem 1rem;
+      font-size: var(--font-scale-sm);
+    }
+
+    .booking-section {
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+  }
+</style>

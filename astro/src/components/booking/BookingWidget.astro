@@ -1,0 +1,2336 @@
+---
+/**
+ * BookingWidget - Sistema de reservas completo
+ * WDA-901: Widget de reservas con calendario, slots y formulario
+ *
+ * Flujo:
+ * 1. Mostrar calendario con fechas disponibles
+ * 2. Al seleccionar fecha, mostrar slots de tiempo
+ * 3. Al seleccionar slot, mostrar formulario
+ * 4. Submit crea reserva y muestra confirmación
+ *
+ * Pattern: SSG + Client-side fetching (same as BlogScrollCards.astro)
+ */
+
+import { getLegalUrl } from '../../lib/wordpress/legal-slugs.js';
+
+export interface Props {
+  sessionId: number;
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  class?: string;
+}
+
+const { sessionId, locale = 'es', class: className = '' } = Astro.props;
+
+// Translations for all supported languages
+const translations = {
+  es: {
+    // Steps
+    selectDate: 'Selecciona una fecha',
+    selectTime: 'Elige un horario',
+    yourDetails: 'Tus datos',
+    confirmation: 'Reserva confirmada',
+    // Calendar
+    prevMonth: 'Mes anterior',
+    nextMonth: 'Mes siguiente',
+    months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+    weekdays: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+    // Slots
+    available: 'disponibles',
+    spots: 'plazas',
+    spot: 'plaza',
+    full: 'Completo',
+    closed: 'Cerrado',
+    changeDate: 'Cambiar fecha',
+    // Form
+    name: 'Nombre completo',
+    email: 'Correo electrónico',
+    phone: 'Teléfono (opcional)',
+    attendees: 'Número de asistentes',
+    notes: 'Notas adicionales (opcional)',
+    gdprLabel: 'He leído y acepto la',
+    privacyLink: 'política de privacidad',
+    privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'es'),
+    confirm: 'Confirmar reserva',
+    changeSlot: 'Cambiar horario',
+    // WDA-909: Multi-attendee
+    attendeeData: 'Datos de los asistentes',
+    attendeeName: 'Nombre',
+    attendeeEmail: 'Email (opcional)',
+    addAttendee: 'Añadir asistente',
+    removeAttendee: 'Eliminar',
+    mainContact: 'Contacto principal',
+    // Validation
+    nameRequired: 'El nombre es obligatorio',
+    emailRequired: 'El email es obligatorio',
+    emailInvalid: 'El email no es válido',
+    phoneInvalid: 'El teléfono no es válido',
+    attendeesRequired: 'Indica el número de asistentes',
+    attendeesMax: 'Máximo {max} asistentes',
+    privacyRequired: 'Debes aceptar la política de privacidad',
+    // States
+    loading: 'Cargando...',
+    loadingDates: 'Cargando fechas disponibles...',
+    loadingSlots: 'Cargando horarios...',
+    submitting: 'Procesando reserva...',
+    noSlots: 'No hay horarios disponibles para esta fecha',
+    noDates: 'No hay fechas disponibles en este período',
+    // Confirmation
+    successTitle: '¡Reserva confirmada!',
+    successMessage: 'Recibirás un email de confirmación en breve.',
+    bookingNumber: 'Número de reserva',
+    bookingDate: 'Fecha',
+    bookingTime: 'Hora',
+    bookingAttendees: 'Asistentes',
+    newBooking: 'Nueva reserva',
+    // Errors
+    errorTitle: 'Error al procesar la reserva',
+    errorGeneric: 'Ha ocurrido un error. Por favor, inténtalo de nuevo.',
+    tryAgain: 'Intentar de nuevo',
+  },
+  ca: {
+    selectDate: 'Selecciona una data',
+    selectTime: 'Tria un horari',
+    yourDetails: 'Les teves dades',
+    confirmation: 'Reserva confirmada',
+    prevMonth: 'Mes anterior',
+    nextMonth: 'Mes següent',
+    months: ['Gener', 'Febrer', 'Març', 'Abril', 'Maig', 'Juny', 'Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'],
+    weekdays: ['Dll', 'Dmt', 'Dmc', 'Dij', 'Dve', 'Dis', 'Dge'],
+    available: 'disponibles',
+    spots: 'places',
+    spot: 'plaça',
+    full: 'Complet',
+    closed: 'Tancat',
+    changeDate: 'Canviar data',
+    name: 'Nom complet',
+    email: 'Correu electrònic',
+    phone: 'Telèfon (opcional)',
+    attendees: 'Nombre d\'assistents',
+    notes: 'Notes addicionals (opcional)',
+    gdprLabel: 'He llegit i accepto la',
+    privacyLink: 'política de privacitat',
+    privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'ca'),
+    confirm: 'Confirmar reserva',
+    changeSlot: 'Canviar horari',
+    attendeeData: 'Dades dels assistents',
+    attendeeName: 'Nom',
+    attendeeEmail: 'Email (opcional)',
+    addAttendee: 'Afegir assistent',
+    removeAttendee: 'Eliminar',
+    mainContact: 'Contacte principal',
+    nameRequired: 'El nom és obligatori',
+    emailRequired: 'L\'email és obligatori',
+    emailInvalid: 'L\'email no és vàlid',
+    phoneInvalid: 'El telèfon no és vàlid',
+    attendeesRequired: 'Indica el nombre d\'assistents',
+    attendeesMax: 'Màxim {max} assistents',
+    privacyRequired: 'Has d\'acceptar la política de privacitat',
+    loading: 'Carregant...',
+    loadingDates: 'Carregant dates disponibles...',
+    loadingSlots: 'Carregant horaris...',
+    submitting: 'Processant reserva...',
+    noSlots: 'No hi ha horaris disponibles per aquesta data',
+    noDates: 'No hi ha dates disponibles en aquest període',
+    successTitle: 'Reserva confirmada!',
+    successMessage: 'Rebràs un email de confirmació aviat.',
+    bookingNumber: 'Número de reserva',
+    bookingDate: 'Data',
+    bookingTime: 'Hora',
+    bookingAttendees: 'Assistents',
+    newBooking: 'Nova reserva',
+    errorTitle: 'Error en processar la reserva',
+    errorGeneric: 'S\'ha produït un error. Si us plau, torna-ho a intentar.',
+    tryAgain: 'Tornar a intentar',
+  },
+  en: {
+    selectDate: 'Select a date',
+    selectTime: 'Choose a time',
+    yourDetails: 'Your details',
+    confirmation: 'Booking confirmed',
+    prevMonth: 'Previous month',
+    nextMonth: 'Next month',
+    months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    available: 'available',
+    spots: 'spots',
+    spot: 'spot',
+    full: 'Full',
+    closed: 'Closed',
+    changeDate: 'Change date',
+    name: 'Full name',
+    email: 'Email address',
+    phone: 'Phone (optional)',
+    attendees: 'Number of attendees',
+    notes: 'Additional notes (optional)',
+    gdprLabel: 'I have read and accept the',
+    privacyLink: 'privacy policy',
+    privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'en'),
+    confirm: 'Confirm booking',
+    changeSlot: 'Change time',
+    attendeeData: 'Attendee details',
+    attendeeName: 'Name',
+    attendeeEmail: 'Email (optional)',
+    addAttendee: 'Add attendee',
+    removeAttendee: 'Remove',
+    mainContact: 'Main contact',
+    nameRequired: 'Name is required',
+    emailRequired: 'Email is required',
+    emailInvalid: 'Email is not valid',
+    phoneInvalid: 'Phone is not valid',
+    attendeesRequired: 'Please indicate number of attendees',
+    attendeesMax: 'Maximum {max} attendees',
+    privacyRequired: 'You must accept the privacy policy',
+    loading: 'Loading...',
+    loadingDates: 'Loading available dates...',
+    loadingSlots: 'Loading time slots...',
+    submitting: 'Processing booking...',
+    noSlots: 'No time slots available for this date',
+    noDates: 'No dates available in this period',
+    successTitle: 'Booking confirmed!',
+    successMessage: 'You will receive a confirmation email shortly.',
+    bookingNumber: 'Booking number',
+    bookingDate: 'Date',
+    bookingTime: 'Time',
+    bookingAttendees: 'Attendees',
+    newBooking: 'New booking',
+    errorTitle: 'Error processing booking',
+    errorGeneric: 'An error occurred. Please try again.',
+    tryAgain: 'Try again',
+  },
+  fr: {
+    selectDate: 'Sélectionnez une date',
+    selectTime: 'Choisissez un horaire',
+    yourDetails: 'Vos coordonnées',
+    confirmation: 'Réservation confirmée',
+    prevMonth: 'Mois précédent',
+    nextMonth: 'Mois suivant',
+    months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+    weekdays: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+    available: 'disponibles',
+    spots: 'places',
+    spot: 'place',
+    full: 'Complet',
+    closed: 'Fermé',
+    changeDate: 'Changer la date',
+    name: 'Nom complet',
+    email: 'Adresse email',
+    phone: 'Téléphone (optionnel)',
+    attendees: 'Nombre de participants',
+    notes: 'Notes supplémentaires (optionnel)',
+    gdprLabel: 'J\'ai lu et j\'accepte la',
+    privacyLink: 'politique de confidentialité',
+    privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'fr'),
+    confirm: 'Confirmer la réservation',
+    changeSlot: 'Changer l\'horaire',
+    attendeeData: 'Détails des participants',
+    attendeeName: 'Nom',
+    attendeeEmail: 'Email (optionnel)',
+    addAttendee: 'Ajouter un participant',
+    removeAttendee: 'Supprimer',
+    mainContact: 'Contact principal',
+    nameRequired: 'Le nom est obligatoire',
+    emailRequired: 'L\'email est obligatoire',
+    emailInvalid: 'L\'email n\'est pas valide',
+    phoneInvalid: 'Le téléphone n\'est pas valide',
+    attendeesRequired: 'Veuillez indiquer le nombre de participants',
+    attendeesMax: 'Maximum {max} participants',
+    privacyRequired: 'Vous devez accepter la politique de confidentialité',
+    loading: 'Chargement...',
+    loadingDates: 'Chargement des dates disponibles...',
+    loadingSlots: 'Chargement des horaires...',
+    submitting: 'Traitement de la réservation...',
+    noSlots: 'Aucun horaire disponible pour cette date',
+    noDates: 'Aucune date disponible dans cette période',
+    successTitle: 'Réservation confirmée!',
+    successMessage: 'Vous recevrez un email de confirmation sous peu.',
+    bookingNumber: 'Numéro de réservation',
+    bookingDate: 'Date',
+    bookingTime: 'Heure',
+    bookingAttendees: 'Participants',
+    newBooking: 'Nouvelle réservation',
+    errorTitle: 'Erreur lors du traitement de la réservation',
+    errorGeneric: 'Une erreur s\'est produite. Veuillez réessayer.',
+    tryAgain: 'Réessayer',
+  },
+};
+
+const t = translations[locale];
+const uniqueId = `booking-${sessionId}-${Date.now()}`;
+---
+
+<div
+  class={`booking-widget ${className}`}
+  data-session-id={sessionId}
+  data-locale={locale}
+  data-translations={JSON.stringify(t)}
+  id={uniqueId}
+>
+  <!-- Progress Steps - WDA-909: Clickable para volver atrás -->
+  <div class="booking-progress">
+    <button type="button" class="progress-step active" data-step="calendar" data-step-index="0">
+      <span class="step-number">1</span>
+      <span class="step-label">{t.selectDate}</span>
+    </button>
+    <div class="progress-connector"></div>
+    <button type="button" class="progress-step" data-step="slots" data-step-index="1">
+      <span class="step-number">2</span>
+      <span class="step-label">{t.selectTime}</span>
+    </button>
+    <div class="progress-connector"></div>
+    <button type="button" class="progress-step" data-step="form" data-step-index="2">
+      <span class="step-number">3</span>
+      <span class="step-label">{t.yourDetails}</span>
+    </button>
+    <div class="progress-connector"></div>
+    <button type="button" class="progress-step" data-step="confirmation" data-step-index="3" disabled>
+      <span class="step-number">4</span>
+      <span class="step-label">{t.confirmation}</span>
+    </button>
+  </div>
+
+  <!-- Step 1: Calendar -->
+  <div class="booking-step active" data-step="calendar">
+    <div class="step-header">
+      <h3 class="step-title">{t.selectDate}</h3>
+    </div>
+    <div class="calendar-container">
+      <!-- Calendar header with navigation -->
+      <div class="calendar-header">
+        <button type="button" class="calendar-nav prev-month" aria-label={t.prevMonth}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <span class="calendar-month-year"></span>
+        <button type="button" class="calendar-nav next-month" aria-label={t.nextMonth}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+      <!-- Weekday labels -->
+      <div class="calendar-weekdays">
+        {t.weekdays.map((day: string) => <span class="weekday">{day}</span>)}
+      </div>
+      <!-- Calendar grid (populated by JS) -->
+      <div class="calendar-grid">
+        <!-- Days will be rendered here -->
+      </div>
+      <!-- Loading state -->
+      <div class="calendar-loading hidden">
+        <div class="loading-spinner"></div>
+        <span>{t.loadingDates}</span>
+      </div>
+      <!-- No dates message -->
+      <div class="calendar-empty hidden">
+        <p>{t.noDates}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Time Slots -->
+  <div class="booking-step hidden" data-step="slots">
+    <div class="step-header">
+      <h3 class="step-title">{t.selectTime}</h3>
+      <button type="button" class="back-button" data-action="back-to-calendar">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        {t.changeDate}
+      </button>
+    </div>
+    <div class="selected-date-display">
+      <!-- Shows selected date -->
+    </div>
+    <div class="slots-container">
+      <!-- Slots will be rendered here -->
+    </div>
+    <!-- Loading state -->
+    <div class="slots-loading hidden">
+      <div class="loading-spinner"></div>
+      <span>{t.loadingSlots}</span>
+    </div>
+    <!-- No slots message -->
+    <div class="slots-empty hidden">
+      <p>{t.noSlots}</p>
+    </div>
+  </div>
+
+  <!-- Step 3: Booking Form -->
+  <div class="booking-step hidden" data-step="form">
+    <div class="step-header">
+      <h3 class="step-title">{t.yourDetails}</h3>
+      <button type="button" class="back-button" data-action="back-to-slots">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+        {t.changeSlot}
+      </button>
+    </div>
+
+    <!-- Selected slot summary -->
+    <div class="selection-summary">
+      <div class="summary-item">
+        <span class="summary-label">{t.bookingDate}:</span>
+        <span class="summary-value selected-date-text"></span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">{t.bookingTime}:</span>
+        <span class="summary-value selected-slot-text"></span>
+      </div>
+    </div>
+
+    <form class="booking-form" novalidate>
+      <!-- Name -->
+      <div class="form-group">
+        <label for={`name-${uniqueId}`} class="form-label">
+          {t.name} <span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          id={`name-${uniqueId}`}
+          name="customer_name"
+          required
+          class="form-input"
+          autocomplete="name"
+        />
+        <span class="form-error hidden">{t.nameRequired}</span>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for={`email-${uniqueId}`} class="form-label">
+          {t.email} <span class="required">*</span>
+        </label>
+        <input
+          type="email"
+          id={`email-${uniqueId}`}
+          name="customer_email"
+          required
+          class="form-input"
+          autocomplete="email"
+        />
+        <span class="form-error hidden">{t.emailRequired}</span>
+      </div>
+
+      <!-- Phone -->
+      <div class="form-group">
+        <label for={`phone-${uniqueId}`} class="form-label">
+          {t.phone}
+        </label>
+        <input
+          type="tel"
+          id={`phone-${uniqueId}`}
+          name="customer_phone"
+          class="form-input"
+          autocomplete="tel"
+        />
+        <span class="form-error hidden">{t.phoneInvalid}</span>
+      </div>
+
+      <!-- WDA-909: Attendees Section - Dynamic list of attendees -->
+      <div class="attendees-section">
+        <div class="attendees-header">
+          <span class="form-label">{t.attendeeData} <span class="required">*</span></span>
+          <span class="attendees-count">1/<span class="max-attendees">6</span></span>
+        </div>
+
+        <!-- Attendees list container - JS will populate this -->
+        <div class="attendees-list">
+          <!-- First attendee (main contact) - always visible -->
+          <div class="attendee-row main-contact" data-attendee-index="0">
+            <div class="attendee-badge">{t.mainContact}</div>
+            <div class="attendee-fields">
+              <div class="attendee-field">
+                <input
+                  type="text"
+                  name="attendee_name_0"
+                  placeholder={t.attendeeName}
+                  required
+                  class="form-input attendee-name"
+                  autocomplete="name"
+                />
+              </div>
+              <div class="attendee-field">
+                <input
+                  type="email"
+                  name="attendee_email_0"
+                  placeholder={t.attendeeEmail}
+                  class="form-input attendee-email"
+                  autocomplete="email"
+                />
+              </div>
+            </div>
+          </div>
+          <!-- Additional attendees will be added here by JS -->
+        </div>
+
+        <!-- Add attendee button -->
+        <button type="button" class="add-attendee-btn" data-action="add-attendee">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+          {t.addAttendee}
+        </button>
+
+        <span class="form-error attendees-error hidden">{t.attendeesRequired}</span>
+      </div>
+
+      <!-- Hidden field to store total attendees count for form submission -->
+      <input type="hidden" name="attendees" value="1" />
+
+      <!-- Notes -->
+      <div class="form-group">
+        <label for={`notes-${uniqueId}`} class="form-label">
+          {t.notes}
+        </label>
+        <textarea
+          id={`notes-${uniqueId}`}
+          name="notes"
+          class="form-textarea"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <!-- Privacy Consent -->
+      <div class="form-group privacy-group">
+        <label class="privacy-label">
+          <input
+            type="checkbox"
+            name="privacy"
+            required
+            class="privacy-checkbox"
+          />
+          <span class="privacy-text">
+            {t.gdprLabel}{' '}
+            <a href={t.privacyUrl} class="privacy-link" target="_blank" rel="noopener noreferrer">
+              {t.privacyLink}
+            </a>
+            <span class="required">*</span>
+          </span>
+        </label>
+        <span class="form-error hidden">{t.privacyRequired}</span>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="submit-button" disabled>
+        <span class="button-text">{t.confirm}</span>
+        <span class="button-loading hidden">
+          <div class="loading-spinner small"></div>
+          <span>{t.submitting}</span>
+        </span>
+      </button>
+
+      <!-- Form Error -->
+      <div class="form-message error-message hidden" role="alert">
+        <span class="error-text"></span>
+      </div>
+    </form>
+  </div>
+
+  <!-- Step 4: Confirmation -->
+  <div class="booking-step hidden" data-step="confirmation">
+    <div class="confirmation-content">
+      <!-- Success State -->
+      <div class="confirmation-success">
+        <div class="success-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <h3 class="success-title">{t.successTitle}</h3>
+        <p class="success-message">{t.successMessage}</p>
+
+        <!-- Booking Details -->
+        <div class="booking-details">
+          <div class="detail-row">
+            <span class="detail-label">{t.bookingNumber}:</span>
+            <span class="detail-value booking-number"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{t.bookingDate}:</span>
+            <span class="detail-value confirmed-date"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{t.bookingTime}:</span>
+            <span class="detail-value confirmed-time"></span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{t.bookingAttendees}:</span>
+            <span class="detail-value confirmed-attendees"></span>
+          </div>
+        </div>
+
+        <button type="button" class="new-booking-button" data-action="new-booking">
+          {t.newBooking}
+        </button>
+      </div>
+
+      <!-- Error State -->
+      <div class="confirmation-error hidden">
+        <div class="error-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </div>
+        <h3 class="error-title">{t.errorTitle}</h3>
+        <p class="error-message-text">{t.errorGeneric}</p>
+        <button type="button" class="try-again-button" data-action="try-again">
+          {t.tryAgain}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* ============================================
+     BASE STYLES
+     ============================================ */
+
+  .booking-widget {
+    --booking-primary: #DB4529;
+    --booking-primary-hover: #BA2515;
+    --booking-success: #10b981;
+    --booking-error: #ef4444;
+    --booking-gray-50: #f9fafb;
+    --booking-gray-100: #f3f4f6;
+    --booking-gray-200: #e5e7eb;
+    --booking-gray-300: #d1d5db;
+    --booking-gray-400: #9ca3af;
+    --booking-gray-500: #6b7280;
+    --booking-gray-600: #4b5563;
+    --booking-gray-700: #374151;
+    --booking-gray-800: #1f2937;
+    --booking-gray-900: #111827;
+
+    font-family: 'Avenir Next', 'Nunito Sans', sans-serif;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* ============================================
+     PROGRESS STEPS
+     ============================================ */
+
+  .booking-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--booking-gray-200);
+  }
+
+  .progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0.4;
+    transition: opacity 0.3s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: default;
+  }
+
+  /* WDA-909: Steps clickables cuando están completed */
+  .progress-step.completed {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .progress-step.completed:hover .step-number {
+    transform: scale(1.1);
+  }
+
+  .progress-step.active {
+    opacity: 1;
+  }
+
+  .progress-step:disabled {
+    cursor: not-allowed;
+  }
+
+  .step-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--booking-gray-200);
+    color: var(--booking-gray-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .progress-step.active .step-number {
+    background: var(--booking-primary);
+    color: white;
+  }
+
+  .progress-step.completed .step-number {
+    background: var(--booking-success);
+    color: white;
+  }
+
+  .step-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--booking-gray-600);
+    text-align: center;
+    max-width: 80px;
+  }
+
+  .progress-connector {
+    width: 40px;
+    height: 2px;
+    background: var(--booking-gray-200);
+    margin: 0 0.5rem;
+    align-self: flex-start;
+    margin-top: 15px; /* Center with step-number (32px / 2 - 1px) */
+  }
+
+  /* ============================================
+     BOOKING STEPS
+     ============================================ */
+
+  .booking-step {
+    animation: fadeIn 0.3s ease;
+  }
+
+  .booking-step.hidden {
+    display: none;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .step-title {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--booking-gray-900);
+    margin: 0;
+  }
+
+  .back-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--booking-gray-600);
+    background: transparent;
+    border: 1px solid var(--booking-gray-300);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .back-button:hover {
+    color: var(--booking-gray-900);
+    border-color: var(--booking-gray-400);
+  }
+
+  .back-button svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ============================================
+     CALENDAR
+     ============================================ */
+
+  .calendar-container {
+    position: relative;
+  }
+
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .calendar-nav {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--booking-gray-100);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .calendar-nav:hover {
+    background: var(--booking-gray-200);
+  }
+
+  .calendar-nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .calendar-nav svg {
+    width: 20px;
+    height: 20px;
+    color: var(--booking-gray-700);
+  }
+
+  .calendar-month-year {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--booking-gray-900);
+  }
+
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 0.5rem;
+  }
+
+  .weekday {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--booking-gray-500);
+    padding: 0.5rem 0;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  /* WDA-909: Usar :global para elementos dinámicos del calendario */
+  :global(.calendar-day) {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+    color: var(--booking-gray-700);
+    min-height: 40px;
+    position: relative;
+  }
+
+  :global(.calendar-day.empty) {
+    cursor: default;
+  }
+
+  :global(.calendar-day.disabled) {
+    color: var(--booking-gray-300);
+    cursor: not-allowed;
+  }
+
+  /* WDA-909: Sistema de estados visuales para días (usando :global para elementos dinámicos) */
+  :global(.calendar-day.available) {
+    background: rgba(16, 185, 129, 0.1) !important; /* Verde suave */
+    color: var(--booking-gray-900) !important;
+    position: relative;
+  }
+
+  :global(.calendar-day.available)::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--booking-success);
+  }
+
+  :global(.calendar-day.available:hover) {
+    background: var(--booking-primary) !important;
+    color: white !important;
+  }
+
+  :global(.calendar-day.available:hover)::after {
+    background: white;
+  }
+
+  /* Estado: disponible pero pocas plazas */
+  :global(.calendar-day.low-availability) {
+    background: rgba(245, 158, 11, 0.1) !important; /* Naranja suave */
+    color: var(--booking-gray-900) !important;
+    position: relative;
+  }
+
+  :global(.calendar-day.low-availability)::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #f59e0b;
+  }
+
+  :global(.calendar-day.low-availability:hover) {
+    background: var(--booking-primary) !important;
+    color: white !important;
+  }
+
+  :global(.calendar-day.low-availability:hover)::after {
+    background: white;
+  }
+
+  /* Estado: completo (sin disponibilidad) */
+  :global(.calendar-day.full) {
+    background: rgba(239, 68, 68, 0.05) !important;
+    color: var(--booking-gray-400) !important;
+    cursor: not-allowed;
+    position: relative;
+  }
+
+  :global(.calendar-day.full)::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--booking-error);
+  }
+
+  :global(.calendar-day.selected) {
+    background: var(--booking-primary) !important;
+    color: white !important;
+  }
+
+  :global(.calendar-day.selected)::after {
+    background: white;
+  }
+
+  .calendar-day.today {
+    box-shadow: inset 0 0 0 2px var(--booking-primary);
+  }
+
+  /* ============================================
+     TIME SLOTS
+     ============================================ */
+
+  .selected-date-display {
+    padding: 1rem;
+    background: var(--booking-gray-50);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--booking-gray-900);
+    text-align: center;
+  }
+
+  .slots-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+
+  .time-slot {
+    padding: 1rem;
+    background: white;
+    border: 2px solid var(--booking-gray-200);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .time-slot:hover:not(.disabled) {
+    border-color: var(--booking-primary);
+    box-shadow: 0 2px 8px rgba(219, 69, 41, 0.15);
+  }
+
+  .time-slot.selected {
+    border-color: var(--booking-primary);
+    background: rgba(219, 69, 41, 0.05);
+  }
+
+  .time-slot.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--booking-gray-50);
+  }
+
+  .slot-time {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--booking-gray-900);
+    margin-bottom: 0.25rem;
+  }
+
+  .slot-capacity {
+    font-size: 0.75rem;
+    color: var(--booking-gray-500);
+  }
+
+  .slot-capacity.low {
+    color: #f59e0b;
+  }
+
+  .slot-capacity.full {
+    color: var(--booking-error);
+  }
+
+  /* ============================================
+     FORM
+     ============================================ */
+
+  .selection-summary {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem;
+    background: var(--booking-gray-50);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .summary-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--booking-gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .summary-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--booking-gray-900);
+  }
+
+  .booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--booking-gray-700);
+  }
+
+  .required {
+    color: var(--booking-error);
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--booking-gray-900);
+    background: white;
+    border: 1px solid var(--booking-gray-300);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--booking-primary);
+    box-shadow: 0 0 0 3px rgba(219, 69, 41, 0.15);
+  }
+
+  .form-input.error,
+  .form-select.error,
+  .form-textarea.error {
+    border-color: var(--booking-error);
+  }
+
+  .form-error {
+    font-size: 0.75rem;
+    color: var(--booking-error);
+  }
+
+  .form-error.hidden {
+    display: none;
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  /* WDA-909: Attendees Section */
+  .attendees-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .attendees-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .attendees-count {
+    font-size: 0.875rem;
+    color: var(--booking-gray-500);
+    font-weight: 500;
+  }
+
+  .attendees-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .attendee-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--booking-gray-50);
+    border-radius: 8px;
+    position: relative;
+  }
+
+  .attendee-row.main-contact {
+    background: rgba(219, 69, 41, 0.05);
+    border: 1px solid rgba(219, 69, 41, 0.2);
+  }
+
+  .attendee-badge {
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--booking-primary);
+  }
+
+  .attendee-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .attendee-field {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .attendee-row .form-input {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+  }
+
+  .attendee-actions {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+
+  .remove-attendee-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    color: var(--booking-error);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+
+  .remove-attendee-btn:hover {
+    opacity: 1;
+  }
+
+  .remove-attendee-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .add-attendee-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--booking-primary);
+    background: transparent;
+    border: 2px dashed var(--booking-gray-300);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .add-attendee-btn:hover {
+    border-color: var(--booking-primary);
+    background: rgba(219, 69, 41, 0.05);
+  }
+
+  .add-attendee-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: var(--booking-gray-200);
+  }
+
+  .add-attendee-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .attendees-error {
+    margin-top: 0.5rem;
+  }
+
+  /* Privacy */
+  .privacy-group {
+    margin-top: 0.5rem;
+  }
+
+  .privacy-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+  }
+
+  .privacy-checkbox {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--booking-primary);
+    cursor: pointer;
+  }
+
+  .privacy-text {
+    font-size: 0.875rem;
+    color: var(--booking-gray-600);
+    line-height: 1.5;
+  }
+
+  .privacy-link {
+    color: var(--booking-primary);
+    text-decoration: underline;
+  }
+
+  .privacy-link:hover {
+    color: var(--booking-primary-hover);
+  }
+
+  /* Submit Button */
+  .submit-button {
+    width: 100%;
+    padding: 1rem 2rem;
+    margin-top: 0.5rem;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background: var(--booking-primary);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+
+  .submit-button:hover:not(:disabled) {
+    background: var(--booking-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(219, 69, 41, 0.3);
+  }
+
+  .submit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .button-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .button-loading.hidden {
+    display: none;
+  }
+
+  .submit-button.submitting .button-text {
+    display: none;
+  }
+
+  .submit-button.submitting .button-loading {
+    display: flex;
+  }
+
+  .form-message {
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    text-align: center;
+  }
+
+  .error-message {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .error-message.hidden {
+    display: none;
+  }
+
+  /* ============================================
+     CONFIRMATION
+     ============================================ */
+
+  .confirmation-content {
+    text-align: center;
+    padding: 2rem 0;
+  }
+
+  .success-icon,
+  .error-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .success-icon {
+    background: rgba(16, 185, 129, 0.1);
+  }
+
+  .success-icon svg {
+    width: 32px;
+    height: 32px;
+    color: var(--booking-success);
+  }
+
+  .error-icon {
+    background: rgba(239, 68, 68, 0.1);
+  }
+
+  .error-icon svg {
+    width: 32px;
+    height: 32px;
+    color: var(--booking-error);
+  }
+
+  .success-title,
+  .error-title {
+    font-family: 'Helvetica Neue', 'Inter', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--booking-gray-900);
+    margin: 0 0 0.5rem;
+  }
+
+  .success-message,
+  .error-message-text {
+    font-size: 1rem;
+    color: var(--booking-gray-600);
+    margin: 0 0 2rem;
+  }
+
+  .booking-details {
+    background: var(--booking-gray-50);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--booking-gray-200);
+  }
+
+  .detail-row:last-child {
+    border-bottom: none;
+  }
+
+  .detail-label {
+    font-size: 0.875rem;
+    color: var(--booking-gray-500);
+  }
+
+  .detail-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--booking-gray-900);
+  }
+
+  .new-booking-button,
+  .try-again-button {
+    padding: 0.875rem 2rem;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--booking-primary);
+    background: transparent;
+    border: 2px solid var(--booking-primary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .new-booking-button:hover,
+  .try-again-button:hover {
+    background: var(--booking-primary);
+    color: white;
+  }
+
+  .confirmation-error.hidden {
+    display: none;
+  }
+
+  /* ============================================
+     LOADING STATES
+     ============================================ */
+
+  .calendar-loading,
+  .slots-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    gap: 1rem;
+    color: var(--booking-gray-500);
+  }
+
+  .calendar-loading.hidden,
+  .slots-loading.hidden {
+    display: none;
+  }
+
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--booking-gray-200);
+    border-top-color: var(--booking-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .loading-spinner.small {
+    width: 20px;
+    height: 20px;
+    border-width: 2px;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .calendar-empty,
+  .slots-empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--booking-gray-500);
+  }
+
+  .calendar-empty.hidden,
+  .slots-empty.hidden {
+    display: none;
+  }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+
+  @media (max-width: 640px) {
+    .booking-widget {
+      padding: 1.5rem;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .booking-progress {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .progress-connector {
+      display: none;
+    }
+
+    .step-label {
+      font-size: 0.625rem;
+    }
+
+    .step-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .selection-summary {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .slots-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* WDA-909: Attendees mobile */
+    .attendee-fields {
+      grid-template-columns: 1fr;
+    }
+
+    .attendee-row {
+      padding: 0.875rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .booking-step,
+    .calendar-day,
+    .time-slot,
+    .submit-button,
+    .loading-spinner {
+      animation: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * BookingWidgetController
+   * Handles all client-side logic for the booking widget
+   */
+  import {
+    getAvailableDates,
+    getDaySlots,
+    createBooking,
+    formatTime,
+    formatDate,
+    getDefaultDateRange,
+    getCapacityColor,
+  } from '../../lib/booking';
+  import type {
+    DateAvailability,
+    TimeSlot,
+    DayAvailability,
+    CreateBookingRequest,
+  } from '../../lib/booking';
+
+  interface WidgetState {
+    sessionId: number;
+    locale: string;
+    translations: Record<string, string>;
+    currentMonth: Date;
+    availableDates: Map<string, DateAvailability>;
+    selectedDate: string | null;
+    daySlots: TimeSlot[];
+    selectedSlot: TimeSlot | null;
+    maxCapacity: number;
+    // WDA-909: Multi-attendee support
+    attendeeCount: number;
+  }
+
+  class BookingWidgetController {
+    private widget: HTMLElement;
+    private state: WidgetState;
+
+    constructor(widget: HTMLElement) {
+      this.widget = widget;
+      this.state = {
+        sessionId: parseInt(widget.dataset.sessionId || '0'),
+        locale: widget.dataset.locale || 'es',
+        translations: JSON.parse(widget.dataset.translations || '{}'),
+        currentMonth: new Date(),
+        availableDates: new Map(),
+        selectedDate: null,
+        daySlots: [],
+        selectedSlot: null,
+        maxCapacity: 6,
+        attendeeCount: 1,
+      };
+
+      this.init();
+    }
+
+    private async init(): Promise<void> {
+      this.bindEvents();
+      await this.loadAvailableDates();
+      this.renderCalendar();
+    }
+
+    private bindEvents(): void {
+      // Calendar navigation
+      const prevBtn = this.widget.querySelector('.prev-month');
+      const nextBtn = this.widget.querySelector('.next-month');
+      prevBtn?.addEventListener('click', () => this.navigateMonth(-1));
+      nextBtn?.addEventListener('click', () => this.navigateMonth(1));
+
+      // WDA-909: Progress steps clickables para volver atrás
+      this.widget.querySelectorAll('.progress-step').forEach((step) => {
+        step.addEventListener('click', (e) => {
+          const stepEl = e.currentTarget as HTMLButtonElement;
+          if (stepEl.classList.contains('completed')) {
+            const stepName = stepEl.dataset.step as 'calendar' | 'slots' | 'form' | 'confirmation';
+            if (stepName && stepName !== 'confirmation') {
+              this.showStep(stepName);
+            }
+          }
+        });
+      });
+
+      // Back buttons
+      this.widget.querySelectorAll('[data-action]').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          const action = (e.currentTarget as HTMLElement).dataset.action;
+          this.handleAction(action || '');
+        });
+      });
+
+      // Form submission
+      const form = this.widget.querySelector('.booking-form');
+      form?.addEventListener('submit', (e) => this.handleSubmit(e as SubmitEvent));
+
+      // Form validation on input
+      form?.addEventListener('input', () => this.updateSubmitButton());
+      form?.addEventListener('change', () => this.updateSubmitButton());
+    }
+
+    private handleAction(action: string): void {
+      switch (action) {
+        case 'back-to-calendar':
+          this.showStep('calendar');
+          break;
+        case 'back-to-slots':
+          this.showStep('slots');
+          break;
+        case 'new-booking':
+        case 'try-again':
+          this.resetWidget();
+          break;
+      }
+    }
+
+    // =========================================
+    // CALENDAR
+    // =========================================
+
+    private async loadAvailableDates(): Promise<void> {
+      const loading = this.widget.querySelector('.calendar-loading');
+      const grid = this.widget.querySelector('.calendar-grid');
+      const empty = this.widget.querySelector('.calendar-empty');
+
+      loading?.classList.remove('hidden');
+      grid?.classList.add('hidden');
+      empty?.classList.add('hidden');
+
+      try {
+        const { startDate, endDate } = getDefaultDateRange();
+        const dates = await getAvailableDates({
+          sessionId: this.state.sessionId,
+          startDate,
+          endDate,
+        });
+
+        // WDA-909: Guardar todos los datos de fechas para mostrar estados visuales
+        this.state.availableDates.clear();
+        let hasAnyAvailable = false;
+        dates.forEach((d) => {
+          this.state.availableDates.set(d.date, d);
+          if (d.hasSlots) hasAnyAvailable = true;
+        });
+
+        if (!hasAnyAvailable) {
+          empty?.classList.remove('hidden');
+        } else {
+          grid?.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('[BookingWidget] Error loading dates:', error);
+        empty?.classList.remove('hidden');
+      } finally {
+        loading?.classList.add('hidden');
+      }
+    }
+
+    private renderCalendar(): void {
+      const { currentMonth, availableDates, translations, locale } = this.state;
+
+      // Update month/year display
+      const monthYearEl = this.widget.querySelector('.calendar-month-year');
+      if (monthYearEl) {
+        const months = translations.months as unknown as string[];
+        monthYearEl.textContent = `${months[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
+      }
+
+      // Get first day of month and total days
+      const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+      const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+      const startOffset = (firstDay.getDay() + 6) % 7; // Monday = 0
+      const totalDays = lastDay.getDate();
+
+      // Build calendar grid
+      const grid = this.widget.querySelector('.calendar-grid');
+      if (!grid) return;
+
+      let html = '';
+
+      // Empty cells for offset
+      for (let i = 0; i < startOffset; i++) {
+        html += '<button type="button" class="calendar-day empty" disabled></button>';
+      }
+
+      // Day cells
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      for (let day = 1; day <= totalDays; day++) {
+        const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+        const dateStr = date.toISOString().split('T')[0];
+        const isToday = date.getTime() === today.getTime();
+        const isPast = date < today;
+        const dateData = availableDates.get(dateStr);
+        const isAvailable = dateData?.hasSlots === true;
+        const isSelected = dateStr === this.state.selectedDate;
+
+        // WDA-909: Determinar estado visual basado en slotCount
+        const slotCount = dateData?.slotCount || 0;
+        const isLowAvailability = isAvailable && slotCount > 0 && slotCount <= 2;
+
+        const classes = ['calendar-day'];
+        if (isToday) classes.push('today');
+        if (isPast) classes.push('disabled');
+        else if (isAvailable) {
+          if (isLowAvailability) {
+            classes.push('low-availability');
+          } else {
+            classes.push('available');
+          }
+        } else {
+          classes.push('disabled');
+        }
+        if (isSelected) classes.push('selected');
+
+        html += `
+          <button
+            type="button"
+            class="${classes.join(' ')}"
+            data-date="${dateStr}"
+            ${isPast || !isAvailable ? 'disabled' : ''}
+          >
+            ${day}
+          </button>
+        `;
+      }
+
+      grid.innerHTML = html;
+
+      // Bind click events to available days (both normal and low-availability)
+      grid.querySelectorAll('.calendar-day.available, .calendar-day.low-availability').forEach((day) => {
+        day.addEventListener('click', (e) => {
+          const dateStr = (e.currentTarget as HTMLElement).dataset.date;
+          if (dateStr) this.selectDate(dateStr);
+        });
+      });
+
+      // Update navigation buttons
+      const prevBtn = this.widget.querySelector('.prev-month') as HTMLButtonElement;
+      const nextBtn = this.widget.querySelector('.next-month') as HTMLButtonElement;
+
+      if (prevBtn) {
+        const prevMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
+        prevBtn.disabled = prevMonth < new Date(today.getFullYear(), today.getMonth());
+      }
+    }
+
+    private navigateMonth(delta: number): void {
+      this.state.currentMonth = new Date(
+        this.state.currentMonth.getFullYear(),
+        this.state.currentMonth.getMonth() + delta,
+        1
+      );
+      this.renderCalendar();
+    }
+
+    private async selectDate(dateStr: string): Promise<void> {
+      this.state.selectedDate = dateStr;
+      this.renderCalendar(); // Update selection visual
+
+      // Update selected date display
+      const dateDisplay = this.widget.querySelector('.selected-date-display');
+      if (dateDisplay) {
+        dateDisplay.textContent = formatDate(dateStr, this.state.locale);
+      }
+
+      // Also update form summary
+      const summaryDate = this.widget.querySelector('.selected-date-text');
+      if (summaryDate) {
+        summaryDate.textContent = formatDate(dateStr, this.state.locale);
+      }
+
+      // Load time slots
+      await this.loadTimeSlots(dateStr);
+      this.showStep('slots');
+    }
+
+    // =========================================
+    // TIME SLOTS
+    // =========================================
+
+    private async loadTimeSlots(date: string): Promise<void> {
+      const loading = this.widget.querySelector('.slots-loading');
+      const container = this.widget.querySelector('.slots-container');
+      const empty = this.widget.querySelector('.slots-empty');
+
+      loading?.classList.remove('hidden');
+      container?.classList.add('hidden');
+      empty?.classList.add('hidden');
+
+      try {
+        const dayData = await getDaySlots({
+          sessionId: this.state.sessionId,
+          date,
+        });
+
+        if (!dayData || !dayData.slots || dayData.slots.length === 0) {
+          empty?.classList.remove('hidden');
+          this.state.daySlots = [];
+          return;
+        }
+
+        this.state.daySlots = dayData.slots;
+        this.state.maxCapacity = dayData.slots[0]?.capacity.maximum || 6;
+        this.renderTimeSlots();
+        container?.classList.remove('hidden');
+      } catch (error) {
+        console.error('[BookingWidget] Error loading slots:', error);
+        empty?.classList.remove('hidden');
+      } finally {
+        loading?.classList.add('hidden');
+      }
+    }
+
+    private renderTimeSlots(): void {
+      const container = this.widget.querySelector('.slots-container');
+      if (!container) return;
+
+      const { daySlots, translations } = this.state;
+
+      let html = '';
+
+      daySlots.forEach((slot, index) => {
+        const slotStatus = slot.status.toLowerCase();
+        const isDisabled = !slot.bookable || slotStatus !== 'available';
+        const isSelected = this.state.selectedSlot?.startTime === slot.startTime;
+        const capacityColor = getCapacityColor(slot.capacity);
+
+        const classes = ['time-slot'];
+        if (isDisabled) classes.push('disabled');
+        if (isSelected) classes.push('selected');
+
+        let capacityText = '';
+        let capacityClass = '';
+
+        if (slotStatus === 'full' || slot.capacity.available === 0) {
+          capacityText = translations.full;
+          capacityClass = 'full';
+        } else if (slotStatus === 'closed') {
+          capacityText = translations.closed;
+          capacityClass = 'full';
+        } else {
+          const spotWord = slot.capacity.available === 1 ? translations.spot : translations.spots;
+          capacityText = `${slot.capacity.available} ${spotWord} ${translations.available}`;
+          capacityClass = capacityColor === 'yellow' ? 'low' : '';
+        }
+
+        html += `
+          <button
+            type="button"
+            class="${classes.join(' ')}"
+            data-slot-index="${index}"
+            ${isDisabled ? 'disabled' : ''}
+          >
+            <div class="slot-time">${formatTime(slot.startTime)}</div>
+            <div class="slot-capacity ${capacityClass}">${capacityText}</div>
+          </button>
+        `;
+      });
+
+      container.innerHTML = html;
+
+      // Bind click events
+      container.querySelectorAll('.time-slot:not(.disabled)').forEach((slot) => {
+        slot.addEventListener('click', (e) => {
+          const index = parseInt((e.currentTarget as HTMLElement).dataset.slotIndex || '0');
+          this.selectSlot(index);
+        });
+      });
+    }
+
+    private selectSlot(index: number): void {
+      const slot = this.state.daySlots[index];
+      if (!slot) return;
+
+      this.state.selectedSlot = slot;
+      this.renderTimeSlots(); // Update selection visual
+
+      // Update form summary
+      const summarySlot = this.widget.querySelector('.selected-slot-text');
+      if (summarySlot) {
+        summarySlot.textContent = `${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}`;
+      }
+
+      // WDA-909: Initialize attendees section with max capacity
+      this.initAttendeesSection(slot.capacity.available);
+
+      this.showStep('form');
+    }
+
+    // =========================================
+    // FORM
+    // =========================================
+
+    // WDA-909: Initialize attendees section with max capacity
+    private initAttendeesSection(maxAvailable: number): void {
+      this.state.maxCapacity = maxAvailable;
+      this.state.attendeeCount = 1;
+
+      // Update max attendees display
+      const maxEl = this.widget.querySelector('.max-attendees');
+      if (maxEl) maxEl.textContent = String(maxAvailable);
+
+      // Update count display
+      this.updateAttendeesCount();
+
+      // Bind add attendee button
+      const addBtn = this.widget.querySelector('[data-action="add-attendee"]') as HTMLButtonElement;
+      addBtn?.addEventListener('click', () => this.addAttendee());
+
+      // Update button state
+      this.updateAddAttendeeButton();
+    }
+
+    private addAttendee(): void {
+      if (this.state.attendeeCount >= this.state.maxCapacity) return;
+
+      const { translations } = this.state;
+      const index = this.state.attendeeCount;
+      const list = this.widget.querySelector('.attendees-list');
+      if (!list) return;
+
+      const row = document.createElement('div');
+      row.className = 'attendee-row';
+      row.setAttribute('data-attendee-index', String(index));
+      row.innerHTML = `
+        <div class="attendee-actions">
+          <button type="button" class="remove-attendee-btn" data-action="remove-attendee" data-index="${index}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+            ${translations.removeAttendee}
+          </button>
+        </div>
+        <div class="attendee-fields">
+          <div class="attendee-field">
+            <input
+              type="text"
+              name="attendee_name_${index}"
+              placeholder="${translations.attendeeName}"
+              required
+              class="form-input attendee-name"
+            />
+          </div>
+          <div class="attendee-field">
+            <input
+              type="email"
+              name="attendee_email_${index}"
+              placeholder="${translations.attendeeEmail}"
+              class="form-input attendee-email"
+            />
+          </div>
+        </div>
+      `;
+
+      list.appendChild(row);
+
+      // Bind remove button
+      const removeBtn = row.querySelector('[data-action="remove-attendee"]');
+      removeBtn?.addEventListener('click', () => this.removeAttendee(index));
+
+      this.state.attendeeCount++;
+      this.updateAttendeesCount();
+      this.updateAddAttendeeButton();
+      this.updateHiddenAttendeesField();
+      this.updateSubmitButton();
+    }
+
+    private removeAttendee(index: number): void {
+      const row = this.widget.querySelector(`.attendee-row[data-attendee-index="${index}"]`);
+      if (row) {
+        row.remove();
+        this.state.attendeeCount--;
+        this.updateAttendeesCount();
+        this.updateAddAttendeeButton();
+        this.updateHiddenAttendeesField();
+        this.updateSubmitButton();
+      }
+    }
+
+    private updateAttendeesCount(): void {
+      const countEl = this.widget.querySelector('.attendees-count');
+      if (countEl) {
+        countEl.innerHTML = `${this.state.attendeeCount}/<span class="max-attendees">${this.state.maxCapacity}</span>`;
+      }
+    }
+
+    private updateAddAttendeeButton(): void {
+      const addBtn = this.widget.querySelector('[data-action="add-attendee"]') as HTMLButtonElement;
+      if (addBtn) {
+        addBtn.disabled = this.state.attendeeCount >= this.state.maxCapacity;
+      }
+    }
+
+    private updateHiddenAttendeesField(): void {
+      const hidden = this.widget.querySelector('input[name="attendees"]') as HTMLInputElement;
+      if (hidden) {
+        hidden.value = String(this.state.attendeeCount);
+      }
+    }
+
+    private updateSubmitButton(): void {
+      const form = this.widget.querySelector('.booking-form') as HTMLFormElement;
+      const submitBtn = form?.querySelector('.submit-button') as HTMLButtonElement;
+      if (!form || !submitBtn) return;
+
+      const emailInput = form.querySelector('input[name="customer_email"]') as HTMLInputElement;
+      const privacyCheckbox = form.querySelector('input[name="privacy"]') as HTMLInputElement;
+
+      // WDA-909: Validate all attendee names are filled
+      const attendeeNameInputs = form.querySelectorAll('.attendee-name') as NodeListOf<HTMLInputElement>;
+      const allNamesValid = Array.from(attendeeNameInputs).every((input) => input.value.trim().length > 0);
+
+      const isValid =
+        allNamesValid &&
+        emailInput?.value.trim().length > 0 &&
+        privacyCheckbox?.checked;
+
+      submitBtn.disabled = !isValid;
+    }
+
+    private async handleSubmit(e: SubmitEvent): Promise<void> {
+      e.preventDefault();
+
+      const form = e.target as HTMLFormElement;
+      const submitBtn = form.querySelector('.submit-button') as HTMLButtonElement;
+      const errorMessage = form.querySelector('.form-message.error-message');
+      const errorText = errorMessage?.querySelector('.error-text');
+
+      // Validate
+      if (!this.validateForm(form)) {
+        return;
+      }
+
+      // Show loading
+      submitBtn.disabled = true;
+      submitBtn.classList.add('submitting');
+      errorMessage?.classList.add('hidden');
+
+      // Prepare data
+      const formData = new FormData(form);
+
+      // WDA-909: Collect all attendees data
+      const attendeeRows = form.querySelectorAll('.attendee-row');
+      const attendees: Array<{ name: string; email: string }> = [];
+
+      attendeeRows.forEach((row, index) => {
+        const nameInput = row.querySelector(`input[name="attendee_name_${index}"]`) as HTMLInputElement;
+        const emailInput = row.querySelector(`input[name="attendee_email_${index}"]`) as HTMLInputElement;
+        if (nameInput?.value.trim()) {
+          attendees.push({
+            name: nameInput.value.trim(),
+            email: emailInput?.value.trim() || '',
+          });
+        }
+      });
+
+      // Main contact is the first attendee
+      const mainContact = attendees[0] || { name: '', email: '' };
+
+      // Build notes with all attendees info
+      let notes = formData.get('notes') as string || '';
+      if (attendees.length > 1) {
+        const attendeesList = attendees
+          .map((a, i) => `${i + 1}. ${a.name}${a.email ? ` (${a.email})` : ''}`)
+          .join('\n');
+        notes = notes
+          ? `${notes}\n\n--- Asistentes ---\n${attendeesList}`
+          : `--- Asistentes ---\n${attendeesList}`;
+      }
+
+      const bookingData: CreateBookingRequest = {
+        session_id: this.state.sessionId,
+        slot_date: this.state.selectedDate!,
+        slot_time: formatTime(this.state.selectedSlot!.startTime),
+        attendees: attendees.length,
+        customer_name: mainContact.name,
+        customer_email: formData.get('customer_email') as string,
+        customer_phone: formData.get('customer_phone') as string || undefined,
+        notes: notes || undefined,
+      };
+
+      try {
+        const result = await createBooking(bookingData);
+
+        if (result.success) {
+          this.showConfirmation(result);
+        } else {
+          if (errorText) {
+            errorText.textContent = result.error || this.state.translations.errorGeneric;
+          }
+          errorMessage?.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('[BookingWidget] Submit error:', error);
+        if (errorText) {
+          errorText.textContent = this.state.translations.errorGeneric;
+        }
+        errorMessage?.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('submitting');
+      }
+    }
+
+    private validateForm(form: HTMLFormElement): boolean {
+      let isValid = true;
+      const { translations } = this.state;
+
+      // Reset errors
+      form.querySelectorAll('.form-error').forEach((el) => el.classList.add('hidden'));
+      form.querySelectorAll('.form-input, .form-select').forEach((el) => el.classList.remove('error'));
+
+      // WDA-909: Validate all attendee names
+      const attendeeNameInputs = form.querySelectorAll('.attendee-name') as NodeListOf<HTMLInputElement>;
+      attendeeNameInputs.forEach((input) => {
+        if (!input.value.trim()) {
+          input.classList.add('error');
+          isValid = false;
+        }
+      });
+
+      if (!isValid) {
+        const attendeesError = form.querySelector('.attendees-error');
+        attendeesError?.classList.remove('hidden');
+      }
+
+      // Email (main contact)
+      const emailInput = form.querySelector('input[name="customer_email"]') as HTMLInputElement;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailInput?.value.trim()) {
+        this.showFieldError(emailInput, translations.emailRequired);
+        isValid = false;
+      } else if (!emailRegex.test(emailInput.value)) {
+        this.showFieldError(emailInput, translations.emailInvalid);
+        isValid = false;
+      }
+
+      // Privacy
+      const privacyCheckbox = form.querySelector('input[name="privacy"]') as HTMLInputElement;
+      if (!privacyCheckbox?.checked) {
+        const privacyError = privacyCheckbox?.closest('.form-group')?.querySelector('.form-error');
+        privacyError?.classList.remove('hidden');
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    private showFieldError(input: HTMLInputElement | null, message: string): void {
+      if (!input) return;
+      input.classList.add('error');
+      const errorEl = input.closest('.form-group')?.querySelector('.form-error');
+      if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.remove('hidden');
+      }
+    }
+
+    // =========================================
+    // CONFIRMATION
+    // =========================================
+
+    private showConfirmation(result: { booking_number?: string; success: boolean }): void {
+      const successEl = this.widget.querySelector('.confirmation-success');
+      const errorEl = this.widget.querySelector('.confirmation-error');
+
+      if (result.success) {
+        // Populate booking details
+        const bookingNumber = this.widget.querySelector('.booking-number');
+        const confirmedDate = this.widget.querySelector('.confirmed-date');
+        const confirmedTime = this.widget.querySelector('.confirmed-time');
+        const confirmedAttendees = this.widget.querySelector('.confirmed-attendees');
+
+        if (bookingNumber) {
+          bookingNumber.textContent = result.booking_number || '-';
+        }
+        if (confirmedDate && this.state.selectedDate) {
+          confirmedDate.textContent = formatDate(this.state.selectedDate, this.state.locale);
+        }
+        if (confirmedTime && this.state.selectedSlot) {
+          confirmedTime.textContent = `${formatTime(this.state.selectedSlot.startTime)} - ${formatTime(this.state.selectedSlot.endTime)}`;
+        }
+        if (confirmedAttendees) {
+          const form = this.widget.querySelector('.booking-form') as HTMLFormElement;
+          const attendees = form?.querySelector('select[name="attendees"]') as HTMLSelectElement;
+          confirmedAttendees.textContent = attendees?.value || '1';
+        }
+
+        successEl?.classList.remove('hidden');
+        errorEl?.classList.add('hidden');
+      } else {
+        successEl?.classList.add('hidden');
+        errorEl?.classList.remove('hidden');
+      }
+
+      this.showStep('confirmation');
+    }
+
+    // =========================================
+    // NAVIGATION
+    // =========================================
+
+    private showStep(step: 'calendar' | 'slots' | 'form' | 'confirmation'): void {
+      // Hide all steps
+      this.widget.querySelectorAll('.booking-step').forEach((el) => {
+        el.classList.add('hidden');
+      });
+
+      // Show target step
+      const targetStep = this.widget.querySelector(`.booking-step[data-step="${step}"]`);
+      targetStep?.classList.remove('hidden');
+
+      // Update progress
+      const steps = ['calendar', 'slots', 'form', 'confirmation'];
+      const currentIndex = steps.indexOf(step);
+
+      this.widget.querySelectorAll('.progress-step').forEach((el, i) => {
+        el.classList.remove('active', 'completed');
+        if (i < currentIndex) {
+          el.classList.add('completed');
+        } else if (i === currentIndex) {
+          el.classList.add('active');
+        }
+      });
+    }
+
+    private resetWidget(): void {
+      // Reset state
+      this.state.selectedDate = null;
+      this.state.daySlots = [];
+      this.state.selectedSlot = null;
+
+      // Reset form
+      const form = this.widget.querySelector('.booking-form') as HTMLFormElement;
+      form?.reset();
+
+      // Reset confirmation
+      const successEl = this.widget.querySelector('.confirmation-success');
+      const errorEl = this.widget.querySelector('.confirmation-error');
+      successEl?.classList.remove('hidden');
+      errorEl?.classList.add('hidden');
+
+      // Go back to calendar
+      this.showStep('calendar');
+      this.renderCalendar();
+    }
+  }
+
+  // Initialize all booking widgets on the page
+  function initBookingWidgets(): void {
+    const widgets = document.querySelectorAll('.booking-widget');
+    widgets.forEach((widget) => {
+      new BookingWidgetController(widget as HTMLElement);
+    });
+  }
+
+  // Initialize on DOM load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBookingWidgets);
+  } else {
+    initBookingWidgets();
+  }
+</script>

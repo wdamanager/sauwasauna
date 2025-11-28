@@ -14,6 +14,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Asistente IA 24/7
 - Panel de gestión completo
 
+## [0.7.0] - 2025-11-28
+
+### Added
+- **Booking Widget UX Improvements** (WDA-909):
+  - Sistema de estados visuales para días del calendario:
+    - Verde: días disponibles con indicador de punto
+    - Amarillo: días con pocas plazas (≤2 slots)
+    - Rojo: días completos
+    - Gris: días sin disponibilidad
+  - Steps de progreso clickables para navegación hacia atrás
+  - Gestión de múltiples asistentes:
+    - Sección "Datos de los asistentes" con contador dinámico
+    - Badge "Contacto principal" para primer asistente
+    - Campos Nombre (obligatorio) + Email (opcional) por asistente
+    - Botones añadir/eliminar asistentes
+    - Validación y envío de datos en booking
+  - Traducciones para 4 idiomas (ES, CA, EN, FR)
+
+### Fixed
+- Alineación de steps de progreso en BookingWidget
+- CSS scoping para elementos dinámicos usando `:global()`
+- Altura mínima de días del calendario para visualización de indicadores
+
+### Changed
+- Steps de progreso cambiados de `<div>` a `<button>` para accesibilidad
+- Días del calendario con `min-height: 40px` para mejor UX
+
 ## [0.6.0] - 2025-11-12
 
 ### Added
