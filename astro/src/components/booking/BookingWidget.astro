@@ -1757,9 +1757,17 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
+      // WDA-909: Helper to format date as YYYY-MM-DD without timezone issues
+      const toLocalDateString = (d: Date): string => {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      };
+
       for (let day = 1; day <= totalDays; day++) {
         const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-        const dateStr = date.toISOString().split('T')[0];
+        const dateStr = toLocalDateString(date);
         const isToday = date.getTime() === today.getTime();
         const isPast = date < today;
         const dateData = availableDates.get(dateStr);

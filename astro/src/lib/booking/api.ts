@@ -303,9 +303,15 @@ export function formatTime(time: string): string {
 
 /**
  * Format date for display based on locale
+ * WDA-909: Fix timezone issue - parse date parts to avoid UTC conversion
  */
 export function formatDate(dateString: string, locale: string = 'es'): string {
-  const date = new Date(dateString);
+  // Parse date parts manually to avoid timezone issues
+  // dateString format: "YYYY-MM-DD"
+  const [year, month, day] = dateString.split('-').map(Number);
+  // Create date at noon local time to avoid any timezone edge cases
+  const date = new Date(year, month - 1, day, 12, 0, 0);
+
   const localeMap: Record<string, string> = {
     es: 'es-ES',
     ca: 'ca-ES',
