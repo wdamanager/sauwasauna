@@ -28,7 +28,7 @@ const translations = {
     // Steps
     selectDate: 'Selecciona una fecha',
     selectTime: 'Elige un horario',
-    yourDetails: 'Tus datos',
+    yourDetails: 'Datos personales',
     confirmation: 'Reserva confirmada',
     // Calendar
     prevMonth: 'Mes anterior',
@@ -98,6 +98,20 @@ const translations = {
     errorEmailRequired: 'El email del asistente {n} es obligatorio',
     errorRateLimit: 'Demasiados intentos. Por favor, espera unos minutos.',
     tryAgain: 'Intentar de nuevo',
+    // WDA-920: UX Capacidad Limitada
+    spotsRemaining: 'Solo quedan {n} plazas para este horario',
+    capacityReached: 'Capacidad máxima alcanzada ({current}/{max} plazas)',
+    spotsAvailableText: '{n} plazas disponibles',
+    // WDA-921: Rate Limiting
+    rateLimitMessage: 'Demasiados intentos. Intenta de nuevo en {time}',
+    // WDA-922: A11Y
+    a11y: {
+      prevMonth: 'Mes anterior',
+      nextMonth: 'Mes siguiente',
+      attendeeAdded: 'Asistente {n} añadido',
+      attendeeRemoved: 'Asistente eliminado',
+      stepLabel: 'Paso',
+    },
   },
   ca: {
     selectDate: 'Selecciona una data',
@@ -164,11 +178,25 @@ const translations = {
     errorEmailRequired: 'L\'email de l\'assistent {n} és obligatori',
     errorRateLimit: 'Massa intents. Si us plau, espera uns minuts.',
     tryAgain: 'Tornar a intentar',
+    // WDA-920: UX Capacidad Limitada
+    spotsRemaining: 'Només queden {n} places per a aquest horari',
+    capacityReached: 'Capacitat màxima assolida ({current}/{max} places)',
+    spotsAvailableText: '{n} places disponibles',
+    // WDA-921: Rate Limiting
+    rateLimitMessage: 'Massa intents. Torna a intentar-ho en {time}',
+    // WDA-922: A11Y
+    a11y: {
+      prevMonth: 'Mes anterior',
+      nextMonth: 'Mes següent',
+      attendeeAdded: 'Assistent {n} afegit',
+      attendeeRemoved: 'Assistent eliminat',
+      stepLabel: 'Pas',
+    },
   },
   en: {
     selectDate: 'Select a date',
     selectTime: 'Choose a time',
-    yourDetails: 'Your details',
+    yourDetails: 'Personal details',
     confirmation: 'Booking confirmed',
     prevMonth: 'Previous month',
     nextMonth: 'Next month',
@@ -230,6 +258,20 @@ const translations = {
     errorEmailRequired: 'Attendee {n} email is required',
     errorRateLimit: 'Too many attempts. Please wait a few minutes.',
     tryAgain: 'Try again',
+    // WDA-920: UX Capacidad Limitada
+    spotsRemaining: 'Only {n} spots remaining for this time',
+    capacityReached: 'Maximum capacity reached ({current}/{max} spots)',
+    spotsAvailableText: '{n} spots available',
+    // WDA-921: Rate Limiting
+    rateLimitMessage: 'Too many attempts. Try again in {time}',
+    // WDA-922: A11Y
+    a11y: {
+      prevMonth: 'Previous month',
+      nextMonth: 'Next month',
+      attendeeAdded: 'Attendee {n} added',
+      attendeeRemoved: 'Attendee removed',
+      stepLabel: 'Step',
+    },
   },
   fr: {
     selectDate: 'Sélectionnez une date',
@@ -296,6 +338,20 @@ const translations = {
     errorEmailRequired: 'L\'email du participant {n} est requis',
     errorRateLimit: 'Trop de tentatives. Veuillez attendre quelques minutes.',
     tryAgain: 'Réessayer',
+    // WDA-920: UX Capacidad Limitada
+    spotsRemaining: 'Seulement {n} places restantes pour cet horaire',
+    capacityReached: 'Capacité maximale atteinte ({current}/{max} places)',
+    spotsAvailableText: '{n} places disponibles',
+    // WDA-921: Rate Limiting
+    rateLimitMessage: 'Trop de tentatives. Réessayez dans {time}',
+    // WDA-922: A11Y
+    a11y: {
+      prevMonth: 'Mois précédent',
+      nextMonth: 'Mois suivant',
+      attendeeAdded: 'Participant {n} ajouté',
+      attendeeRemoved: 'Participant supprimé',
+      stepLabel: 'Étape',
+    },
   },
 };
 
@@ -310,24 +366,32 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
   data-translations={JSON.stringify(t)}
   id={uniqueId}
 >
+  <!-- WDA-922: A11Y - Screen reader announcements -->
+  <div
+    id={`booking-announcements-${uniqueId}`}
+    class="sr-only"
+    aria-live="polite"
+    aria-atomic="true"
+  ></div>
+
   <!-- Progress Steps - WDA-909: Clickable para volver atrás -->
   <div class="booking-progress">
-    <button type="button" class="progress-step active" data-step="calendar" data-step-index="0">
+    <button type="button" class="progress-step active" data-step="calendar" data-step-index="0" aria-label={`${t.a11y.stepLabel} 1: ${t.selectDate}`} aria-current="step">
       <span class="step-number">1</span>
       <span class="step-label">{t.selectDate}</span>
     </button>
     <div class="progress-connector"></div>
-    <button type="button" class="progress-step" data-step="slots" data-step-index="1">
+    <button type="button" class="progress-step" data-step="slots" data-step-index="1" aria-label={`${t.a11y.stepLabel} 2: ${t.selectTime}`}>
       <span class="step-number">2</span>
       <span class="step-label">{t.selectTime}</span>
     </button>
     <div class="progress-connector"></div>
-    <button type="button" class="progress-step" data-step="form" data-step-index="2">
+    <button type="button" class="progress-step" data-step="form" data-step-index="2" aria-label={`${t.a11y.stepLabel} 3: ${t.yourDetails}`}>
       <span class="step-number">3</span>
       <span class="step-label">{t.yourDetails}</span>
     </button>
     <div class="progress-connector"></div>
-    <button type="button" class="progress-step" data-step="confirmation" data-step-index="3" disabled>
+    <button type="button" class="progress-step" data-step="confirmation" data-step-index="3" disabled aria-label={`${t.a11y.stepLabel} 4: ${t.confirmation}`}>
       <span class="step-number">4</span>
       <span class="step-label">{t.confirmation}</span>
     </button>
@@ -341,13 +405,13 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     <div class="calendar-container">
       <!-- Calendar header with navigation -->
       <div class="calendar-header">
-        <button type="button" class="calendar-nav prev-month" aria-label={t.prevMonth}>
+        <button type="button" class="calendar-nav prev-month" aria-label={t.a11y.prevMonth}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="15 18 9 12 15 6"></polyline>
           </svg>
         </button>
         <span class="calendar-month-year"></span>
-        <button type="button" class="calendar-nav next-month" aria-label={t.nextMonth}>
+        <button type="button" class="calendar-nav next-month" aria-label={t.a11y.nextMonth}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="9 18 15 12 9 6"></polyline>
           </svg>
@@ -425,6 +489,26 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       </div>
     </div>
 
+    <!-- WDA-920: Mensaje de capacidad limitada -->
+    <div class="capacity-warning hidden" role="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span class="capacity-warning-text"></span>
+    </div>
+
+    <!-- WDA-920: Badge de capacidad del slot seleccionado -->
+    <div class="slot-capacity-badge hidden">
+      <span class="capacity-badge-text"></span>
+    </div>
+
+    <!-- WDA-921: Rate limit countdown message -->
+    <div class="rate-limit-message hidden" role="alert" aria-live="polite">
+      <!-- Mensaje dinámico del countdown -->
+    </div>
+
     <form class="booking-form" novalidate>
       <!-- Name -->
       <div class="form-group">
@@ -439,7 +523,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
           class="form-input"
           autocomplete="name"
         />
-        <span class="form-error hidden">{t.nameRequired}</span>
+        <span class="form-error hidden" role="status" aria-live="polite">{t.nameRequired}</span>
       </div>
 
       <!-- Email -->
@@ -455,7 +539,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
           class="form-input"
           autocomplete="email"
         />
-        <span class="form-error hidden">{t.emailRequired}</span>
+        <span class="form-error hidden" role="status" aria-live="polite">{t.emailRequired}</span>
       </div>
 
       <!-- Phone -->
@@ -470,7 +554,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
           class="form-input"
           autocomplete="tel"
         />
-        <span class="form-error hidden">{t.phoneInvalid}</span>
+        <span class="form-error hidden" role="status" aria-live="polite">{t.phoneInvalid}</span>
       </div>
 
       <!-- WDA-909: Attendees Section - Dynamic list of attendees -->
@@ -511,16 +595,21 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         </div>
 
         <!-- Add attendee button -->
-        <button type="button" class="add-attendee-btn" data-action="add-attendee">
+        <button type="button" class="add-attendee-btn" data-action="add-attendee" aria-label={t.addAttendee}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="16"></line>
             <line x1="8" y1="12" x2="16" y2="12"></line>
           </svg>
-          {t.addAttendee}
+          <span class="add-attendee-text">{t.addAttendee}</span>
         </button>
 
-        <span class="form-error attendees-error hidden">{t.attendeesRequired}</span>
+        <!-- WDA-920: Tooltip cuando botón disabled -->
+        <span class="add-attendee-disabled-hint hidden" role="tooltip">
+          <!-- Mensaje dinámico: "Capacidad máxima alcanzada (X/X plazas)" -->
+        </span>
+
+        <span class="form-error attendees-error hidden" role="status" aria-live="polite">{t.attendeesRequired}</span>
       </div>
 
       <!-- Hidden field to store total attendees count for form submission -->
@@ -663,6 +752,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     --booking-primary-hover: #BA2515;
     --booking-success: #10b981;
     --booking-error: #ef4444;
+    --booking-warning: #f59e0b;
     --booking-gray-50: #f9fafb;
     --booking-gray-100: #f3f4f6;
     --booking-gray-200: #e5e7eb;
@@ -681,6 +771,19 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     padding: 2rem;
     max-width: 600px;
     margin: 0 auto;
+  }
+
+  /* WDA-922: A11Y - Screen reader only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 
   /* ============================================
@@ -757,6 +860,8 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     color: var(--booking-gray-600);
     text-align: center;
     max-width: 80px;
+    min-height: 32px; /* Force consistent height for 2 lines (16px * 2) */
+    line-height: 1.3;
   }
 
   .progress-connector {
@@ -1464,6 +1569,124 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
   }
 
   /* ============================================
+     WDA-920: CAPACITY WARNING & BADGE
+     ============================================ */
+
+  .capacity-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid var(--booking-warning);
+    border-radius: 8px;
+    color: #92400e;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .capacity-warning svg {
+    width: 20px;
+    height: 20px;
+    color: var(--booking-warning);
+    flex-shrink: 0;
+  }
+
+  .capacity-warning.hidden {
+    display: none;
+  }
+
+  .slot-capacity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    background: var(--booking-gray-50);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .slot-capacity-badge.green {
+    background: rgba(16, 185, 129, 0.1);
+    color: #065f46;
+  }
+
+  .slot-capacity-badge.yellow {
+    background: rgba(245, 158, 11, 0.1);
+    color: #92400e;
+  }
+
+  .slot-capacity-badge.red {
+    background: rgba(239, 68, 68, 0.1);
+    color: #991b1b;
+  }
+
+  .slot-capacity-badge.hidden {
+    display: none;
+  }
+
+  .add-attendee-btn {
+    position: relative;
+  }
+
+  .add-attendee-disabled-hint {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5rem 0.75rem;
+    background: var(--booking-gray-800);
+    color: white;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .add-attendee-disabled-hint::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--booking-gray-800);
+  }
+
+  .add-attendee-btn:disabled:hover + .add-attendee-disabled-hint {
+    display: block;
+  }
+
+  /* ============================================
+     WDA-921: RATE LIMITING
+     ============================================ */
+
+  .rate-limit-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid var(--booking-error);
+    border-radius: 8px;
+    color: #991b1b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .rate-limit-message.hidden {
+    display: none;
+  }
+
+  /* ============================================
      CONFIRMATION
      ============================================ */
 
@@ -1726,7 +1949,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
   interface WidgetState {
     sessionId: number;
     locale: string;
-    translations: Record<string, string>;
+    translations: Record<string, any>;
     currentMonth: Date;
     availableDates: Map<string, DateAvailability>;
     selectedDate: string | null;
@@ -1735,6 +1958,9 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     maxCapacity: number;
     // WDA-909: Multi-attendee support
     attendeeCount: number;
+    // WDA-921: Rate limiting
+    rateLimitUntil: number | null;
+    rateLimitCountdown: number;
   }
 
   class BookingWidgetController {
@@ -1754,6 +1980,8 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         selectedSlot: null,
         maxCapacity: 6,
         attendeeCount: 1,
+        rateLimitUntil: null,
+        rateLimitCountdown: 0,
       };
 
       this.init();
@@ -2099,7 +2327,54 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       // WDA-909: Initialize attendees section with max capacity
       this.initAttendeesSection(slot.capacity.available);
 
+      // WDA-920: Show capacity warning and badge
+      this.updateCapacityWarning(slot.capacity.available);
+      this.updateCapacityBadge(slot.capacity.available);
+
       this.showStep('form');
+    }
+
+    // =========================================
+    // WDA-920: CAPACITY WARNING & BADGE
+    // =========================================
+
+    private updateCapacityWarning(availableSpots: number): void {
+      const warning = this.widget.querySelector('.capacity-warning');
+      const warningText = this.widget.querySelector('.capacity-warning-text');
+      const t = this.state.translations;
+
+      if (availableSpots < 3 && availableSpots > 0) {
+        if (warningText) {
+          warningText.textContent = t.spotsRemaining.replace('{n}', String(availableSpots));
+        }
+        warning?.classList.remove('hidden');
+      } else {
+        warning?.classList.add('hidden');
+      }
+    }
+
+    private updateCapacityBadge(availableSpots: number): void {
+      const badge = this.widget.querySelector('.slot-capacity-badge');
+      const badgeText = this.widget.querySelector('.capacity-badge-text');
+      const t = this.state.translations;
+
+      if (badgeText) {
+        badgeText.textContent = t.spotsAvailableText.replace('{n}', String(availableSpots));
+      }
+
+      // Remove all color classes
+      badge?.classList.remove('green', 'yellow', 'red');
+
+      // Add appropriate color class
+      if (availableSpots > 3) {
+        badge?.classList.add('green');
+      } else if (availableSpots >= 2) {
+        badge?.classList.add('yellow');
+      } else if (availableSpots === 1) {
+        badge?.classList.add('red');
+      }
+
+      badge?.classList.remove('hidden');
     }
 
     // =========================================
@@ -2191,6 +2466,10 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       this.updateAddAttendeeButton();
       this.updateHiddenAttendeesField();
       this.updateSubmitButton();
+
+      // WDA-922: A11Y announcement
+      const t = translations.a11y || translations;
+      this.announce(t.attendeeAdded.replace('{n}', String(this.state.attendeeCount)));
     }
 
     private removeAttendee(index: number): void {
@@ -2202,6 +2481,25 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         this.updateAddAttendeeButton();
         this.updateHiddenAttendeesField();
         this.updateSubmitButton();
+
+        // WDA-922: A11Y announcement
+        const t = this.state.translations.a11y || this.state.translations;
+        this.announce(t.attendeeRemoved);
+      }
+    }
+
+    // =========================================
+    // WDA-922: A11Y ANNOUNCEMENTS
+    // =========================================
+
+    private announce(message: string): void {
+      const announcer = this.widget.querySelector(`#booking-announcements-${this.widget.id}`);
+      if (announcer) {
+        announcer.textContent = message;
+        // Clear after announcement
+        setTimeout(() => {
+          announcer.textContent = '';
+        }, 1000);
       }
     }
 
@@ -2214,8 +2512,22 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
 
     private updateAddAttendeeButton(): void {
       const addBtn = this.widget.querySelector('[data-action="add-attendee"]') as HTMLButtonElement;
+      const hint = this.widget.querySelector('.add-attendee-disabled-hint');
+      const t = this.state.translations;
+
       if (addBtn) {
-        addBtn.disabled = this.state.attendeeCount >= this.state.maxCapacity;
+        const isDisabled = this.state.attendeeCount >= this.state.maxCapacity;
+        addBtn.disabled = isDisabled;
+
+        // WDA-920: Update tooltip with capacity message
+        if (hint && isDisabled) {
+          hint.textContent = t.capacityReached
+            .replace('{current}', String(this.state.attendeeCount))
+            .replace('{max}', String(this.state.maxCapacity));
+          hint.classList.remove('hidden');
+        } else {
+          hint?.classList.add('hidden');
+        }
       }
     }
 
@@ -2324,6 +2636,11 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         if (result.success) {
           this.showConfirmation(result);
         } else {
+          // WDA-921: Check for rate limit error
+          if (this.isRateLimitError(result.error || '')) {
+            this.handleRateLimit();
+          }
+
           if (errorText) {
             // WDA-912: Translate backend error messages to current locale
             errorText.textContent = this.translateError(result.error || '');
@@ -2332,6 +2649,13 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         }
       } catch (error) {
         console.error('[BookingWidget] Submit error:', error);
+
+        // WDA-921: Check if error is rate limit related
+        const errorMessage = (error as Error).message || '';
+        if (this.isRateLimitError(errorMessage)) {
+          this.handleRateLimit();
+        }
+
         if (errorText) {
           errorText.textContent = this.state.translations.errorGeneric;
         }
@@ -2340,6 +2664,77 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         submitBtn.disabled = false;
         submitBtn.classList.remove('submitting');
       }
+    }
+
+    // =========================================
+    // WDA-921: RATE LIMITING
+    // =========================================
+
+    private isRateLimitError(errorMessage: string): boolean {
+      return /rate.?limit|too many.*(?:attempts|booking|requests)|429/i.test(errorMessage);
+    }
+
+    private handleRateLimit(): void {
+      // Backend bloquea por 15 minutos (900 segundos)
+      this.state.rateLimitUntil = Date.now() + (15 * 60 * 1000);
+      this.state.rateLimitCountdown = 900;
+      this.startRateLimitCountdown();
+      this.disableSubmitButton();
+    }
+
+    private startRateLimitCountdown(): void {
+      const countdownInterval = setInterval(() => {
+        if (!this.state.rateLimitUntil) {
+          clearInterval(countdownInterval);
+          return;
+        }
+
+        const remaining = Math.ceil((this.state.rateLimitUntil - Date.now()) / 1000);
+
+        if (remaining <= 0) {
+          clearInterval(countdownInterval);
+          this.state.rateLimitUntil = null;
+          this.state.rateLimitCountdown = 0;
+          this.enableSubmitButton();
+          this.updateRateLimitDisplay();
+        } else {
+          this.state.rateLimitCountdown = remaining;
+          this.updateRateLimitDisplay();
+        }
+      }, 1000);
+    }
+
+    private updateRateLimitDisplay(): void {
+      const display = this.widget.querySelector('.rate-limit-message');
+      if (!display) return;
+
+      if (this.state.rateLimitCountdown > 0) {
+        const minutes = Math.floor(this.state.rateLimitCountdown / 60);
+        const seconds = this.state.rateLimitCountdown % 60;
+        const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        const t = this.state.translations;
+        display.textContent = t.rateLimitMessage.replace('{time}', timeStr);
+        display.classList.remove('hidden');
+      } else {
+        display.classList.add('hidden');
+      }
+    }
+
+    private disableSubmitButton(): void {
+      const submitBtn = this.widget.querySelector('.submit-button') as HTMLButtonElement;
+      if (submitBtn) {
+        submitBtn.disabled = true;
+      }
+    }
+
+    private enableSubmitButton(): void {
+      const submitBtn = this.widget.querySelector('.submit-button') as HTMLButtonElement;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+      }
+      // Re-validate to ensure button state is correct
+      this.updateSubmitButton();
     }
 
     private validateForm(form: HTMLFormElement): boolean {
@@ -2507,12 +2902,23 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
 
       this.widget.querySelectorAll('.progress-step').forEach((el, i) => {
         el.classList.remove('active', 'completed');
+        // WDA-922: Update aria-current
+        el.removeAttribute('aria-current');
         if (i < currentIndex) {
           el.classList.add('completed');
         } else if (i === currentIndex) {
           el.classList.add('active');
+          el.setAttribute('aria-current', 'step');
         }
       });
+
+      // WDA-922: Focus management
+      setTimeout(() => {
+        if (targetStep) {
+          const focusable = targetStep.querySelector('input, button:not([disabled]), select, textarea') as HTMLElement;
+          focusable?.focus();
+        }
+      }, 100);
     }
 
     private resetWidget(): void {

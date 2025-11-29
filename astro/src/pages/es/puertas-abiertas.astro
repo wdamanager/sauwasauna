@@ -10,6 +10,7 @@ import NavbarScroll from '../../components/NavbarScroll.astro';
 import FooterBlack from '../../components/layout/FooterBlack.astro';
 import SessionHero from '../../components/booking/SessionHero.astro';
 import BookingWidget from '../../components/booking/BookingWidget.astro';
+import CollaboratorsSection from '../../components/booking/CollaboratorsSection.astro';
 import { getBookingContent } from '../../lib/i18n/booking';
 import { BOOKING_CONFIG } from '../../lib/booking/config';
 import { fetchSessionServer } from '../../lib/booking/api';
@@ -36,6 +37,24 @@ const sessionSubtitle = session?.sessionDetails?.subtitulo ?? content.hero.subti
 // Featured image from WordPress or fallback
 const fallbackImage = '/images/sauwa-sauna-puertas-abiertas-hero.webp';
 const backgroundImage = session?.featuredImage?.node?.sourceUrl ?? fallbackImage;
+
+// Partner from WordPress (ubicación del evento)
+const partnerData = session?.sessionDetails?.partner?.edges?.[0]?.node;
+const partner = partnerData ? {
+  name: partnerData.title,
+  slug: partnerData.slug,
+  logo: partnerData.featuredImage?.node?.sourceUrl,
+  url: partnerData.partnerInformation?.partnerWeb ?? undefined,
+} : null;
+
+// Sponsors (hardcoded for now - will come from API in future)
+const sponsors = [
+  {
+    name: 'Aneto Natural',
+    logo: '/images/sponsors/aneto-patrocinador-sauwa.jpg',
+    url: 'https://www.caldoaneto.com/es',
+  },
+];
 ---
 
 <Layout title={seoTitle} description={seoDescription} lang={locale} pageType="booking">
@@ -49,6 +68,7 @@ const backgroundImage = session?.featuredImage?.node?.sourceUrl ?? fallbackImage
       duration={duration}
       capacity={capacity}
       price={price}
+      location={partner?.name}
       ctaText={content.hero.ctaText}
       ctaHref="#reserva"
       backgroundImage={backgroundImage}
@@ -109,7 +129,14 @@ const backgroundImage = session?.featuredImage?.node?.sourceUrl ?? fallbackImage
       </div>
     </section>
 
-    <!-- FAQ Section -->
+    <!-- Collaborators Section (Partner + Sponsors) -->
+    <CollaboratorsSection
+      partner={partner}
+      sponsors={sponsors}
+      locale={locale}
+    />
+
+    <!-- FAQ Section (hidden for now)
     <section class="section section--bg-white">
       <div class="container container--narrow">
         <header class="section-header section-header--center">
@@ -145,6 +172,7 @@ const backgroundImage = session?.featuredImage?.node?.sourceUrl ?? fallbackImage
         </div>
       </div>
     </section>
+    -->
   </main>
 
   <FooterBlack locale={locale} />

@@ -1,0 +1,226 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - navigation "Navigation" [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - link "Switch to CA" [ref=e5] [cursor=pointer]:
+          - /url: /ca/puertas-abiertas/
+          - text: CA
+        - generic [ref=e6]: /
+        - link "Switch to ES" [ref=e7] [cursor=pointer]:
+          - /url: /es/puertas-abiertas/
+          - text: ES
+        - generic [ref=e8]: /
+        - link "Switch to FR" [ref=e9] [cursor=pointer]:
+          - /url: /fr/puertas-abiertas/
+          - text: FR
+        - generic [ref=e10]: /
+        - link "Switch to EN" [ref=e11] [cursor=pointer]:
+          - /url: /en/puertas-abiertas/
+          - text: EN
+      - link "SAUWA Home" [ref=e12] [cursor=pointer]:
+        - /url: /es/
+        - img "SAUWA" [ref=e13] [cursor=pointer]
+      - generic [ref=e14]:
+        - link "Follow us on Instagram" [ref=e15] [cursor=pointer]:
+          - /url: https://www.instagram.com/sauwa.sauna/
+          - img [ref=e16] [cursor=pointer]
+        - button "Menu" [ref=e18] [cursor=pointer]
+  - navigation "Navigation" [ref=e22]:
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - link "Switch to CA" [ref=e25] [cursor=pointer]:
+          - /url: /ca/puertas-abiertas/
+          - text: CA
+        - generic [ref=e26]: /
+        - link "Switch to ES" [ref=e27] [cursor=pointer]:
+          - /url: /es/puertas-abiertas/
+          - text: ES
+        - generic [ref=e28]: /
+        - link "Switch to FR" [ref=e29] [cursor=pointer]:
+          - /url: /fr/puertas-abiertas/
+          - text: FR
+        - generic [ref=e30]: /
+        - link "Switch to EN" [ref=e31] [cursor=pointer]:
+          - /url: /en/puertas-abiertas/
+          - text: EN
+      - link "SAUWA Home" [ref=e32] [cursor=pointer]:
+        - /url: /es/
+        - img "SAUWA" [ref=e33] [cursor=pointer]
+      - generic [ref=e34]:
+        - link "Follow us on Instagram" [ref=e35] [cursor=pointer]:
+          - /url: https://www.instagram.com/sauwa.sauna/
+          - img [ref=e36] [cursor=pointer]
+        - button "Menu" [ref=e38] [cursor=pointer]
+  - main [ref=e42]:
+    - generic [ref=e43]:
+      - generic [ref=e46]:
+        - heading "Evento Exclusivo" [level=1] [ref=e47]
+        - heading "Jornadas de puertas abiertas" [level=2] [ref=e48]
+        - paragraph [ref=e49]: Descubre el contraste térmico en el corazón de la montaña.
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - img [ref=e52]
+            - generic [ref=e55]:
+              - generic [ref=e56]: Duración
+              - generic [ref=e57]: 60 minutos
+          - generic [ref=e58]:
+            - img [ref=e59]
+            - generic [ref=e64]:
+              - generic [ref=e65]: Capacidad máxima
+              - generic [ref=e66]: 6 personas
+          - generic [ref=e67]:
+            - img [ref=e68]
+            - generic [ref=e70]:
+              - generic [ref=e71]: Precio
+              - generic [ref=e72]: Gratuito
+      - link "Reservar plaza" [ref=e73] [cursor=pointer]:
+        - /url: "#reserva"
+        - generic [ref=e74] [cursor=pointer]: Reservar plaza
+        - img [ref=e75] [cursor=pointer]
+    - generic [ref=e78]:
+      - generic [ref=e79]:
+        - heading "Sobre el evento" [level=2] [ref=e80]
+        - heading "Tu primera experiencia SAUWA" [level=3] [ref=e81]
+      - generic [ref=e82]:
+        - paragraph [ref=e83]: ¿Has oído hablar del poder del contraste? Te invitamos a vivirlo en primera persona.
+        - paragraph [ref=e84]: En estas jornadas especiales, te abrimos las puertas de nuestro refugio en el Coma Bella para que experimentes la magia del contraste térmico de la manera más segura y acogedora. No necesitas experiencia previa, solo ganas de parar y sentir.
+        - paragraph [ref=e85]: ¿Qué vivirás en esta pausa de 60 minutos?
+        - paragraph [ref=e86]: "Diseñado para grupos íntimos (de 2 a 6 personas), este ritual guiado por nuestro equipo te llevará a través de un viaje sensorial:"
+        - list [ref=e87]:
+          - listitem [ref=e88]:
+            - img [ref=e89]
+            - generic [ref=e91]: "Doble ciclo de calor profundo: Deja que la sauna finlandesa de leña deshaga las tensiones y el vapor te abrace."
+          - listitem [ref=e92]:
+            - img [ref=e93]
+            - generic [ref=e95]: "Vitalidad natural: Despierta tu energía con dos momentos de frescor en nuestra piscina exterior, rodeada de árboles y aire puro."
+          - listitem [ref=e96]:
+            - img [ref=e97]
+            - generic [ref=e99]: "Calma e integración: Cerraremos la experiencia con 20 minutos de reposo absoluto, con un Glühwein (vino caliente) o un caldo reconfortante en las manos para calentar el alma."
+    - generic [ref=e101]:
+      - generic [ref=e102]:
+        - heading "Reserva tu plaza" [level=2] [ref=e103]
+        - heading "Las plazas son limitadas. Selecciona fecha y horario." [level=3] [ref=e104]
+      - generic [ref=e105]:
+        - generic [ref=e106]:
+          - button "1 Selecciona una fecha" [ref=e107]:
+            - generic [ref=e108]: "1"
+            - generic [ref=e109]: Selecciona una fecha
+          - button "2 Elige un horario" [ref=e111]:
+            - generic [ref=e112]: "2"
+            - generic [ref=e113]: Elige un horario
+          - button "3 Tus datos" [ref=e115]:
+            - generic [ref=e116]: "3"
+            - generic [ref=e117]: Tus datos
+          - button "4 Reserva confirmada" [disabled] [ref=e119]:
+            - generic [ref=e120]: "4"
+            - generic [ref=e121]: Reserva confirmada
+        - generic [ref=e122]:
+          - heading "Selecciona una fecha" [level=3] [ref=e124]
+          - generic [ref=e125]:
+            - generic [ref=e126]:
+              - button "Mes anterior" [disabled] [ref=e127]:
+                - img [ref=e128]
+              - generic [ref=e130]: Noviembre 2025
+              - button "Mes siguiente" [ref=e131] [cursor=pointer]:
+                - img [ref=e132] [cursor=pointer]
+            - generic [ref=e134]:
+              - generic [ref=e135]: Lun
+              - generic [ref=e136]: Mar
+              - generic [ref=e137]: Mié
+              - generic [ref=e138]: Jue
+              - generic [ref=e139]: Vie
+              - generic [ref=e140]: Sáb
+              - generic [ref=e141]: Dom
+            - generic [ref=e142]:
+              - button [disabled] [ref=e143]
+              - button [disabled] [ref=e144]
+              - button [disabled] [ref=e145]
+              - button [disabled] [ref=e146]
+              - button [disabled] [ref=e147]
+              - button "1" [disabled] [ref=e148]
+              - button "2" [disabled] [ref=e149]
+              - button "3" [disabled] [ref=e150]
+              - button "4" [disabled] [ref=e151]
+              - button "5" [disabled] [ref=e152]
+              - button "6" [disabled] [ref=e153]
+              - button "7" [disabled] [ref=e154]
+              - button "8" [disabled] [ref=e155]
+              - button "9" [disabled] [ref=e156]
+              - button "10" [disabled] [ref=e157]
+              - button "11" [disabled] [ref=e158]
+              - button "12" [disabled] [ref=e159]
+              - button "13" [disabled] [ref=e160]
+              - button "14" [disabled] [ref=e161]
+              - button "15" [disabled] [ref=e162]
+              - button "16" [disabled] [ref=e163]
+              - button "17" [disabled] [ref=e164]
+              - button "18" [disabled] [ref=e165]
+              - button "19" [disabled] [ref=e166]
+              - button "20" [disabled] [ref=e167]
+              - button "21" [disabled] [ref=e168]
+              - button "22" [disabled] [ref=e169]
+              - button "23" [disabled] [ref=e170]
+              - button "24" [disabled] [ref=e171]
+              - button "25" [disabled] [ref=e172]
+              - button "26" [disabled] [ref=e173]
+              - button "27" [disabled] [ref=e174]
+              - button "28" [disabled] [ref=e175]
+              - button "29" [disabled] [ref=e176]
+              - button "30" [disabled] [ref=e177]
+    - generic [ref=e179]:
+      - generic [ref=e180]:
+        - heading "Preguntas frecuentes" [level=2] [ref=e181]
+        - heading "Todo lo que necesitas saber" [level=3] [ref=e182]
+      - generic [ref=e183]:
+        - group [ref=e184]:
+          - generic "¿Qué debo traer a la sesión?" [ref=e185] [cursor=pointer]:
+            - generic [ref=e186] [cursor=pointer]: ¿Qué debo traer a la sesión?
+            - img [ref=e187] [cursor=pointer]
+          - paragraph [ref=e189]: Te recomendamos traer bañador, toalla y chanclas. Nosotros proporcionamos toallas adicionales si las necesitas.
+        - group [ref=e190]:
+          - generic "¿Es apta para principiantes?" [ref=e191] [cursor=pointer]:
+            - generic [ref=e192] [cursor=pointer]: ¿Es apta para principiantes?
+            - img [ref=e193] [cursor=pointer]
+        - group [ref=e195]:
+          - generic "¿Cuántas personas pueden asistir?" [ref=e196] [cursor=pointer]:
+            - generic [ref=e197] [cursor=pointer]: ¿Cuántas personas pueden asistir?
+            - img [ref=e198] [cursor=pointer]
+        - group [ref=e200]:
+          - generic "¿Puedo cancelar mi reserva?" [ref=e201] [cursor=pointer]:
+            - generic [ref=e202] [cursor=pointer]: ¿Puedo cancelar mi reserva?
+            - img [ref=e203] [cursor=pointer]
+        - group [ref=e205]:
+          - generic "¿Hay restricciones de salud?" [ref=e206] [cursor=pointer]:
+            - generic [ref=e207] [cursor=pointer]: ¿Hay restricciones de salud?
+            - img [ref=e208] [cursor=pointer]
+  - contentinfo [ref=e210]:
+    - generic [ref=e211]:
+      - generic [ref=e212]:
+        - img "SAUWA" [ref=e213]
+        - paragraph [ref=e214]: La auténtica experiencia de sauna finlandesa en Andorra
+      - generic [ref=e215]:
+        - heading "CONTACTO" [level=3] [ref=e216]
+        - link "info@sauwasauna.com" [ref=e218] [cursor=pointer]:
+          - /url: mailto:info@sauwasauna.com
+          - img [ref=e219] [cursor=pointer]
+          - text: info@sauwasauna.com
+        - generic [ref=e222]:
+          - paragraph [ref=e223]: Síguenos
+          - link "Instagram" [ref=e225] [cursor=pointer]:
+            - /url: https://www.instagram.com/sauwa.sauna/
+            - img [ref=e226] [cursor=pointer]
+    - generic [ref=e229]:
+      - paragraph [ref=e230]: © 2025 SAUWA - PCR Europe, S.L. Todos los derechos reservados.
+      - navigation "Legal navigation" [ref=e231]:
+        - link "Política de Privacidad" [ref=e232] [cursor=pointer]:
+          - /url: /es/politica-de-privacidad/
+        - generic [ref=e233]: ·
+        - link "Política de Cookies" [ref=e234] [cursor=pointer]:
+          - /url: /es/politica-de-cookies/
+        - generic [ref=e235]: ·
+        - link "Aviso Legal" [ref=e236] [cursor=pointer]:
+          - /url: /es/aviso-legal/
+```

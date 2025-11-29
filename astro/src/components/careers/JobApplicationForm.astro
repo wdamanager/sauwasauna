@@ -735,49 +735,82 @@ const { locale, title, subtitle } = Astro.props;
     }
 
     private async submitToBackend(formData: FormData): Promise<void> {
-      // Simulate API call (replace with real GraphQL mutation)
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          console.log('Form data:', Object.fromEntries(formData));
-          resolve();
-        }, 1500);
-      });
+      const GRAPHQL_URL = 'https://backend.sauwasauna.com/graphql';
 
-      /* GraphQL mutation example (implement when backend ready):
+      // GraphQL mutation for job application submission
       const mutation = `
-        mutation CreateJobApplication($input: JobApplicationInput!) {
-          createJobApplication(input: $input) {
-            id
+        mutation SubmitJobApplication($input: SubmitContactFormInput!) {
+          submitContactForm(input: $input) {
             success
             message
+            submissionId
           }
         }
       `;
 
+      // Get CV filename (file upload field)
+      const cvFile = formData.get('cv') as File;
+      const cvFileName = cvFile?.name || 'No CV attached';
+
+      // Build detailed message with all job application data
+      const name = formData.get('name') as string;
+      const surname = formData.get('surname') as string;
+      const age = formData.get('age') as string;
+      const motivation = formData.get('motivation') as string;
+
+      const detailedMessage = `SOLICITUD DE EMPLEO - SAUNA MASTER
+
+Nombre completo: ${name} ${surname}
+Edad: ${age} años
+Teléfono: ${formData.get('phone')}
+CV adjunto: ${cvFileName}
+
+MOTIVACIÓN:
+${motivation}
+
+---
+Formulario enviado desde: ${window.location.href}`;
+
       const variables = {
         input: {
-          name: formData.get('name'),
-          surname: formData.get('surname'),
-          email: formData.get('email'),
-          phone: formData.get('phone'),
-          age: parseInt(formData.get('age') as string),
-          motivation: formData.get('motivation'),
-          locale: this.locale,
-          cv: formData.get('cv'), // Handle file upload separately
-        }
+          formId: 126, // Job Application form ID
+          name: `${name} ${surname}`,
+          email: formData.get('email') as string,
+          phone: formData.get('phone') as string,
+          message: detailedMessage,
+          newsletter: true, // Subscribe to HR newsletter (Mailrelay group)
+          gdprConsent: true, // Already validated in form
+          language: this.locale, // es, ca, en, or fr
+        },
       };
 
-      const response = await fetch('/graphql', {
+      const response = await fetch(GRAPHQL_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: mutation, variables }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: mutation,
+          variables,
+        }),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const result = await response.json();
+
       if (result.errors) {
+        console.error('GraphQL errors:', result.errors);
         throw new Error(result.errors[0].message);
       }
-      */
+
+      if (!result.data?.submitContactForm?.success) {
+        throw new Error(result.data?.submitContactForm?.message || 'Submission failed');
+      }
+
+      return result.data;
     }
 
     private showMessage(type: 'success' | 'error'): void {

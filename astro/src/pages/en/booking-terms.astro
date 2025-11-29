@@ -1,0 +1,38 @@
+---
+/**
+ * Safety and Booking Terms EN - SAUWA
+ * Dynamic loading from WordPress with Polylang
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import NavbarNoHero from '../../components/NavbarNoHero.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
+import HreflangMeta from '../../components/seo/HreflangMeta.astro';
+import LegalPageClient from '../../components/legal/LegalPageClient.astro';
+import { LEGAL_PAGE_IDS } from '../../lib/wordpress/polylang-client.js';
+import { getHreflangPaths } from '../../lib/wordpress/legal-slugs.js';
+
+const lang = 'en';
+const title = 'Safety and Booking Terms | SAUWA';
+const description = 'Safety and booking terms for SAUWA reservations. Information about health requirements, usage rules and booking conditions.';
+---
+
+<Layout title={title} description={description} lang={lang} navbar="none">
+  <HreflangMeta customPaths={getHreflangPaths('CONDICIONES_CONTRATACION')} slot="head" />
+
+  <NavbarNoHero locale={lang} />
+
+  <main class="legal-page">
+    <LegalPageClient
+      pageId={LEGAL_PAGE_IDS.CONDICIONES_CONTRATACION}
+      pageType="booking-terms"
+      lang="EN"
+      loadingText="Loading content..."
+      errorTitle="Error loading content"
+      errorMessage="Could not load the terms. Please try again."
+      retryText="Retry"
+    />
+  </main>
+
+  <FooterBlack locale={lang} />
+</Layout>

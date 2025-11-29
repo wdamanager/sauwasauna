@@ -765,13 +765,88 @@ const { locale, title, subtitle } = Astro.props;
     }
 
     private async submitToBackend(formData: FormData): Promise<void> {
-      // Simulate API call (replace with real GraphQL mutation)
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          console.log('Partner form data:', Object.fromEntries(formData));
-          resolve();
-        }, 1500);
+      const GRAPHQL_URL = 'https://backend.sauwasauna.com/graphql';
+
+      // GraphQL mutation for partner application submission
+      const mutation = `
+        mutation SubmitPartnerApplication($input: SubmitContactFormInput!) {
+          submitContactForm(input: $input) {
+            success
+            message
+            submissionId
+          }
+        }
+      `;
+
+      // Build detailed message with all partner application data
+      const establishmentName = formData.get('establishmentName') as string;
+      const propertyType = formData.get('propertyType') as string;
+      const address = formData.get('address') as string;
+      const website = formData.get('website') as string;
+      const contactName = formData.get('contactName') as string;
+      const contactPosition = formData.get('contactPosition') as string;
+      const motivation = formData.get('motivation') as string;
+
+      const detailedMessage = `SOLICITUD DE PARTNERSHIP B2B
+
+DATOS DEL ESTABLECIMIENTO:
+Nombre: ${establishmentName}
+Tipo de propiedad: ${propertyType}
+Dirección: ${address}
+Sitio web: ${website}
+
+PERSONA DE CONTACTO:
+Nombre: ${contactName}
+Cargo: ${contactPosition}
+Teléfono: ${formData.get('phone')}
+Email: ${formData.get('email')}
+
+MOTIVACIÓN PARA COLABORAR:
+${motivation}
+
+---
+Formulario enviado desde: ${window.location.href}`;
+
+      const variables = {
+        input: {
+          formId: 128, // Partner Application form ID
+          name: contactName,
+          email: formData.get('email') as string,
+          phone: formData.get('phone') as string,
+          message: detailedMessage,
+          newsletter: true, // Subscribe to Partners newsletter (Mailrelay group)
+          gdprConsent: true, // Already validated in form
+          language: this.locale, // es, ca, en, or fr
+        },
+      };
+
+      const response = await fetch(GRAPHQL_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: mutation,
+          variables,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.errors) {
+        console.error('GraphQL errors:', result.errors);
+        throw new Error(result.errors[0].message);
+      }
+
+      if (!result.data?.submitContactForm?.success) {
+        throw new Error(result.data?.submitContactForm?.message || 'Submission failed');
+      }
+
+      return result.data;
     }
 
     private showMessage(type: 'success' | 'error'): void {

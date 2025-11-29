@@ -31,6 +31,12 @@ export const LEGAL_SLUGS = {
     ca: 'politica-de-privacitat',
     en: 'privacy-policy',
     fr: 'politique-de-confidentialite'
+  },
+  CONDICIONES_CONTRATACION: {
+    es: 'condiciones-contratacion',
+    ca: 'condicions-contractacio',
+    en: 'booking-terms',
+    fr: 'conditions-reservation'
   }
 };
 
@@ -40,7 +46,8 @@ export const LEGAL_SLUGS = {
 export const LEGAL_PAGE_TYPES = {
   AVISO_LEGAL: 'AVISO_LEGAL',
   POLITICA_COOKIES: 'POLITICA_COOKIES',
-  POLITICA_PRIVACIDAD: 'POLITICA_PRIVACIDAD'
+  POLITICA_PRIVACIDAD: 'POLITICA_PRIVACIDAD',
+  CONDICIONES_CONTRATACION: 'CONDICIONES_CONTRATACION'
 };
 
 /**

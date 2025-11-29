@@ -18,6 +18,8 @@ export type {
   Locale,
   SaunaSession,
   SessionDetails,
+  SessionPartner,
+  PartnerConnection,
   SessionResponse,
   // Availability
   DateAvailability,

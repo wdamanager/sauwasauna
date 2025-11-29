@@ -39,6 +39,26 @@ export const BOOKING_QUERIES = {
           sessionPrice
           sessionDescription
           subtitulo
+          partner {
+            edges {
+              node {
+                ... on Partner {
+                  databaseId
+                  title
+                  slug
+                  partnerInformation {
+                    partnerWeb
+                  }
+                  featuredImage {
+                    node {
+                      sourceUrl
+                      altText
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

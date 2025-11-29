@@ -18,7 +18,8 @@ export interface Props {
   subtitle?: string;
   duration?: number; // Minutes
   capacity?: number;
-  price?: number | null; // Cents, null for free
+  price?: number | null; // Euros, null for free
+  location?: string; // Partner/venue name
   ctaText: string;
   ctaHref?: string;
   backgroundImage: string;
@@ -33,6 +34,7 @@ const {
   duration,
   capacity,
   price,
+  location,
   ctaText,
   ctaHref = '#reserva',
   backgroundImage,
@@ -50,6 +52,7 @@ const translations = {
     price: 'Precio',
     free: 'Gratuito',
     perPerson: 'por persona',
+    location: 'Ubicación',
   },
   ca: {
     duration: 'Durada',
@@ -59,6 +62,7 @@ const translations = {
     price: 'Preu',
     free: 'Gratuït',
     perPerson: 'per persona',
+    location: 'Ubicació',
   },
   en: {
     duration: 'Duration',
@@ -68,6 +72,7 @@ const translations = {
     price: 'Price',
     free: 'Free',
     perPerson: 'per person',
+    location: 'Location',
   },
   fr: {
     duration: 'Durée',
@@ -77,21 +82,21 @@ const translations = {
     price: 'Prix',
     free: 'Gratuit',
     perPerson: 'par personne',
+    location: 'Lieu',
   },
 };
 
 const t = translations[locale];
 
-// Format price
-const formatPrice = (cents: number | null | undefined): string => {
-  if (cents === null || cents === undefined || cents === 0) {
+// Format price (value comes in euros from WordPress)
+const formatPrice = (euros: number | null | undefined): string => {
+  if (euros === null || euros === undefined || euros === 0) {
     return t.free;
   }
-  const euros = cents / 100;
   return `${euros.toFixed(2).replace('.', ',')}€ ${t.perPerson}`;
 };
 
-const showDetails = duration || capacity || price !== undefined;
+const showDetails = duration || capacity || price !== undefined || location;
 ---
 
 <section class="session-hero" data-session-id={sessionId}>
@@ -142,6 +147,18 @@ const showDetails = duration || capacity || price !== undefined;
             <div class="detail-content">
               <span class="detail-label">{t.price}</span>
               <span class="detail-value highlight">{formatPrice(price)}</span>
+            </div>
+          </div>
+        )}
+        {location && (
+          <div class="session-hero__detail">
+            <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <div class="detail-content">
+              <span class="detail-label">{t.location}</span>
+              <span class="detail-value">{location}</span>
             </div>
           </div>
         )}

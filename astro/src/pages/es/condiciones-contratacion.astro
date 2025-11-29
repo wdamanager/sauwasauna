@@ -1,0 +1,38 @@
+---
+/**
+ * Condiciones de Seguridad y Contratación ES - SAUWA
+ * Carga dinámica desde WordPress con Polylang
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import NavbarNoHero from '../../components/NavbarNoHero.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
+import HreflangMeta from '../../components/seo/HreflangMeta.astro';
+import LegalPageClient from '../../components/legal/LegalPageClient.astro';
+import { LEGAL_PAGE_IDS } from '../../lib/wordpress/polylang-client.js';
+import { getHreflangPaths } from '../../lib/wordpress/legal-slugs.js';
+
+const lang = 'es';
+const title = 'Condiciones de Seguridad y Contratación | SAUWA';
+const description = 'Condiciones de seguridad y contratación para reservas en SAUWA. Información sobre requisitos de salud, normas de uso y términos de contratación.';
+---
+
+<Layout title={title} description={description} lang={lang} navbar="none">
+  <HreflangMeta customPaths={getHreflangPaths('CONDICIONES_CONTRATACION')} slot="head" />
+
+  <NavbarNoHero locale={lang} />
+
+  <main class="legal-page">
+    <LegalPageClient
+      pageId={LEGAL_PAGE_IDS.CONDICIONES_CONTRATACION}
+      pageType="condiciones-contratacion"
+      lang="ES"
+      loadingText="Cargando contenido..."
+      errorTitle="Error al cargar el contenido"
+      errorMessage="No se pudieron cargar las condiciones. Por favor, intenta nuevamente."
+      retryText="Reintentar"
+    />
+  </main>
+
+  <FooterBlack locale={lang} />
+</Layout>

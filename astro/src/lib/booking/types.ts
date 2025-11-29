@@ -40,17 +40,44 @@ export interface SaunaSession {
   sessionDetails: SessionDetails;
 }
 
+/**
+ * Partner information ACF field group
+ */
+export interface PartnerInformation {
+  partnerWeb?: string | null;
+}
+
+export interface SessionPartner {
+  databaseId: number;
+  title: string;
+  slug: string;
+  partnerInformation?: PartnerInformation | null;
+  featuredImage?: FeaturedImage | null;
+}
+
+/**
+ * Partner connection structure from GraphQL
+ * ACF post_object returns edges/nodes connection
+ */
+export interface PartnerConnection {
+  edges: Array<{
+    node: SessionPartner;
+  }>;
+}
+
 export interface SessionDetails {
   /** Duration in minutes */
   sessionDuration: number;
   /** Maximum capacity per slot */
   sessionCapacity: number;
-  /** Price in cents (0 for free events, null if not set) */
+  /** Price in euros (0 for free events, null if not set) */
   sessionPrice: number | null;
   /** Optional description */
   sessionDescription: string | null;
   /** Subtitle for hero section */
   subtitulo: string | null;
+  /** Partner hosting this session (GraphQL connection) */
+  partner: PartnerConnection | null;
 }
 
 /**

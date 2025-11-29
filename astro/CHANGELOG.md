@@ -8,11 +8,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### To Do
-- Sistema de reservas inteligente
 - Integración con pasarela de pago (Stripe/Redsys)
 - Check-in digital con QR
 - Asistente IA 24/7
 - Panel de gestión completo
+
+### Known Issues (WDA-910, WDA-911, WDA-912, WDA-913)
+- Email de asistentes adicionales debería ser opcional (WDA-910)
+- Cálculo de capacidad no cuenta el contacto principal (WDA-911)
+- Mensajes de error del backend en inglés sin traducir (WDA-912)
+- Contador de asistentes incorrecto en confirmación (WDA-913)
+
+## [0.7.2] - 2025-11-29
+
+### Added
+- **Páginas de Condiciones de Contratación** (4 idiomas):
+  - `/es/condiciones-contratacion/`
+  - `/ca/condicions-contractacio/`
+  - `/en/booking-terms/`
+  - `/fr/conditions-reservation/`
+- **CollaboratorsSection**: Nuevo componente para mostrar sponsors/colaboradores
+- **Imágenes de sponsors**: Nueva carpeta `public/images/sponsors/`
+
+### Fixed
+- **Booking Widget - Slot Selection** (WDA-909):
+  - Slots con status `BELOW_MINIMUM` ahora son clickables (antes se deshabilitaban)
+  - Solo se deshabilitan slots con status `full` o `closed`
+- **Booking Widget - Attendees UI**:
+  - Estilos CSS corregidos para asistentes dinámicos usando `:global()`
+  - Campos de asistente con fondo blanco y tamaño proporcional al formulario
+  - Botón "Eliminar" posicionado correctamente en esquina superior derecha
+  - Responsive mejorado para mobile
+
+### Changed
+- Legal slugs actualizados con nuevas páginas de condiciones de contratación
+- Navbar y MobileMenu actualizados
 
 ## [0.7.1] - 2025-11-28
 

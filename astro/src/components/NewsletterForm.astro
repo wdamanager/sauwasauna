@@ -897,6 +897,7 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
 
       const variables = {
         input: {
+          formId: 85, // Newsletter - Homepage form
           name: data.nombre || 'Newsletter Subscriber',
           email: data.email,
           message: `Newsletter subscription - ${data.source}`,
