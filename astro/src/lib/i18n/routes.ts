@@ -66,6 +66,14 @@ export const ROUTE_TRANSLATIONS: Record<string, Record<Locale, string>> = {
     en: '/privacy-policy/',
     fr: '/politique-de-confidentialite/',
   },
+
+  // Puertas Abiertas / Open Days event page
+  'puertas-abiertas': {
+    es: '/puertas-abiertas/',
+    ca: '/portes-obertes/',
+    en: '/open-days/',
+    fr: '/portes-ouvertes/',
+  },
 };
 
 /**
@@ -113,6 +121,12 @@ export const SLUG_TO_ROUTE: Record<string, string> = {
   '/politica-de-privacitat/': 'politica-privacidad',
   '/privacy-policy/': 'politica-privacidad',
   '/politique-de-confidentialite/': 'politica-privacidad',
+
+  // Puertas Abiertas / Open Days
+  '/puertas-abiertas/': 'puertas-abiertas',
+  '/portes-obertes/': 'puertas-abiertas',
+  '/open-days/': 'puertas-abiertas',
+  '/portes-ouvertes/': 'puertas-abiertas',
 };
 
 /**
