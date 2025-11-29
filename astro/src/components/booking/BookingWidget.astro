@@ -51,6 +51,10 @@ const translations = {
     gdprLabel: 'He leído y acepto la',
     privacyLink: 'política de privacidad',
     privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'es'),
+    termsLabel: 'He leído y acepto las',
+    termsLink: 'condiciones de seguridad y contratación',
+    termsUrl: getLegalUrl('CONDICIONES_CONTRATACION', 'es'),
+    termsRequired: 'Debes aceptar las condiciones de contratación',
     confirm: 'Confirmar reserva',
     changeSlot: 'Cambiar horario',
     // WDA-909: Multi-attendee
@@ -86,6 +90,13 @@ const translations = {
     // Errors
     errorTitle: 'Error al procesar la reserva',
     errorGeneric: 'Ha ocurrido un error. Por favor, inténtalo de nuevo.',
+    errorSpotsLimit: 'Solo quedan {n} plazas disponibles',
+    errorSlotFull: 'Este horario ya está completo',
+    errorSlotClosed: 'Este horario ya no está disponible',
+    errorInvalidDate: 'La fecha seleccionada no es válida',
+    errorSessionExpired: 'Tu sesión ha expirado. Por favor, recarga la página.',
+    errorEmailRequired: 'El email del asistente {n} es obligatorio',
+    errorRateLimit: 'Demasiados intentos. Por favor, espera unos minutos.',
     tryAgain: 'Intentar de nuevo',
   },
   ca: {
@@ -111,6 +122,10 @@ const translations = {
     gdprLabel: 'He llegit i accepto la',
     privacyLink: 'política de privacitat',
     privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'ca'),
+    termsLabel: 'He llegit i accepto les',
+    termsLink: 'condicions de seguretat i contractació',
+    termsUrl: getLegalUrl('CONDICIONES_CONTRATACION', 'ca'),
+    termsRequired: 'Has d\'acceptar les condicions de contractació',
     confirm: 'Confirmar reserva',
     changeSlot: 'Canviar horari',
     attendeeData: 'Dades dels assistents',
@@ -141,6 +156,13 @@ const translations = {
     newBooking: 'Nova reserva',
     errorTitle: 'Error en processar la reserva',
     errorGeneric: 'S\'ha produït un error. Si us plau, torna-ho a intentar.',
+    errorSpotsLimit: 'Només queden {n} places disponibles',
+    errorSlotFull: 'Aquest horari ja està complet',
+    errorSlotClosed: 'Aquest horari ja no està disponible',
+    errorInvalidDate: 'La data seleccionada no és vàlida',
+    errorSessionExpired: 'La teva sessió ha expirat. Si us plau, recarrega la pàgina.',
+    errorEmailRequired: 'L\'email de l\'assistent {n} és obligatori',
+    errorRateLimit: 'Massa intents. Si us plau, espera uns minuts.',
     tryAgain: 'Tornar a intentar',
   },
   en: {
@@ -166,6 +188,10 @@ const translations = {
     gdprLabel: 'I have read and accept the',
     privacyLink: 'privacy policy',
     privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'en'),
+    termsLabel: 'I have read and accept the',
+    termsLink: 'safety and booking terms',
+    termsUrl: getLegalUrl('CONDICIONES_CONTRATACION', 'en'),
+    termsRequired: 'You must accept the booking terms',
     confirm: 'Confirm booking',
     changeSlot: 'Change time',
     attendeeData: 'Attendee details',
@@ -196,6 +222,13 @@ const translations = {
     newBooking: 'New booking',
     errorTitle: 'Error processing booking',
     errorGeneric: 'An error occurred. Please try again.',
+    errorSpotsLimit: 'Only {n} spots available',
+    errorSlotFull: 'This time slot is already full',
+    errorSlotClosed: 'This time slot is no longer available',
+    errorInvalidDate: 'The selected date is not valid',
+    errorSessionExpired: 'Your session has expired. Please reload the page.',
+    errorEmailRequired: 'Attendee {n} email is required',
+    errorRateLimit: 'Too many attempts. Please wait a few minutes.',
     tryAgain: 'Try again',
   },
   fr: {
@@ -221,6 +254,10 @@ const translations = {
     gdprLabel: 'J\'ai lu et j\'accepte la',
     privacyLink: 'politique de confidentialité',
     privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'fr'),
+    termsLabel: 'J\'ai lu et j\'accepte les',
+    termsLink: 'conditions de sécurité et de réservation',
+    termsUrl: getLegalUrl('CONDICIONES_CONTRATACION', 'fr'),
+    termsRequired: 'Vous devez accepter les conditions de réservation',
     confirm: 'Confirmer la réservation',
     changeSlot: 'Changer l\'horaire',
     attendeeData: 'Détails des participants',
@@ -251,6 +288,13 @@ const translations = {
     newBooking: 'Nouvelle réservation',
     errorTitle: 'Erreur lors du traitement de la réservation',
     errorGeneric: 'Une erreur s\'est produite. Veuillez réessayer.',
+    errorSpotsLimit: 'Seulement {n} places disponibles',
+    errorSlotFull: 'Ce créneau est déjà complet',
+    errorSlotClosed: 'Ce créneau n\'est plus disponible',
+    errorInvalidDate: 'La date sélectionnée n\'est pas valide',
+    errorSessionExpired: 'Votre session a expiré. Veuillez recharger la page.',
+    errorEmailRequired: 'L\'email du participant {n} est requis',
+    errorRateLimit: 'Trop de tentatives. Veuillez attendre quelques minutes.',
     tryAgain: 'Réessayer',
   },
 };
@@ -513,6 +557,26 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
           </span>
         </label>
         <span class="form-error hidden">{t.privacyRequired}</span>
+      </div>
+
+      <!-- Terms Consent (Safety & Booking Conditions) -->
+      <div class="form-group privacy-group">
+        <label class="privacy-label">
+          <input
+            type="checkbox"
+            name="terms"
+            required
+            class="privacy-checkbox"
+          />
+          <span class="privacy-text">
+            {t.termsLabel}{' '}
+            <a href={t.termsUrl} class="privacy-link" target="_blank" rel="noopener noreferrer">
+              {t.termsLink}
+            </a>
+            <span class="required">*</span>
+          </span>
+        </label>
+        <span class="form-error hidden">{t.termsRequired}</span>
       </div>
 
       <!-- Submit Button -->
@@ -1142,6 +1206,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     gap: 0.75rem;
   }
 
+  /* Estilos base para attendee-row (el primer asistente está en el HTML) */
   .attendee-row {
     display: flex;
     flex-direction: column;
@@ -1163,6 +1228,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--booking-primary);
+    margin-bottom: 0.25rem;
   }
 
   .attendee-fields {
@@ -1177,37 +1243,89 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
   }
 
   .attendee-row .form-input {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    background: white;
+    border: 1px solid var(--booking-gray-300);
   }
 
-  .attendee-actions {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-  }
+  /* ============================================
+     ESTILOS PARA ASISTENTES DINAMICOS (JS)
+     Usar :global() porque son generados por JS
+     ============================================ */
 
-  .remove-attendee-btn {
+  /* Asistentes adicionales generados por JS */
+  :global(.attendees-list .attendee-row:not(.main-contact)) {
     display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    padding-top: 2.5rem;
+    background: var(--booking-gray-50);
+    border-radius: 8px;
+    position: relative;
+    border: 1px solid var(--booking-gray-200);
+  }
+
+  :global(.attendees-list .attendee-row:not(.main-contact) .attendee-fields) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  :global(.attendees-list .attendee-row:not(.main-contact) .form-input) {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-family: inherit;
+    font-size: 0.9375rem;
+    color: var(--booking-gray-900);
+    background: white;
+    border: 1px solid var(--booking-gray-300);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  :global(.attendees-list .attendee-row:not(.main-contact) .form-input:focus) {
+    outline: none;
+    border-color: var(--booking-primary);
+    box-shadow: 0 0 0 3px rgba(219, 69, 41, 0.15);
+  }
+
+  :global(.attendees-list .attendee-row:not(.main-contact) .form-input::placeholder) {
+    color: var(--booking-gray-400);
+  }
+
+  /* Botón eliminar en esquina superior derecha */
+  :global(.attendees-list .attendee-actions) {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+
+  :global(.attendees-list .remove-attendee-btn) {
+    display: inline-flex;
     align-items: center;
     gap: 0.25rem;
     padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
+    font-family: inherit;
+    font-size: 0.6875rem;
+    font-weight: 500;
     color: var(--booking-error);
-    background: transparent;
-    border: none;
+    background: white;
+    border: 1px solid var(--booking-gray-200);
+    border-radius: 4px;
     cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.2s ease;
+    transition: all 0.2s ease;
   }
 
-  .remove-attendee-btn:hover {
-    opacity: 1;
+  :global(.attendees-list .remove-attendee-btn:hover) {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--booking-error);
   }
 
-  .remove-attendee-btn svg {
-    width: 14px;
-    height: 14px;
+  :global(.attendees-list .remove-attendee-btn svg) {
+    width: 12px;
+    height: 12px;
   }
 
   .add-attendee-btn {
@@ -1555,6 +1673,21 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     .attendee-row {
       padding: 0.875rem;
     }
+
+    /* Asistentes dinámicos en mobile */
+    :global(.attendees-list .attendee-row:not(.main-contact)) {
+      padding: 0.875rem;
+      padding-top: 2.25rem;
+    }
+
+    :global(.attendees-list .attendee-row:not(.main-contact) .attendee-fields) {
+      grid-template-columns: 1fr;
+    }
+
+    :global(.attendees-list .attendee-actions) {
+      top: 0.375rem;
+      right: 0.375rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1901,7 +2034,9 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
 
       daySlots.forEach((slot, index) => {
         const slotStatus = slot.status.toLowerCase();
-        const isDisabled = !slot.bookable || slotStatus !== 'available';
+        // A slot is disabled if not bookable OR if status is 'full' or 'closed'
+        // 'available' and 'below_minimum' are both bookable states
+        const isDisabled = !slot.bookable || slotStatus === 'full' || slotStatus === 'closed';
         const isSelected = this.state.selectedSlot?.startTime === slot.startTime;
         const capacityColor = getCapacityColor(slot.capacity);
 
@@ -1976,6 +2111,13 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       this.state.maxCapacity = maxAvailable;
       this.state.attendeeCount = 1;
 
+      // WDA-911: Clear any existing additional attendees (keep only main contact)
+      const list = this.widget.querySelector('.attendees-list');
+      if (list) {
+        const additionalAttendees = list.querySelectorAll('.attendee-row:not(.main-contact)');
+        additionalAttendees.forEach(row => row.remove());
+      }
+
       // Update max attendees display
       const maxEl = this.widget.querySelector('.max-attendees');
       if (maxEl) maxEl.textContent = String(maxAvailable);
@@ -1983,9 +2125,14 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       // Update count display
       this.updateAttendeesCount();
 
-      // Bind add attendee button
+      // WDA-911: Bind add attendee button (only once using bound handler)
       const addBtn = this.widget.querySelector('[data-action="add-attendee"]') as HTMLButtonElement;
-      addBtn?.addEventListener('click', () => this.addAttendee());
+      if (addBtn) {
+        // Remove any existing listener by cloning the button
+        const newBtn = addBtn.cloneNode(true) as HTMLButtonElement;
+        addBtn.parentNode?.replaceChild(newBtn, addBtn);
+        newBtn.addEventListener('click', () => this.addAttendee());
+      }
 
       // Update button state
       this.updateAddAttendeeButton();
@@ -2086,6 +2233,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
 
       const emailInput = form.querySelector('input[name="customer_email"]') as HTMLInputElement;
       const privacyCheckbox = form.querySelector('input[name="privacy"]') as HTMLInputElement;
+      const termsCheckbox = form.querySelector('input[name="terms"]') as HTMLInputElement;
 
       // WDA-909: Validate all attendee names are filled
       const attendeeNameInputs = form.querySelectorAll('.attendee-name') as NodeListOf<HTMLInputElement>;
@@ -2094,7 +2242,8 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       const isValid =
         allNamesValid &&
         emailInput?.value.trim().length > 0 &&
-        privacyCheckbox?.checked;
+        privacyCheckbox?.checked &&
+        termsCheckbox?.checked;
 
       submitBtn.disabled = !isValid;
     }
@@ -2176,7 +2325,8 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
           this.showConfirmation(result);
         } else {
           if (errorText) {
-            errorText.textContent = result.error || this.state.translations.errorGeneric;
+            // WDA-912: Translate backend error messages to current locale
+            errorText.textContent = this.translateError(result.error || '');
           }
           errorMessage?.classList.remove('hidden');
         }
@@ -2233,6 +2383,14 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         isValid = false;
       }
 
+      // Terms (Safety & Booking Conditions)
+      const termsCheckbox = form.querySelector('input[name="terms"]') as HTMLInputElement;
+      if (!termsCheckbox?.checked) {
+        const termsError = termsCheckbox?.closest('.form-group')?.querySelector('.form-error');
+        termsError?.classList.remove('hidden');
+        isValid = false;
+      }
+
       return isValid;
     }
 
@@ -2244,6 +2402,51 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         errorEl.textContent = message;
         errorEl.classList.remove('hidden');
       }
+    }
+
+    // WDA-912: Translate backend error messages to current locale
+    private translateError(errorMessage: string): string {
+      const { translations } = this.state;
+
+      // Pattern: "Only X spots available" -> errorSpotsLimit
+      const spotsMatch = errorMessage.match(/Only (\d+) spots? available/i);
+      if (spotsMatch) {
+        return translations.errorSpotsLimit.replace('{n}', spotsMatch[1]);
+      }
+
+      // Pattern: "Attendee X: email is required" -> errorEmailRequired
+      const emailMatch = errorMessage.match(/Attendee (\d+):?\s*email\s*(?:is\s*)?required/i);
+      if (emailMatch) {
+        return translations.errorEmailRequired.replace('{n}', emailMatch[1]);
+      }
+
+      // Pattern: rate limit / too many attempts
+      if (/too many.*(?:attempts|booking|requests)|rate.?limit/i.test(errorMessage)) {
+        return translations.errorRateLimit;
+      }
+
+      // Pattern: slot is full
+      if (/slot.*full|full.*slot|no.*spots/i.test(errorMessage)) {
+        return translations.errorSlotFull;
+      }
+
+      // Pattern: slot is closed/unavailable
+      if (/slot.*closed|closed.*slot|unavailable/i.test(errorMessage)) {
+        return translations.errorSlotClosed;
+      }
+
+      // Pattern: invalid date
+      if (/invalid.*date|date.*invalid/i.test(errorMessage)) {
+        return translations.errorInvalidDate;
+      }
+
+      // Pattern: session expired
+      if (/session.*expired|expired.*session/i.test(errorMessage)) {
+        return translations.errorSessionExpired;
+      }
+
+      // Fallback: return original message or generic error
+      return errorMessage || translations.errorGeneric;
     }
 
     // =========================================
@@ -2271,9 +2474,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
           confirmedTime.textContent = `${formatTime(this.state.selectedSlot.startTime)} - ${formatTime(this.state.selectedSlot.endTime)}`;
         }
         if (confirmedAttendees) {
-          const form = this.widget.querySelector('.booking-form') as HTMLFormElement;
-          const attendees = form?.querySelector('select[name="attendees"]') as HTMLSelectElement;
-          confirmedAttendees.textContent = attendees?.value || '1';
+          confirmedAttendees.textContent = String(this.state.attendeeCount);
         }
 
         successEl?.classList.remove('hidden');
