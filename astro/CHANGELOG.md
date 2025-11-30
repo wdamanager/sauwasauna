@@ -19,6 +19,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mensajes de error del backend en inglés sin traducir (WDA-912)
 - Contador de asistentes incorrecto en confirmación (WDA-913)
 
+## [0.8.0] - 2025-11-30
+
+### Added
+- **Multi-language Session Fields** (WDA-960):
+  - Nuevo helper `getLocalizedSession()` con lógica de fallback automática
+  - Soporte para 4 idiomas: ES (base), CA, FR, EN
+  - Fallback: Idioma solicitado → Español (si vacío)
+  - GraphQL queries actualizados con campos multi-idioma
+  - TypeScript interfaces extendidas para soportar campos opcionales por idioma
+
+### Fixed
+- **Session Hydration Bug** (WDA-960):
+  - Script client-side sobrescribía contenido SSG correcto con campos base en español
+  - Ahora usa `getLocalizedSession()` para respetar el idioma de cada página
+  - Eliminado flash de contenido en idioma incorrecto
+
+### Changed
+- **Session Pages Hydration** (WDA-960):
+  - Actualizados scripts de hidratación en 4 páginas (ES, CA, FR, EN)
+  - Import de `getLocalizedSession` y `Locale` type
+  - Localización aplicada tanto en SSG como en client-side hydration
+
+### Technical
+- **Archivos creados**:
+  - `src/lib/i18n/sessions.ts` (128 líneas) - Helper de localización
+- **Archivos modificados**:
+  - `src/lib/booking/queries.ts` - Campos GraphQL multi-idioma
+  - `src/lib/booking/types.ts` - Interfaces TypeScript
+  - `src/pages/es/puertas-abiertas.astro` - Script hydration
+  - `src/pages/ca/portes-obertes.astro` - Script hydration
+  - `src/pages/fr/portes-ouvertes.astro` - Script hydration
+  - `src/pages/en/open-days.astro` - Script hydration
+
 ## [0.7.2] - 2025-11-29
 
 ### Added
