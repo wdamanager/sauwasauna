@@ -6,9 +6,10 @@ interface Props {
 }
 
 const { gtmId, locale = 'es', pageType = 'page' } = Astro.props;
-const isDevelopment = import.meta.env.PUBLIC_ENV === 'development';
+// Use Astro's built-in DEV flag - more reliable than PUBLIC_ENV
+const isDevelopment = import.meta.env.DEV;
 
-// Only load GTM in production or if explicitly enabled in dev
+// Load GTM in production builds OR if explicitly enabled in dev
 const shouldLoadGTM = !isDevelopment || import.meta.env.PUBLIC_ENABLE_GTM_IN_DEV === 'true';
 ---
 

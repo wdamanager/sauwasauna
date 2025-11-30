@@ -19,6 +19,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mensajes de error del backend en inglés sin traducir (WDA-912)
 - Contador de asistentes incorrecto en confirmación (WDA-913)
 
+## [0.8.1] - 2025-11-30
+
+### Fixed
+- **Google Analytics Tracking**:
+  - GTM ahora se carga correctamente en builds de producción
+  - Cambiado de `PUBLIC_ENV` a `import.meta.env.DEV` para detección confiable
+  - Fallback `GTM-5FJSRXL7` incluido en Layout.astro para builds sin variables de entorno
+  - Analytics tracking funcional en producción manteniendo desarrollo limpio
+
+### Changed
+- **Archivos modificados**:
+  - `src/layouts/Layout.astro` - Fallback GTM ID hardcoded
+  - `src/components/GoogleTagManager.astro` - Usa `import.meta.env.DEV` en lugar de `PUBLIC_ENV`
+  - `.env` - Comentario aclaratorio sobre GTM en builds
+
 ## [0.8.0] - 2025-11-30
 
 ### Added

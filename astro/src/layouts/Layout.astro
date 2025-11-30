@@ -15,7 +15,8 @@ interface Props {
 
 const { title, description = '', lang = 'es', pageType = 'page', navbar = 'default' } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const gtmId = import.meta.env.PUBLIC_GTM_ID;
+// GTM ID with fallback - ensures analytics work even if env vars aren't configured in production
+const gtmId = import.meta.env.PUBLIC_GTM_ID || 'GTM-5FJSRXL7';
 ---
 
 <!doctype html>
