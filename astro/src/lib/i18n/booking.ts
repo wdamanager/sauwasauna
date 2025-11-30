@@ -49,7 +49,7 @@ export const puertasAbiertasContent: Record<BookingLocale, BookingPageContent> =
     seoTitle: 'Puertas Abiertas SAUWA | Evento Gratuito de Sauna en Andorra',
     seoDescription: 'Descubre la experiencia SAUWA en nuestras jornadas de puertas abiertas. Evento gratuito para conocer nuestra sauna finlandesa en Andorra. Reserva tu plaza.',
     hero: {
-      title: 'Evento Exclusivo',
+      title: 'Sesión Sauna SAUWA',
       heading: 'Jornadas de Puertas Abiertas',
       subtitle: 'Descubre la auténtica experiencia de sauna finlandesa en SAUWA. Sesión gratuita de introducción para conocer nuestras instalaciones y nuestra filosofía.',
       ctaText: 'Reservar plaza',
@@ -60,8 +60,8 @@ export const puertasAbiertasContent: Record<BookingLocale, BookingPageContent> =
       price: 'Gratuito',
     },
     about: {
-      title: 'Sobre el evento',
-      heading: 'Tu primera experiencia SAUWA',
+      title: 'Sobre la sesión',
+      heading: 'La experiencia SAUWA',
       description: [
         'Las Jornadas de Puertas Abiertas son la oportunidad perfecta para descubrir SAUWA sin compromiso. Durante 60 minutos, te guiaremos a través de una sesión introductoria donde experimentarás la autenticidad de la sauna finlandesa.',
         'Nuestros Sauna Masters certificados te explicarán los beneficios del calor, las técnicas de respiración y el ritual del Aufguss. Es una experiencia diseñada tanto para principiantes como para aquellos que quieren conocer nuestra propuesta antes de reservar una sesión completa.',
@@ -109,7 +109,7 @@ export const puertasAbiertasContent: Record<BookingLocale, BookingPageContent> =
     seoTitle: 'Portes Obertes SAUWA | Esdeveniment Gratuït de Sauna a Andorra',
     seoDescription: 'Descobreix l\'experiència SAUWA a les nostres jornades de portes obertes. Esdeveniment gratuït per conèixer la nostra sauna finlandesa a Andorra. Reserva la teva plaça.',
     hero: {
-      title: 'Esdeveniment Exclusiu',
+      title: 'Sessió Sauna SAUWA',
       heading: 'Jornades de Portes Obertes',
       subtitle: 'Descobreix l\'autèntica experiència de sauna finlandesa a SAUWA. Sessió gratuïta d\'introducció per conèixer les nostres instal·lacions i la nostra filosofia.',
       ctaText: 'Reservar plaça',
@@ -120,8 +120,8 @@ export const puertasAbiertasContent: Record<BookingLocale, BookingPageContent> =
       price: 'Gratuït',
     },
     about: {
-      title: 'Sobre l\'esdeveniment',
-      heading: 'La teva primera experiència SAUWA',
+      title: 'Sobre la sessió',
+      heading: 'L\'experiència SAUWA',
       description: [
         'Les Jornades de Portes Obertes són l\'oportunitat perfecta per descobrir SAUWA sense compromís. Durant 60 minuts, et guiarem a través d\'una sessió introductòria on experimentaràs l\'autenticitat de la sauna finlandesa.',
         'Els nostres Sauna Masters certificats t\'explicaran els beneficis de la calor, les tècniques de respiració i el ritual de l\'Aufguss. És una experiència dissenyada tant per a principiants com per a aquells que volen conèixer la nostra proposta abans de reservar una sessió completa.',
@@ -169,7 +169,7 @@ export const puertasAbiertasContent: Record<BookingLocale, BookingPageContent> =
     seoTitle: 'SAUWA Open Days | Free Sauna Event in Andorra',
     seoDescription: 'Discover the SAUWA experience at our open days. Free event to explore our Finnish sauna in Andorra. Book your spot now.',
     hero: {
-      title: 'Exclusive Event',
+      title: 'Sauna Session SAUWA',
       heading: 'Open Days',
       subtitle: 'Discover the authentic Finnish sauna experience at SAUWA. Free introductory session to explore our facilities and philosophy.',
       ctaText: 'Book your spot',
@@ -180,8 +180,8 @@ export const puertasAbiertasContent: Record<BookingLocale, BookingPageContent> =
       price: 'Free',
     },
     about: {
-      title: 'About the event',
-      heading: 'Your first SAUWA experience',
+      title: 'About the session',
+      heading: 'The SAUWA experience',
       description: [
         'The Open Days are the perfect opportunity to discover SAUWA with no commitment. During 60 minutes, we will guide you through an introductory session where you will experience the authenticity of Finnish sauna.',
         'Our certified Sauna Masters will explain the benefits of heat, breathing techniques, and the Aufguss ritual. It\'s an experience designed for beginners and those who want to learn about our offering before booking a full session.',
@@ -229,7 +229,7 @@ export const puertasAbiertasContent: Record<BookingLocale, BookingPageContent> =
     seoTitle: 'Portes Ouvertes SAUWA | Événement Gratuit de Sauna en Andorre',
     seoDescription: 'Découvrez l\'expérience SAUWA lors de nos journées portes ouvertes. Événement gratuit pour découvrir notre sauna finlandais en Andorre. Réservez votre place.',
     hero: {
-      title: 'Événement Exclusif',
+      title: 'Séance Sauna SAUWA',
       heading: 'Journées Portes Ouvertes',
       subtitle: 'Découvrez l\'authentique expérience du sauna finlandais chez SAUWA. Session gratuite d\'introduction pour découvrir nos installations et notre philosophie.',
       ctaText: 'Réserver ma place',
@@ -240,8 +240,8 @@ export const puertasAbiertasContent: Record<BookingLocale, BookingPageContent> =
       price: 'Gratuit',
     },
     about: {
-      title: 'À propos de l\'événement',
-      heading: 'Votre première expérience SAUWA',
+      title: 'À propos de la séance',
+      heading: 'L\'expérience SAUWA',
       description: [
         'Les Journées Portes Ouvertes sont l\'occasion parfaite de découvrir SAUWA sans engagement. Pendant 60 minutes, nous vous guiderons à travers une session d\'introduction où vous expérimenterez l\'authenticité du sauna finlandais.',
         'Nos Sauna Masters certifiés vous expliqueront les bienfaits de la chaleur, les techniques de respiration et le rituel de l\'Aufguss. C\'est une expérience conçue aussi bien pour les débutants que pour ceux qui souhaitent découvrir notre offre avant de réserver une session complète.',
