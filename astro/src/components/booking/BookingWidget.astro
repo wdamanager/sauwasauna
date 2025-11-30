@@ -2619,6 +2619,9 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
           : `--- Asistentes ---\n${attendeesList}`;
       }
 
+      // WDA-941: Get language from current locale (uppercase for GraphQL)
+      const language = this.state.locale.toUpperCase();
+
       const bookingData: CreateBookingRequest = {
         session_id: this.state.sessionId,
         slot_date: this.state.selectedDate!,
@@ -2628,6 +2631,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         customer_email: formData.get('customer_email') as string,
         customer_phone: formData.get('customer_phone') as string || undefined,
         notes: notes || undefined,
+        language: language, // WDA-941: ES, CA, EN, FR
       };
 
       try {

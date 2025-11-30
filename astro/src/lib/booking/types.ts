@@ -220,6 +220,7 @@ export interface BookingAttendee {
 /**
  * Request payload for creating a booking
  * REST API: POST /wp-json/sauwa/v1/book
+ * WDA-941: Added language field for multi-language email support
  */
 export interface CreateBookingRequest {
   /** Session post ID */
@@ -238,6 +239,8 @@ export interface CreateBookingRequest {
   customer_phone?: string;
   /** Additional notes (optional) */
   notes?: string;
+  /** Language for confirmation emails (ES, CA, EN, FR) - WDA-941 */
+  language?: string;
 }
 
 /**
