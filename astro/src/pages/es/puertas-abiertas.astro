@@ -39,7 +39,7 @@ const sessionSubtitle = session?.sessionDetails?.subtitulo ?? content.hero.subti
 const backgroundImage = session?.featuredImage?.node?.sourceUrl || '';
 
 // Partner from WordPress (ubicación del evento)
-// Backend expone partner como ACF edge: partner { node { ... on Partner } }
+// WPGraphQL for ACF v2.4.1: partner es Edge directo (no Connection con edges array)
 // Campos disponibles: title, partnerAddress, partnerPhone, partnerEmail, partnerWeb, partnerActive, featuredImage
 // Nota: partnerCity NO está expuesto en GraphQL (solo en DB)
 const partnerData = session?.sessionDetails?.partner?.node;

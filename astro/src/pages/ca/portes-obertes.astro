@@ -39,7 +39,8 @@ const fallbackImage = '/images/sauwa-sauna-puertas-abiertas-hero.webp';
 const backgroundImage = session?.featuredImage?.node?.sourceUrl ?? fallbackImage;
 
 // Partner from WordPress (ubicacio de l'esdeveniment)
-const partnerData = session?.sessionDetails?.partner?.edges?.[0]?.node;
+// WPGraphQL for ACF v2.4.1: partner es Edge directo (no Connection con edges array)
+const partnerData = session?.sessionDetails?.partner?.node;
 const partner = partnerData ? {
   name: partnerData.title,
   slug: partnerData.slug,

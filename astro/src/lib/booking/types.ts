@@ -61,7 +61,8 @@ export interface SessionPartner {
 
 /**
  * Partner edge structure from ACF post_object field
- * ACF returns single edge (not edges array)
+ * WPGraphQL for ACF v2.4.1 returns Edge (not Connection)
+ * Changed from edges[] to direct node access
  */
 export interface PartnerEdge {
   node: SessionPartner;
@@ -78,7 +79,7 @@ export interface SessionDetails {
   sessionDescription: string | null;
   /** Subtitle for hero section */
   subtitulo: string | null;
-  /** Partner hosting this session (ACF edge structure) */
+  /** Partner hosting this session (ACF Edge - direct node access) */
   partner: PartnerEdge | null;
 }
 
