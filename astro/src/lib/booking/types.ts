@@ -44,7 +44,11 @@ export interface SaunaSession {
  * Partner information ACF field group
  */
 export interface PartnerInformation {
+  partnerAddress?: string | null;
+  partnerPhone?: string | null;
+  partnerEmail?: string | null;
   partnerWeb?: string | null;
+  partnerActive?: boolean | null;
 }
 
 export interface SessionPartner {
@@ -56,13 +60,11 @@ export interface SessionPartner {
 }
 
 /**
- * Partner connection structure from GraphQL
- * ACF post_object returns edges/nodes connection
+ * Partner edge structure from ACF post_object field
+ * ACF returns single edge (not edges array)
  */
-export interface PartnerConnection {
-  edges: Array<{
-    node: SessionPartner;
-  }>;
+export interface PartnerEdge {
+  node: SessionPartner;
 }
 
 export interface SessionDetails {
@@ -76,8 +78,8 @@ export interface SessionDetails {
   sessionDescription: string | null;
   /** Subtitle for hero section */
   subtitulo: string | null;
-  /** Partner hosting this session (GraphQL connection) */
-  partner: PartnerConnection | null;
+  /** Partner hosting this session (ACF edge structure) */
+  partner: PartnerEdge | null;
 }
 
 /**

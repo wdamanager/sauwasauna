@@ -40,20 +40,22 @@ export const BOOKING_QUERIES = {
           sessionDescription
           subtitulo
           partner {
-            edges {
-              node {
-                ... on Partner {
-                  databaseId
-                  title
-                  slug
-                  partnerInformation {
-                    partnerWeb
-                  }
-                  featuredImage {
-                    node {
-                      sourceUrl
-                      altText
-                    }
+            node {
+              ... on Partner {
+                databaseId
+                title
+                slug
+                partnerInformation {
+                  partnerAddress
+                  partnerPhone
+                  partnerEmail
+                  partnerWeb
+                  partnerActive
+                }
+                featuredImage {
+                  node {
+                    sourceUrl
+                    altText
                   }
                 }
               }

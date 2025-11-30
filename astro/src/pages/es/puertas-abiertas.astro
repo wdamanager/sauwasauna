@@ -34,17 +34,22 @@ const price = session?.sessionDetails?.sessionPrice ?? 0;
 const sessionTitle = session?.title ?? content.hero.heading;
 const sessionSubtitle = session?.sessionDetails?.subtitulo ?? content.hero.subtitle;
 
-// Featured image from WordPress or fallback
-const fallbackImage = '/images/sauwa-sauna-puertas-abiertas-hero.webp';
-const backgroundImage = session?.featuredImage?.node?.sourceUrl ?? fallbackImage;
+// Featured image from WordPress (required - no fallback)
+// This ensures content remains dynamic and managed from WordPress
+const backgroundImage = session?.featuredImage?.node?.sourceUrl || '';
 
 // Partner from WordPress (ubicación del evento)
-const partnerData = session?.sessionDetails?.partner?.edges?.[0]?.node;
+// Backend expone partner como ACF edge: partner { node { ... on Partner } }
+// Campos disponibles: title, partnerAddress, partnerPhone, partnerEmail, partnerWeb, partnerActive
+// Nota: partnerCity NO está expuesto en GraphQL (solo en DB)
+const partnerData = session?.sessionDetails?.partner?.node;
 const partner = partnerData ? {
   name: partnerData.title,
-  slug: partnerData.slug,
-  logo: partnerData.featuredImage?.node?.sourceUrl,
+  address: partnerData.partnerInformation?.partnerAddress,
+  phone: partnerData.partnerInformation?.partnerPhone,
+  email: partnerData.partnerInformation?.partnerEmail,
   url: partnerData.partnerInformation?.partnerWeb ?? undefined,
+  active: partnerData.partnerInformation?.partnerActive ?? false,
 } : null;
 
 // Sponsors (hardcoded for now - will come from API in future)
