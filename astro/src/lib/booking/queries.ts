@@ -39,6 +39,15 @@ export const BOOKING_QUERIES = {
           sessionPrice
           sessionDescription
           subtitulo
+          tituloCa
+          subtituloCa
+          sessionDescriptionCa
+          tituloFr
+          subtituloFr
+          sessionDescriptionFr
+          tituloEn
+          sessionSubtitleEn
+          sessionDescriptionEn
           partner {
             node {
               ... on Partner {
@@ -142,11 +151,22 @@ export const BOOKING_QUERIES = {
           databaseId
           title
           slug
+          content
           sessionDetails {
             sessionDuration
             sessionCapacity
             sessionPrice
             sessionDescription
+            subtitulo
+            tituloCa
+            subtituloCa
+            sessionDescriptionCa
+            tituloFr
+            subtituloFr
+            sessionDescriptionFr
+            tituloEn
+            sessionSubtitleEn
+            sessionDescriptionEn
           }
         }
       }

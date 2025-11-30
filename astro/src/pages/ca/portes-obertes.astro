@@ -3,6 +3,7 @@
  * WDA-903: Pagina "Portes Obertes" - CA
  * WDA-899: Frontend Booking - Esdeveniment gratuit d'introduccio
  * WDA-907: Contingut dinamic des de WordPress Session
+ * WDA-960: Multi-language session fields with fallback
  */
 
 import Layout from '../../layouts/Layout.astro';
@@ -14,6 +15,7 @@ import CollaboratorsSection from '../../components/booking/CollaboratorsSection.
 import { getBookingContent } from '../../lib/i18n/booking';
 import { BOOKING_CONFIG } from '../../lib/booking/config';
 import { fetchSessionServer } from '../../lib/booking/api';
+import { getLocalizedSession } from '../../lib/i18n/sessions';
 
 const locale = 'ca';
 const content = getBookingContent(locale, 'puertasAbiertas');
@@ -30,9 +32,11 @@ const duration = session?.sessionDetails?.sessionDuration ?? 60;
 const capacity = session?.sessionDetails?.sessionCapacity ?? 6;
 const price = session?.sessionDetails?.sessionPrice ?? 0;
 
-// Dynamic content from WordPress (will be hydrated client-side)
-const sessionTitle = session?.title ?? content.hero.heading;
-const sessionSubtitle = session?.sessionDetails?.subtitulo ?? content.hero.subtitle;
+// WDA-960: Get localized session fields with automatic fallback to Spanish
+const localizedSession = session ? getLocalizedSession(session, locale) : null;
+const sessionTitle = localizedSession?.title ?? content.hero.heading;
+const sessionSubtitle = localizedSession?.subtitle ?? content.hero.subtitle;
+const sessionDescription = localizedSession?.description ?? null;
 
 // Featured image from WordPress or fallback
 const fallbackImage = '/images/sauwa-sauna-puertas-abiertas-hero.webp';
@@ -313,9 +317,12 @@ const sponsors = [
 <script>
   /**
    * WDA-907: Client-side hydration for dynamic WordPress content
+   * WDA-960: Multi-language support with getLocalizedSession()
    * Fetches fresh session data and updates hero + about section without rebuild
    */
   import { getSession } from '../../lib/booking/api';
+  import { getLocalizedSession } from '../../lib/i18n/sessions';
+  import type { Locale } from '../../lib/booking/types';
 
   /**
    * Parse WordPress content HTML and extract paragraphs and list items
@@ -384,18 +391,22 @@ const sponsors = [
       const session = await getSession(parseInt(sessionId, 10));
       if (!session) return;
 
+      // WDA-960: Get localized content based on page locale
+      const locale: Locale = 'ca';
+      const localizedSession = getLocalizedSession(session, locale);
+
       // ===== HERO SECTION =====
 
-      // Update hero heading (title)
+      // Update hero heading (title) with localized content
       const headingEl = heroSection.querySelector('[data-hydrate="heading"]');
-      if (headingEl && session.title) {
-        headingEl.textContent = session.title;
+      if (headingEl && localizedSession.title) {
+        headingEl.textContent = localizedSession.title;
       }
 
-      // Update hero subtitle
+      // Update hero subtitle with localized content
       const subtitleEl = heroSection.querySelector('[data-hydrate="subtitle"]');
-      if (subtitleEl && session.sessionDetails?.subtitulo) {
-        subtitleEl.textContent = session.sessionDetails.subtitulo;
+      if (subtitleEl && localizedSession.subtitle) {
+        subtitleEl.textContent = localizedSession.subtitle;
       }
 
       // Update hero background image
@@ -407,8 +418,9 @@ const sponsors = [
 
       // ===== ABOUT SECTION =====
 
-      if (session.content) {
-        const { paragraphs, highlights } = parseSessionContent(session.content);
+      // WDA-960: Use localized description for about section
+      if (localizedSession.description) {
+        const { paragraphs, highlights } = parseSessionContent(localizedSession.description);
 
         // Update paragraphs in about section
         const aboutContentEl = document.querySelector('[data-hydrate="about-content"]');
@@ -441,9 +453,9 @@ const sponsors = [
         }
       }
 
-      console.log('[WDA-907] Session content hydrated from WordPress');
+      console.log('[WDA-960] Session content hydrated with CA locale from WordPress');
     } catch (error) {
-      console.warn('[WDA-907] Could not hydrate session content:', error);
+      console.warn('[WDA-960] Could not hydrate session content:', error);
       // SSG fallback content remains visible
     }
   }

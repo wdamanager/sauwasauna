@@ -14,6 +14,7 @@ import CollaboratorsSection from '../../components/booking/CollaboratorsSection.
 import { getBookingContent } from '../../lib/i18n/booking';
 import { BOOKING_CONFIG } from '../../lib/booking/config';
 import { fetchSessionServer } from '../../lib/booking/api';
+import { getLocalizedSession } from '../../lib/i18n/sessions';
 
 const locale = 'en';
 const content = getBookingContent(locale, 'puertasAbiertas');
@@ -313,9 +314,12 @@ const sponsors = [
 <script>
   /**
    * WDA-907: Client-side hydration for dynamic WordPress content
+   * WDA-960: Multi-language support with getLocalizedSession()
    * Fetches fresh session data and updates hero + about section without rebuild
    */
   import { getSession } from '../../lib/booking/api';
+  import { getLocalizedSession } from '../../lib/i18n/sessions';
+  import type { Locale } from '../../lib/booking/types';
 
   /**
    * Parse WordPress content HTML and extract paragraphs and list items
@@ -384,18 +388,22 @@ const sponsors = [
       const session = await getSession(parseInt(sessionId, 10));
       if (!session) return;
 
+      // WDA-960: Get localized content based on page locale
+      const locale: Locale = 'en';
+      const localizedSession = getLocalizedSession(session, locale);
+
       // ===== HERO SECTION =====
 
-      // Update hero heading (title)
+      // Update hero heading (title) with localized content
       const headingEl = heroSection.querySelector('[data-hydrate="heading"]');
-      if (headingEl && session.title) {
-        headingEl.textContent = session.title;
+      if (headingEl && localizedSession.title) {
+        headingEl.textContent = localizedSession.title;
       }
 
-      // Update hero subtitle
+      // Update hero subtitle with localized content
       const subtitleEl = heroSection.querySelector('[data-hydrate="subtitle"]');
-      if (subtitleEl && session.sessionDetails?.subtitulo) {
-        subtitleEl.textContent = session.sessionDetails.subtitulo;
+      if (subtitleEl && localizedSession.subtitle) {
+        subtitleEl.textContent = localizedSession.subtitle;
       }
 
       // Update hero background image
@@ -407,8 +415,9 @@ const sponsors = [
 
       // ===== ABOUT SECTION =====
 
-      if (session.content) {
-        const { paragraphs, highlights } = parseSessionContent(session.content);
+      // WDA-960: Use localized description for about section
+      if (localizedSession.description) {
+        const { paragraphs, highlights } = parseSessionContent(localizedSession.description);
 
         // Update paragraphs in about section
         const aboutContentEl = document.querySelector('[data-hydrate="about-content"]');
@@ -441,9 +450,9 @@ const sponsors = [
         }
       }
 
-      console.log('[WDA-907] Session content hydrated from WordPress');
+      console.log('[WDA-960] Session content hydrated with EN locale from WordPress');
     } catch (error) {
-      console.warn('[WDA-907] Could not hydrate session content:', error);
+      console.warn('[WDA-960] Could not hydrate session content:', error);
       // SSG fallback content remains visible
     }
   }

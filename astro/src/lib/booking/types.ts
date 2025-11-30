@@ -75,10 +75,22 @@ export interface SessionDetails {
   sessionCapacity: number;
   /** Price in euros (0 for free events, null if not set) */
   sessionPrice: number | null;
-  /** Optional description */
+  /** Optional description (ES) */
   sessionDescription: string | null;
-  /** Subtitle for hero section */
+  /** Subtitle for hero section (ES) */
   subtitulo: string | null;
+  /** WDA-960: Multi-language fields - Catalan */
+  tituloCa?: string | null;
+  subtituloCa?: string | null;
+  sessionDescriptionCa?: string | null;
+  /** WDA-960: Multi-language fields - French */
+  tituloFr?: string | null;
+  subtituloFr?: string | null;
+  sessionDescriptionFr?: string | null;
+  /** WDA-960: Multi-language fields - English */
+  tituloEn?: string | null;
+  sessionSubtitleEn?: string | null;
+  sessionDescriptionEn?: string | null;
   /** Partner hosting this session (ACF Edge - direct node access) */
   partner: PartnerEdge | null;
 }
