@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 360" width="960" height="360">
+  <!-- Símbolo superior tipo chevron invertido -->
+  <g transform="translate(480, 80)">
+    <polygon points="-80,-60 0,60 80,-60 0,20" fill="#000000"/>
+  </g>
+
+  <!-- Texto LAPELLAND -->
+  <g transform="translate(0, 280)">
+    <text x="50%" y="0" font-family="Arial Black, Helvetica, sans-serif" font-weight="900" font-size="110" fill="#000000" text-anchor="middle" letter-spacing="-2">LAPELLAND</text>
+  </g>
+</svg>

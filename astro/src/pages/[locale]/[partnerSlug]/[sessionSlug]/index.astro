@@ -1,0 +1,295 @@
+---
+/**
+ * WDA-963: Dynamic Session Detail Page
+ * Route: /[locale]/[partnerSlug]/[sessionSlug]/
+ * Example: /es/hotel-coma-bella/jornadas-de-puertas-abiertas-sauwa/
+ */
+import type { GetStaticPaths } from 'astro';
+import Layout from '../../../../layouts/Layout.astro';
+import NavbarScroll from '../../../../components/NavbarScroll.astro';
+import FooterBlack from '../../../../components/layout/FooterBlack.astro';
+import SessionHero from '../../../../components/booking/SessionHero.astro';
+import BookingWidget from '../../../../components/booking/BookingWidget.astro';
+import CollaboratorsSection from '../../../../components/booking/CollaboratorsSection.astro';
+import { getAllSessions, type SessionData } from '../../../../lib/sessions-queries';
+import { getBookingContent } from '../../../../lib/i18n/booking';
+
+type Locale = 'es' | 'ca' | 'en' | 'fr';
+const locales: Locale[] = ['es', 'ca', 'en', 'fr'];
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  // Define locales inside getStaticPaths to ensure they're accessible
+  const pathLocales: Array<'es' | 'ca' | 'en' | 'fr'> = ['es', 'ca', 'en', 'fr'];
+
+  try {
+    const sessions = await getAllSessions();
+
+    if (!sessions || sessions.length === 0) {
+      console.warn('[WDA-963] No sessions found for getStaticPaths');
+      return [];
+    }
+
+    const paths: Array<{
+      params: { locale: string; partnerSlug: string; sessionSlug: string };
+      props: { session: SessionData };
+    }> = [];
+
+    for (const session of sessions) {
+      if (!session.partner) {
+        console.warn(`[WDA-963] Session ${session.slug} has no partner, skipping`);
+        continue;
+      }
+
+      // Generate paths for all locales
+      for (const locale of pathLocales) {
+        // Try to find translation for this locale, or use default slug
+        const sessionTranslation = session.translations.find(t => t.locale === locale);
+        const sessionSlug = sessionTranslation?.slug || session.slug;
+
+        // Partner slug (no translations in current schema)
+        const partnerSlug = session.partner.slug;
+
+        paths.push({
+          params: {
+            locale,
+            partnerSlug,
+            sessionSlug,
+          },
+          props: { session },
+        });
+      }
+    }
+
+    console.log(`[WDA-963] Generated ${paths.length} session detail paths`);
+    return paths;
+  } catch (error) {
+    console.error('[WDA-963] Error generating paths:', error);
+    return [];
+  }
+};
+
+const { locale, partnerSlug, sessionSlug } = Astro.params;
+const { session } = Astro.props;
+
+if (!session || !session.partner) {
+  return Astro.redirect('/404');
+}
+
+// Get localized content
+const content = getBookingContent(locale as Locale, 'puertasAbiertas');
+
+// Session data
+const sessionId = session.databaseId;
+const sessionTitle = session.title;
+const duration = session.duration;
+const capacity = session.capacity;
+const price = session.price;
+
+// Get subtitle from ACF or fallback to hardcoded content
+const subtitle = session.subtitle?.[locale] || content.hero.subtitle;
+
+// Partner data
+const partner = session.partner ? {
+  name: session.partner.title,
+  slug: session.partner.slug,
+  logo: session.partner.featuredImage?.sourceUrl,
+  address: session.partner.address,
+  phone: session.partner.phone,
+  email: session.partner.email,
+  url: session.partner.web,
+  active: true,
+} : null;
+
+// Featured image
+const backgroundImage = session.featuredImage?.sourceUrl || '';
+
+// SEO
+const seoTitle = session.seo?.title || `${sessionTitle} | SAUWA SAUNA`;
+const seoDescription = session.seo?.metaDesc || content.seoDescription;
+
+// Sponsors (placeholder - will come from API)
+const sponsors = [
+  {
+    name: 'Aneto Natural',
+    logo: '/images/sponsors/aneto-patrocinador-sauwa.jpg',
+    url: 'https://www.caldoaneto.com/es',
+  },
+  {
+    name: 'Lapelland',
+    logo: '/logos/lapelland-black.svg',
+    url: 'https://lapelland.com',
+  },
+];
+
+// Generate hreflang URLs for other locales
+const hreflangs = locales.map(loc => {
+  const translation = session.translations.find(t => t.locale === loc);
+  const slug = translation?.slug || session.slug;
+  return {
+    locale: loc,
+    href: `https://sauwasauna.com/${loc}/${partnerSlug}/${slug}/`,
+  };
+});
+---
+
+<Layout title={seoTitle} description={seoDescription} lang={locale} pageType="booking">
+  <Fragment slot="head">
+    <!-- hreflang tags for SEO -->
+    {hreflangs.map(({ locale: loc, href }) => (
+      <link rel="alternate" hreflang={loc} href={href} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={hreflangs[0].href} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={seoTitle} />
+    <meta property="og:description" content={seoDescription} />
+    {backgroundImage && <meta property="og:image" content={backgroundImage} />}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={seoTitle} />
+    <meta name="twitter:description" content={seoDescription} />
+    {backgroundImage && <meta name="twitter:image" content={backgroundImage} />}
+  </Fragment>
+
+  <NavbarScroll locale={locale} />
+
+  <main>
+    <SessionHero
+      title={content.hero.title}
+      heading={sessionTitle}
+      subtitle={subtitle}
+      duration={duration}
+      capacity={capacity}
+      price={price}
+      location={partner?.name}
+      ctaText={content.hero.ctaText}
+      ctaHref="#reserva"
+      backgroundImage={backgroundImage}
+      locale={locale}
+      sessionId={sessionId}
+    />
+
+    <!-- About Section -->
+    <section class="section section--bg-white" data-about-section>
+      <div class="container container--narrow">
+        <header class="section-header section-header--center">
+          <h2 class="section-label section-label--primary">{content.about.title}</h2>
+          <h3 class="section-title section-title--center">{content.about.heading}</h3>
+        </header>
+
+        <div class="about-content" data-hydrate="about-content">
+          {content.about.description.map((paragraph) => (
+            <p class="about-text">{paragraph}</p>
+          ))}
+
+          <ul class="highlights-list" data-hydrate="highlights-list">
+            {content.about.highlights.map((item) => (
+              <li class="highlights-item">
+                <svg
+                  class="highlights-icon"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M5 13L9 17L19 7"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Booking Section -->
+    <section id="reserva" class="section section--bg-light booking-section">
+      <div class="container">
+        <header class="section-header section-header--center">
+          <h2 class="section-label section-label--primary">{content.booking.sectionTitle}</h2>
+          <h3 class="section-title section-title--center">{content.booking.sectionSubtitle}</h3>
+        </header>
+
+        <BookingWidget sessionId={sessionId} locale={locale} />
+      </div>
+    </section>
+
+    <!-- Collaborators Section -->
+    <CollaboratorsSection
+      partner={partner}
+      sponsors={sponsors}
+      locale={locale}
+    />
+  </main>
+
+  <FooterBlack locale={locale} />
+</Layout>
+
+<style>
+  /* About Section */
+  .about-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  :global(.about-content .about-text) {
+    font-family: var(--font-family-secondary);
+    font-weight: var(--font-weight-light);
+    font-size: var(--font-scale-md);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-primary);
+    margin-bottom: 1.5rem;
+  }
+
+  :global(.about-content .highlights-list) {
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  :global(.about-content .highlights-item) {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-family: var(--font-family-secondary);
+    font-size: var(--font-scale-base);
+    color: var(--color-text-primary);
+    line-height: 1.5;
+  }
+
+  :global(.about-content .highlights-icon) {
+    flex-shrink: 0;
+    color: #DB4529;
+    margin-top: 2px;
+  }
+
+  /* Booking Section */
+  .booking-section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    :global(.about-content .about-text) {
+      font-size: var(--font-scale-base);
+    }
+
+    .booking-section {
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+  }
+</style>

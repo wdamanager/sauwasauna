@@ -19,6 +19,116 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mensajes de error del backend en inglés sin traducir (WDA-912)
 - Contador de asistentes incorrecto en confirmación (WDA-913)
 
+## [0.9.0] - 2025-12-05
+
+### Added
+- **WDA-962: GraphQL Backend for Slug-based Queries**
+  - DataLoader pattern implementado para optimizar N+1 queries en relaciones partner↔sessions
+  - 4 nuevas queries slug-based: `sauwaPartnerBySlug`, `sauwaSessionBySlug`, `sauwaAllPartnerSlugs`, `sauwaAllSessionPaths`
+  - Campo `slug` agregado a tipos GraphQL `SauwaSession` y `SauwaPartner`
+  - Archivos: `sessions-queries.ts`, `partners-queries.ts`, interfaces actualizadas
+
+- **WDA-963: Dynamic Routes Implementation**
+  - Rutas dinámicas para sesiones: `/[locale]/[partnerSlug]/[sessionSlug]/`
+  - Rutas dinámicas para partners: `/[locale]/[partnerSlug]/`
+  - `getStaticPaths()` implementado para SSG con soporte multi-idioma (ES, CA, EN, FR)
+  - Queries GraphQL actualizados con `partnerInformation`, `featuredImage`, y títulos multi-idioma
+  - Archivos: páginas dinámicas de sesión/partner, `sessions-queries.ts`, `sessions.ts` interfaces
+
+- **WDA-965: Partner Hero Image Implementation**
+  - Campo ACF `partnerHeroImage` agregado (tipo Image, retorno URL)
+  - Componente `PartnerHero.astro` creado con hero image, nombre del partner, y link a dirección
+  - Estructura GraphQL: `partnerHeroImage { node { sourceUrl, altText } }`
+  - Estilos alineados con patrón `ExclusiveHero` para consistencia de marca
+  - Archivos: `PartnerHero.astro`, queries GraphQL de partner, página de detalle
+
+- **Global Multilingual Fallback System**
+  - Sistema de fallback centralizado: `src/lib/i18n/fallback.ts`
+  - Español (ES) definido como idioma base para todos los fallbacks de campos ACF
+  - Función `getLocalizedValue()` implementada para fallback automático a ES cuando traducciones vacías
+  - Sistema aplicado a: sesiones, posts de blog, páginas de partners
+  - Optimización de query de blog: filtro de idioma eliminado, fallback aplicado en frontend
+  - Documentación: `src/lib/i18n/README.md` con especificación de fallback
+
+- **Lapelland Sponsor Integration**
+  - Logo SVG de Lapelland creado: `public/logos/lapelland-black.svg`
+  - Diseño vectorial con símbolo chevron invertido + texto "LAPELLAND"
+  - Agregado al array de sponsors en todas las páginas de sesión
+  - Aparece en sección de colaboradores junto con Hotel Coma Bella y Aneto Natural
+  - Aplicado automáticamente a los 4 idiomas (ES, CA, EN, FR)
+
+### Fixed
+- **GraphQL Type Registration Issues**
+  - Tipos no aparecían en schema debido a calls `add_action()` anidadas en constructores
+  - Solución: Llamar `register()` directamente en constructores, eliminar hooks anidados
+  - 10 archivos de tipos GraphQL afectados (Session, Partner, Inventory, Attendee, Consent, etc.)
+
+- **Partner Page Layout & Styling**
+  - Display del logo en navbar corregido (ruta SVG corregida: `sauwa-full-white.svg`)
+  - Márgenes de contenedor alineados con patrón de blog (`max-width: 1280px`, `padding: 0 1rem`)
+  - Card de información de partner rediseñada: layout horizontal con logo (280px) + grid 2×2 de datos
+  - Link de dirección estilizado sin apariencia de botón, icono en color corporativo `var(--color-primary-hover)`
+
+- **Blog Pages Navigation (Multi-language)**
+  - Navbar mostrando solo letra "N" roja en lugar de logo completo "SAUWA" corregido
+  - `padding-top: 80px` incorrecto eliminado, `variant="dark"` agregado a Breadcrumb
+  - CSS duplicado y wrappers de contenedor extra limpiados en páginas CA/EN/FR
+  - Archivos: `/ca/guia-sauwa-sauna.astro`, `/en/sauna-guide.astro`, `/fr/guide-sauna.astro`
+
+### Changed
+- **Session Detail Pages**
+  - Array de sponsors ahora incluye 3 colaboradores: Hotel Coma Bella, Aneto Natural, Lapelland
+  - `CollaboratorsSection` renderiza automáticamente todos los logos con estilos consistentes
+
+### Technical
+- **Archivos creados**:
+  - `public/logos/lapelland-black.svg` - Logo vectorial del sponsor Lapelland
+  - `src/lib/i18n/fallback.ts` - Sistema centralizado de fallback multi-idioma
+  - `src/lib/i18n/README.md` - Documentación del sistema de fallback
+  - `src/components/booking/PartnerHero.astro` - Componente hero para páginas de partner
+
+- **Archivos modificados**:
+  - `src/pages/[locale]/[partnerSlug]/[sessionSlug]/index.astro` - Array de sponsors actualizado
+  - `src/pages/[locale]/[partnerSlug]/index.astro` - Página dinámica de partner
+  - `src/lib/sessions-queries.ts` - Queries slug-based agregadas
+  - `src/lib/partners-queries.ts` - Queries de partner actualizadas
+  - `src/interfaces/sessions.ts` - Interfaces TypeScript extendidas
+
+## [0.8.2] - 2025-12-04
+
+### Fixed
+- **Blog Navbar Logo Display** (Multi-language):
+  - Corregido logo que mostraba solo "N" roja en CA/EN/FR blog pages
+  - Problema: `padding-top: 80px` empujaba contenido y desalineaba navbar
+  - Solución: Sincronizado estructura CSS/HTML entre idiomas
+  - Cambios en `/ca/guia-sauwa-sauna.astro`, `/en/guia-sauwa-sauna.astro`, `/fr/guia-sauwa-sauna.astro`:
+    - `padding-top: 80px` → `padding-top: 0`
+    - Agregado `variant="dark"` a componente Breadcrumb
+    - Eliminado contenedor extra `<div class="container">` en CategoryFilter
+  - Verificado con Playwright en todas las versiones de idioma
+
+### Added
+- **Google Analytics 4 Configuration**:
+  - Habilitado GTM en desarrollo con variable `PUBLIC_ENABLE_GTM_IN_DEV=true`
+  - Configurada "Etiqueta de Google" (gtag.js) en Google Tag Manager
+  - ID de medición: G-S3XC2RKG11
+  - Activador: Initialization - All Pages
+  - Etiqueta publicada en producción
+  - Analytics tracking ahora funcional en `https://sauwasauna.com`
+
+### Changed
+- **Archivos modificados**:
+  - `.env` - Agregada variable `PUBLIC_ENABLE_GTM_IN_DEV=true` para testing local
+  - `src/pages/ca/guia-sauwa-sauna.astro` - Sincronizado con versión ES
+  - `src/pages/en/guia-sauwa-sauna.astro` - Sincronizado con versión ES
+  - `src/pages/fr/guia-sauwa-sauna.astro` - Sincronizado con versión ES
+
+### Technical Notes
+- GTM ya estaba instalado correctamente en el código
+- DataLayer enviando eventos correctamente: `pageview`, `gtm.js`, `gtm.dom`, `gtm.load`
+- Problema era configuración incompleta en Google Tag Manager (faltaba publicar etiqueta)
+- Verificado en producción: GTM script cargando correctamente con ID `GTM-5FJSRXL7`
+
 ## [0.8.1] - 2025-11-30
 
 ### Fixed
