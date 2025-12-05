@@ -54,3 +54,15 @@ coverage/
 # Misc
 *.log
 .temp
+
+# Playwright
+.playwright-mcp/
+test-results/
+playwright-report/
+playwright/.cache/
+tests/screenshots/
+
+# Debug files
+build-errors.txt
+temp-*.txt
+ERROR-ANALYSIS.md
