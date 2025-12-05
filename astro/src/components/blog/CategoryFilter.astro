@@ -140,7 +140,7 @@ const { allCategoriesText = 'Todas las categorías', locale = 'es' } = Astro.pro
 
       // WDA-537: Filter categories with count > 0
       const categories = result.data?.categories?.nodes || [];
-      return categories.filter(cat => cat.count > 0);
+      return categories.filter((cat: { count: number }) => cat.count > 0);
 
     } catch (error) {
       console.error('[CategoryFilter] Error fetching categories:', error);
@@ -148,10 +148,16 @@ const { allCategoriesText = 'Todas las categorías', locale = 'es' } = Astro.pro
     }
   }
 
+  interface Category {
+    slug: string;
+    name: string;
+    count: number;
+  }
+
   /**
    * Render category buttons in desktop carousel
    */
-  function renderDesktopCategories(categories) {
+  function renderDesktopCategories(categories: Category[]): void {
     if (!desktopWrapper) return;
 
     // Get Astro scoped attribute from parent
@@ -163,7 +169,7 @@ const { allCategoriesText = 'Todas las categorías', locale = 'es' } = Astro.pro
     const allButton = desktopWrapper.querySelector('[data-category="all"]');
     const fragment = document.createDocumentFragment();
 
-    categories.forEach(category => {
+    categories.forEach((category: Category) => {
       const button = document.createElement('button');
       button.className = 'filter-button';
       button.type = 'button';
@@ -183,7 +189,7 @@ const { allCategoriesText = 'Todas las categorías', locale = 'es' } = Astro.pro
         const countSpan = document.createElement('span');
         countSpan.className = 'category-count';
         countSpan.setAttribute('aria-label', `${category.count} artículos`);
-        countSpan.textContent = category.count;
+        countSpan.textContent = String(category.count);
 
         // Add Astro scoped attribute for CSS
         if (astroAttr) countSpan.setAttribute(astroAttr, '');
@@ -200,7 +206,7 @@ const { allCategoriesText = 'Todas las categorías', locale = 'es' } = Astro.pro
   /**
    * Render category options in mobile dropdown
    */
-  function renderMobileCategories(categories) {
+  function renderMobileCategories(categories: Category[]): void {
     if (!dropdownMenu) return;
 
     // Get Astro scoped attribute from parent
@@ -211,7 +217,7 @@ const { allCategoriesText = 'Todas las categorías', locale = 'es' } = Astro.pro
     // Keep the "All Categories" option, append new categories after it
     const fragment = document.createDocumentFragment();
 
-    categories.forEach(category => {
+    categories.forEach((category: Category) => {
       const li = document.createElement('li');
       li.setAttribute('role', 'option');
       li.setAttribute('aria-selected', 'false');

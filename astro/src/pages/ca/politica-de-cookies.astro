@@ -13,7 +13,7 @@ const description = 'Política de cookies de SAUWA. Informació sobre l\'ús de 
 ---
 
 <Layout title={title} description={description} lang={lang} navbar="none">
-  <HreflangMeta customPaths={getHreflangPaths('POLITICA_COOKIES')} slot="head" />
+  <HreflangMeta customPaths={getHreflangPaths('POLITICA_COOKIES') as Record<string, string>} slot="head" />
   <NavbarNoHero locale={lang} />
   <main class="legal-page">
     <LegalPageClient

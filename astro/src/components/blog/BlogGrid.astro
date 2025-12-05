@@ -96,7 +96,7 @@ const {
   const emptyState = document.getElementById('blog-empty');
   const errorState = document.getElementById('blog-error');
   const loadMoreWrapper = document.getElementById('load-more-wrapper');
-  const loadMoreButton = document.getElementById('load-more-button');
+  const loadMoreButton = document.getElementById('load-more-button') as HTMLButtonElement | null;
   const retryButton = document.getElementById('retry-button');
 
   // Get configuration from data attributes or props

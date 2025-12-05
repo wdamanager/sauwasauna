@@ -2,8 +2,8 @@
 // src/components/sections/BlogStickyScrollSection.astro
 // WDA-266: Sección "Beneficios + Blog" con Sticky Scroll Layout
 
-import { getLatestPosts, truncateExcerpt, formatDateShort, getPrimaryCategory } from '../../lib/wordpress';
-import type { WPPost } from '../../lib/wordpress/types';
+import { getLatestPosts, truncateExcerpt, formatDateShort, getPrimaryCategory } from '../../lib/wordpress-complete';
+import type { WPPost } from '../../lib/wordpress-complete';
 
 // Obtener los últimos 6 posts en build time
 const posts: WPPost[] = await getLatestPosts(6);

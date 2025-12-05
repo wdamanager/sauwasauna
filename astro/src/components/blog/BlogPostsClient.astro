@@ -55,19 +55,45 @@ const { postsPerPage = 6, showLoadMore = true } = Astro.props;
   import { GRAPHQL_CONFIG } from '../../lib/wordpress/config.js';
 
   // State
-  let currentEndCursor = null;
+  let currentEndCursor: string | null = null;
   let hasNextPage = false;
   let isLoading = false;
 
   // Initialize client
   const client = new GraphQLClient();
 
+  interface BlogPost {
+    slug: string;
+    title: string;
+    excerpt?: string;
+    date: string;
+    featuredImage?: {
+      node?: {
+        sourceUrl?: string;
+        altText?: string;
+      };
+    };
+    categories?: {
+      nodes?: Array<{ name: string }>;
+    };
+  }
+
+  interface PostsResponse {
+    posts?: {
+      nodes?: BlogPost[];
+      pageInfo?: {
+        hasNextPage: boolean;
+        endCursor: string | null;
+      };
+    };
+  }
+
   /**
    * Format date to readable string
    */
-  function formatDate(dateString) {
+  function formatDate(dateString: string): string {
     const date = new Date(dateString);
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
     return date.toLocaleDateString('es-ES', options);
   }
 
@@ -83,7 +109,7 @@ const { postsPerPage = 6, showLoadMore = true } = Astro.props;
   /**
    * Create post card HTML
    */
-  function createPostCard(post) {
+  function createPostCard(post: BlogPost): string {
     const imageUrl = post.featuredImage?.node?.sourceUrl || GRAPHQL_CONFIG.defaultImagePlaceholder;
     const imageAlt = post.featuredImage?.node?.altText || post.title;
     const excerpt = post.excerpt?.replace(/<[^>]*>/g, '').substring(0, 150) || '';
@@ -119,11 +145,11 @@ const { postsPerPage = 6, showLoadMore = true } = Astro.props;
   /**
    * Render posts to grid
    */
-  function renderPosts(posts, append = false) {
+  function renderPosts(posts: BlogPost[], append = false): void {
     const grid = document.getElementById('blog-posts-grid');
     if (!grid) return;
 
-    const postsHTML = posts.map(post => createPostCard(post)).join('');
+    const postsHTML = posts.map((post: BlogPost) => createPostCard(post)).join('');
 
     if (append) {
       grid.insertAdjacentHTML('beforeend', postsHTML);
@@ -135,7 +161,7 @@ const { postsPerPage = 6, showLoadMore = true } = Astro.props;
   /**
    * Show/hide error message
    */
-  function toggleError(show) {
+  function toggleError(show: boolean): void {
     const errorDiv = document.getElementById('blog-error');
     if (errorDiv) {
       errorDiv.classList.toggle('hidden', !show);
@@ -145,7 +171,7 @@ const { postsPerPage = 6, showLoadMore = true } = Astro.props;
   /**
    * Show/hide load more button
    */
-  function toggleLoadMore(show) {
+  function toggleLoadMore(show: boolean): void {
     const button = document.getElementById('load-more-button');
     if (button) {
       button.classList.toggle('hidden', !show);
@@ -155,8 +181,8 @@ const { postsPerPage = 6, showLoadMore = true } = Astro.props;
   /**
    * Toggle loading state on load more button
    */
-  function toggleLoadingState(loading) {
-    const button = document.getElementById('load-more-button');
+  function toggleLoadingState(loading: boolean): void {
+    const button = document.getElementById('load-more-button') as HTMLButtonElement | null;
     if (!button) return;
 
     const text = button.querySelector('.button-text');
@@ -173,7 +199,7 @@ const { postsPerPage = 6, showLoadMore = true } = Astro.props;
   /**
    * Load posts from WordPress
    */
-  async function loadPosts(append = false) {
+  async function loadPosts(append = false): Promise<void> {
     if (isLoading) return;
 
     isLoading = true;
@@ -185,14 +211,14 @@ const { postsPerPage = 6, showLoadMore = true } = Astro.props;
         ...(append && currentEndCursor ? { after: currentEndCursor } : {}),
       };
 
-      const data = await client.query(QUERIES.GET_POSTS, variables);
+      const data = await client.query(QUERIES.GET_POSTS, variables) as PostsResponse;
 
       if (data?.posts?.nodes) {
         renderPosts(data.posts.nodes, append);
 
         // Update pagination state
-        hasNextPage = data.posts.pageInfo.hasNextPage;
-        currentEndCursor = data.posts.pageInfo.endCursor;
+        hasNextPage = data.posts.pageInfo?.hasNextPage ?? false;
+        currentEndCursor = data.posts.pageInfo?.endCursor ?? null;
 
         // Show/hide load more button
         toggleLoadMore(hasNextPage);

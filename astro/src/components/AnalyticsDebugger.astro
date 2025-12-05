@@ -106,13 +106,13 @@ const isDevelopment = import.meta.env.DEV;
 
       // Check GTM status
       setTimeout(() => {
-        const gtmStatus = window.google_tag_manager ? '✅ Loaded' : '❌ Not Loaded';
-        const ga4Status = window.gtag ? '✅ Loaded' : '❌ Not Loaded';
+        const gtmStatus = (window as any).google_tag_manager ? '✅ Loaded' : '❌ Not Loaded';
+        const ga4Status = (window as any).gtag ? '✅ Loaded' : '❌ Not Loaded';
 
         console.log('%c📊 Analytics Status', 'background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;');
         console.log(`GTM: ${gtmStatus}`);
         console.log(`GA4: ${ga4Status}`);
-        console.log('DataLayer:', window.dataLayer);
+        console.log('DataLayer:', (window as any).dataLayer);
       }, 2000);
     })();
   </script>

@@ -89,7 +89,7 @@ const {
           contentEl?.classList.add('hidden');
 
           // Cargar contenido desde WordPress
-          const result = await client.getLegalPageTranslated(pageId, lang);
+          const result = await client.getLegalPageTranslated(pageId, lang) as { success?: boolean; data?: { title?: string; content?: string; date?: string; modified?: string; seo?: { title?: string; metaDesc?: string } } };
 
           if (!result.success || !result.data) {
             throw new Error('No content received');
@@ -114,7 +114,7 @@ const {
 
           // Renderizar contenido
           if (contentEl) {
-            const updateDate = formatDate(post.modified, lang);
+            const updateDate = formatDate(post.modified || post.date || '', lang);
 
             contentEl.innerHTML = `
               <h1>${post.title}</h1>

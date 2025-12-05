@@ -157,7 +157,8 @@ const translations = {
   },
 };
 
-const content = translations[locale][variant];
+const heroContent = translations[locale].hero;
+const ctaContent = translations[locale].cta;
 const formId = `newsletter-form-${variant}`;
 const uniqueId = `${variant}-${locale}-${Date.now()}`;
 ---
@@ -165,7 +166,7 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
 {variant === 'hero' ? (
   <!-- Hero Variant: Minimal transparent form -->
   <div class={`newsletter-form-wrapper hero-variant ${className}`}>
-    {content.ctaText && <p class="text-cta">{content.ctaText}</p>}
+    {heroContent.ctaText && <p class="text-cta">{heroContent.ctaText}</p>}
 
     <form class="newsletter-form hero-form" id={formId} data-variant="hero" data-locale={locale} novalidate>
       <!-- Email Input -->
@@ -173,10 +174,10 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
         type="email"
         name="email"
         id={`email-${uniqueId}`}
-        placeholder={content.emailPlaceholder}
+        placeholder={heroContent.emailPlaceholder}
         required
         class="email-input"
-        aria-label={content.emailPlaceholder}
+        aria-label={heroContent.emailPlaceholder}
         autocomplete="email"
       />
 
@@ -191,9 +192,9 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
           aria-required="true"
         />
         <span class="privacy-text">
-          {content.gdprLabel}{' '}
-          <a href={content.privacyUrl} class="privacy-link" target="_blank" rel="noopener noreferrer">
-            {content.privacyLink}
+          {heroContent.gdprLabel}{' '}
+          <a href={heroContent.privacyUrl} class="privacy-link" target="_blank" rel="noopener noreferrer">
+            {heroContent.privacyLink}
           </a>
           <span class="required-asterisk">*</span>
         </span>
@@ -201,7 +202,7 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
 
       <!-- Submit Button -->
       <button type="submit" class="submit-button" disabled>
-        <span class="button-text">{content.buttonText}</span>
+        <span class="button-text">{heroContent.buttonText}</span>
         <span class="button-loading hidden">
           <svg class="spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
@@ -212,10 +213,10 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
 
       <!-- Messages -->
       <div class="form-message success-message hidden" role="alert">
-        {content.successMessage}
+        {heroContent.successMessage}
       </div>
       <div class="form-message error-message hidden" role="alert">
-        <span class="error-text">{content.errorMessage}</span>
+        <span class="error-text">{heroContent.errorMessage}</span>
       </div>
     </form>
   </div>
@@ -226,8 +227,8 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
       <div class="cta-wrapper">
         <!-- Titles -->
         <div class="titles-wrapper">
-          <h2 class="title-seo">{content.titleSeo}</h2>
-          <h3 class="title-commercial">{content.titleCommercial}</h3>
+          <h2 class="title-seo">{ctaContent.titleSeo}</h2>
+          <h3 class="title-commercial">{ctaContent.titleCommercial}</h3>
         </div>
 
         <!-- Form -->
@@ -238,10 +239,10 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
               type="text"
               name="nombre"
               id={`nombre-${uniqueId}`}
-              placeholder={content.namePlaceholder}
+              placeholder={ctaContent.namePlaceholder}
               required
               class="form-input"
-              aria-label={content.namePlaceholder}
+              aria-label={ctaContent.namePlaceholder}
               autocomplete="name"
             />
           </div>
@@ -252,10 +253,10 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
               type="email"
               name="email"
               id={`email-${uniqueId}`}
-              placeholder={content.emailPlaceholder}
+              placeholder={ctaContent.emailPlaceholder}
               required
               class="form-input"
-              aria-label={content.emailPlaceholder}
+              aria-label={ctaContent.emailPlaceholder}
               autocomplete="email"
             />
           </div>
@@ -272,9 +273,9 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
                 aria-required="true"
               />
               <span class="privacy-text">
-                {content.gdprLabel}{' '}
-                <a href={content.privacyUrl} class="privacy-link" target="_blank" rel="noopener noreferrer">
-                  {content.privacyLink}
+                {ctaContent.gdprLabel}{' '}
+                <a href={ctaContent.privacyUrl} class="privacy-link" target="_blank" rel="noopener noreferrer">
+                  {ctaContent.privacyLink}
                 </a>
               </span>
             </label>
@@ -283,7 +284,7 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
           <!-- Submit Button -->
           <div class="form-row">
             <button type="submit" class="cta-button" disabled>
-              <span class="button-text">{content.buttonText}</span>
+              <span class="button-text">{ctaContent.buttonText}</span>
               <span class="button-loading hidden">
                 <svg class="spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
@@ -295,15 +296,15 @@ const uniqueId = `${variant}-${locale}-${Date.now()}`;
 
           <!-- Messages -->
           <div class="form-message success-message hidden" role="alert">
-            {content.successMessage}
+            {ctaContent.successMessage}
           </div>
           <div class="form-message error-message hidden" role="alert">
-            <span class="error-text">{content.errorMessage}</span>
+            <span class="error-text">{ctaContent.errorMessage}</span>
           </div>
         </form>
 
         <!-- Disclaimer -->
-        <p class="disclaimer-text">{content.disclaimer}</p>
+        <p class="disclaimer-text">{ctaContent.disclaimer}</p>
       </div>
     </div>
   </section>

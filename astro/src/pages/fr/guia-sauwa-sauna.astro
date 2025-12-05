@@ -58,7 +58,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
         <div class="header-content">
           <h1 class="blog-title">{t('blog.title')}</h1>
           <h2 class="blog-subtitle">{t('blog.subtitle')}</h2>
-          <Breadcrumb items={breadcrumbItems} locale={locale} />
+          <Breadcrumb items={breadcrumbItems} locale={locale} variant="dark" />
         </div>
       </div>
 
@@ -70,12 +70,10 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
     <!-- Category Filter -->
     <section id="blog-filters" class="blog-filters">
-      <div class="container">
-        <CategoryFilter
-          allCategoriesText={t('blog.category.all')}
-          locale={locale}
-        />
-      </div>
+      <CategoryFilter
+        allCategoriesText={t('blog.category.all')}
+        locale={locale}
+      />
     </section>
 
     <!-- Blog Grid -->
@@ -102,7 +100,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
   .blog-page {
     min-height: 100vh;
     background: #ffffff;
-    padding-top: 80px;
+    padding-top: 0; /* Removed padding, header has its own */
     overflow-x: hidden;
     max-width: 100vw;
   }

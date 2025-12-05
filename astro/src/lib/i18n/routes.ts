@@ -74,6 +74,22 @@ export const ROUTE_TRANSLATIONS: Record<string, Record<Locale, string>> = {
     en: '/open-days/',
     fr: '/portes-ouvertes/',
   },
+
+  // WDA-963: Partner detail pages
+  'partner-detail': {
+    es: '/socio/',
+    ca: '/soci/',
+    en: '/partner/',
+    fr: '/partenaire/',
+  },
+
+  // WDA-963: Session detail pages
+  'session-detail': {
+    es: '/sesion/',
+    ca: '/sessio/',
+    en: '/session/',
+    fr: '/seance/',
+  },
 };
 
 /**

@@ -383,9 +383,10 @@ const t = translations[locale];
    */
   import { getBlogPosts, formatDate, truncateText } from '../lib/blog-queries';
   import { toPolylangCode } from '../utils/language';
+  import type { Locale } from '../lib/types/blog';
 
   // Función para renderizar los posts (produce el MISMO HTML que el SSG)
-  function renderPosts(posts: any[], locale: string, container: HTMLElement) {
+  function renderPosts(posts: any[], locale: Locale, container: HTMLElement) {
     const seeMore = container.getAttribute('data-see-more') || 'Ver más';
     const noPostsMsg = container.getAttribute('data-no-posts') || 'No hay artículos disponibles.';
 
@@ -518,7 +519,7 @@ const t = translations[locale];
     const container = document.querySelector('.blog-scroll-container[data-locale]') as HTMLElement;
     if (!container) return;
 
-    const locale = container.getAttribute('data-locale') || 'es';
+    const locale = (container.getAttribute('data-locale') || 'es') as Locale;
     const limit = parseInt(container.getAttribute('data-limit') || '3');
 
     try {

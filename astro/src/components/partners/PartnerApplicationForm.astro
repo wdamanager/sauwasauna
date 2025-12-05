@@ -587,16 +587,16 @@ const { locale, title, subtitle } = Astro.props;
   import { getPartnersContent } from '../../lib/i18n/partners';
 
   class PartnerApplicationForm {
-    private form: HTMLFormElement;
-    private submitBtn: HTMLButtonElement;
-    private locale: string;
+    private form: HTMLFormElement | null = null;
+    private submitBtn: HTMLButtonElement | null = null;
+    private locale: string = 'es';
     private content: any;
 
     constructor() {
-      this.form = document.getElementById('partnerApplicationForm') as HTMLFormElement;
+      this.form = document.getElementById('partnerApplicationForm') as HTMLFormElement | null;
       if (!this.form) return;
 
-      this.submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+      this.submitBtn = document.getElementById('submitBtn') as HTMLButtonElement | null;
       this.locale = this.form.dataset.locale || 'es';
       this.content = getPartnersContent(this.locale as any);
 

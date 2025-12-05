@@ -28,7 +28,7 @@ const translations = {
     // Steps
     selectDate: 'Selecciona una fecha',
     selectTime: 'Elige un horario',
-    yourDetails: 'Datos personales',
+    yourDetails: 'Datos del comprador',
     confirmation: 'Reserva confirmada',
     // Calendar
     prevMonth: 'Mes anterior',
@@ -59,8 +59,10 @@ const translations = {
     changeSlot: 'Cambiar horario',
     // WDA-909: Multi-attendee
     attendeeData: 'Datos de los asistentes',
-    attendeeName: 'Nombre',
+    attendeeName: 'Nombre completo',
     attendeeEmail: 'Email (opcional)',
+    buyerName: 'Nombre completo',
+    buyerEmail: 'Email',
     addAttendee: 'Añadir asistente',
     removeAttendee: 'Eliminar',
     mainContact: 'Contacto principal',
@@ -116,7 +118,7 @@ const translations = {
   ca: {
     selectDate: 'Selecciona una data',
     selectTime: 'Tria un horari',
-    yourDetails: 'Les teves dades',
+    yourDetails: 'Dades del comprador',
     confirmation: 'Reserva confirmada',
     prevMonth: 'Mes anterior',
     nextMonth: 'Mes següent',
@@ -143,8 +145,10 @@ const translations = {
     confirm: 'Confirmar reserva',
     changeSlot: 'Canviar horari',
     attendeeData: 'Dades dels assistents',
-    attendeeName: 'Nom',
+    attendeeName: 'Nom complet',
     attendeeEmail: 'Email (opcional)',
+    buyerName: 'Nom complet',
+    buyerEmail: 'Email',
     addAttendee: 'Afegir assistent',
     removeAttendee: 'Eliminar',
     mainContact: 'Contacte principal',
@@ -196,7 +200,7 @@ const translations = {
   en: {
     selectDate: 'Select a date',
     selectTime: 'Choose a time',
-    yourDetails: 'Personal details',
+    yourDetails: 'Buyer details',
     confirmation: 'Booking confirmed',
     prevMonth: 'Previous month',
     nextMonth: 'Next month',
@@ -223,8 +227,10 @@ const translations = {
     confirm: 'Confirm booking',
     changeSlot: 'Change time',
     attendeeData: 'Attendee details',
-    attendeeName: 'Name',
+    attendeeName: 'Full name',
     attendeeEmail: 'Email (optional)',
+    buyerName: 'Full name',
+    buyerEmail: 'Email',
     addAttendee: 'Add attendee',
     removeAttendee: 'Remove',
     mainContact: 'Main contact',
@@ -276,7 +282,7 @@ const translations = {
   fr: {
     selectDate: 'Sélectionnez une date',
     selectTime: 'Choisissez un horaire',
-    yourDetails: 'Vos coordonnées',
+    yourDetails: 'Données de l\'acheteur',
     confirmation: 'Réservation confirmée',
     prevMonth: 'Mois précédent',
     nextMonth: 'Mois suivant',
@@ -303,8 +309,10 @@ const translations = {
     confirm: 'Confirmer la réservation',
     changeSlot: 'Changer l\'horaire',
     attendeeData: 'Détails des participants',
-    attendeeName: 'Nom',
+    attendeeName: 'Nom complet',
     attendeeEmail: 'Email (optionnel)',
+    buyerName: 'Nom complet',
+    buyerEmail: 'Email',
     addAttendee: 'Ajouter un participant',
     removeAttendee: 'Supprimer',
     mainContact: 'Contact principal',
@@ -1354,6 +1362,10 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     border: 1px solid var(--booking-gray-300);
   }
 
+  .attendee-row .form-input::placeholder {
+    color: var(--booking-gray-400);
+  }
+
   /* ============================================
      ESTILOS PARA ASISTENTES DINAMICOS (JS)
      Usar :global() porque son generados por JS
@@ -2028,6 +2040,24 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       // Form validation on input
       form?.addEventListener('input', () => this.updateSubmitButton());
       form?.addEventListener('change', () => this.updateSubmitButton());
+
+      // Auto-fill first attendee from buyer data
+      const customerNameInput = form?.querySelector('input[name="customer_name"]') as HTMLInputElement;
+      const customerEmailInput = form?.querySelector('input[name="customer_email"]') as HTMLInputElement;
+      const attendeeNameInput = form?.querySelector('input[name="attendee_name_0"]') as HTMLInputElement;
+      const attendeeEmailInput = form?.querySelector('input[name="attendee_email_0"]') as HTMLInputElement;
+
+      customerNameInput?.addEventListener('input', () => {
+        if (attendeeNameInput) {
+          attendeeNameInput.value = customerNameInput.value;
+        }
+      });
+
+      customerEmailInput?.addEventListener('input', () => {
+        if (attendeeEmailInput) {
+          attendeeEmailInput.value = customerEmailInput.value;
+        }
+      });
     }
 
     private handleAction(action: string): void {

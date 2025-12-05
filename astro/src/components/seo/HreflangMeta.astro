@@ -16,7 +16,7 @@ import { buildHreflangUrls } from '../../utils/language.js';
 
 interface Props {
   basePath?: string;
-  customPaths?: Record<string, string>;
+  customPaths?: Record<string, string> | { [key: string]: string };
   baseUrl?: string;
 }
 
@@ -43,7 +43,7 @@ const defaultUrl = customPaths
 ---
 
 <!-- Hreflang tags para SEO multiidioma -->
-{hreflangUrls.map(({ lang, locale, url }) => (
+{hreflangUrls.map(({ lang, url }: { lang: string; url: string }) => (
   <link rel="alternate" hreflang={lang} href={url} />
 ))}
 

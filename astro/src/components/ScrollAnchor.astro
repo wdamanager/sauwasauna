@@ -130,11 +130,11 @@ const { targetId, class: className = '' } = Astro.props;
 
 <script>
   class ScrollAnchorController {
-    private button: HTMLButtonElement;
-    private targetId: string;
+    private button: HTMLButtonElement | null;
+    private targetId: string = '';
 
     constructor() {
-      this.button = document.getElementById('scroll-anchor') as HTMLButtonElement;
+      this.button = document.getElementById('scroll-anchor') as HTMLButtonElement | null;
       if (!this.button) return;
 
       this.targetId = this.button.dataset.target || '';
@@ -142,7 +142,7 @@ const { targetId, class: className = '' } = Astro.props;
     }
 
     private init() {
-      this.button.addEventListener('click', () => this.scrollToTarget());
+      this.button?.addEventListener('click', () => this.scrollToTarget());
     }
 
     private scrollToTarget() {

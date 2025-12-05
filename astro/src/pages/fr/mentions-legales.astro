@@ -13,7 +13,7 @@ const description = 'Mentions légales de SAUWA (PCR Europe, S.L.). Conditions d
 ---
 
 <Layout title={title} description={description} lang={lang} navbar="none">
-  <HreflangMeta customPaths={getHreflangPaths('AVISO_LEGAL')} slot="head" />
+  <HreflangMeta customPaths={getHreflangPaths('AVISO_LEGAL') as Record<string, string>} slot="head" />
   <NavbarNoHero locale={lang} />
   <main class="legal-page">
     <LegalPageClient

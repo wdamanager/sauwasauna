@@ -13,7 +13,7 @@ const description = 'Politique de confidentialité de SAUWA. Traitement des donn
 ---
 
 <Layout title={title} description={description} lang={lang} navbar="none">
-  <HreflangMeta customPaths={getHreflangPaths('POLITICA_PRIVACIDAD')} slot="head" />
+  <HreflangMeta customPaths={getHreflangPaths('POLITICA_PRIVACIDAD') as Record<string, string>} slot="head" />
   <NavbarNoHero locale={lang} />
   <main class="legal-page">
     <LegalPageClient

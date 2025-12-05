@@ -93,7 +93,7 @@ try {
             tabindex="-1"
           >
             {category.name}
-            {category.count > 0 && <span class="item-count">({category.count})</span>}
+            {(category.count ?? 0) > 0 && <span class="item-count">({category.count})</span>}
           </li>
         ))}
       </ul>
@@ -115,6 +115,12 @@ try {
   const wrapper = document.querySelector<HTMLDivElement>('.dropdown-wrapper');
 
   if (button && list && label && wrapper) {
+    // Create non-nullable references for TypeScript
+    const _button = button;
+    const _list = list;
+    const _label = label;
+    const _wrapper = wrapper;
+
     // State
     let activeCategory = 'all';
     let isOpen = false;
@@ -124,7 +130,7 @@ try {
      * Get all dropdown items
      */
     function getItems(): HTMLLIElement[] {
-      return Array.from(list.querySelectorAll<HTMLLIElement>('.dropdown-item'));
+      return Array.from(_list.querySelectorAll<HTMLLIElement>('.dropdown-item'));
     }
 
     /**
@@ -132,12 +138,12 @@ try {
      */
     function openDropdown(): void {
       isOpen = true;
-      list.classList.remove('hidden');
-      button.setAttribute('aria-expanded', 'true');
+      _list.classList.remove('hidden');
+      _button.setAttribute('aria-expanded', 'true');
 
       // Position dropdown (ensure it's above everything)
-      const rect = button.getBoundingClientRect();
-      list.style.top = `${rect.height + 4}px`;
+      const rect = _button.getBoundingClientRect();
+      _list.style.top = `${rect.height + 4}px`;
 
       // Focus first item
       focusedIndex = 0;
@@ -149,9 +155,9 @@ try {
      */
     function closeDropdown(): void {
       isOpen = false;
-      list.classList.add('hidden');
-      button.setAttribute('aria-expanded', 'false');
-      button.focus();
+      _list.classList.add('hidden');
+      _button.setAttribute('aria-expanded', 'false');
+      _button.focus();
     }
 
     /**
@@ -191,7 +197,7 @@ try {
 
       // Update state
       activeCategory = value;
-      label.textContent = name;
+      _label.textContent = name;
 
       // Update active class
       getItems().forEach(item => {
@@ -305,7 +311,7 @@ try {
      * Handle click outside
      */
     function handleClickOutside(event: MouseEvent): void {
-      if (isOpen && !wrapper.contains(event.target as Node)) {
+      if (isOpen && !_wrapper.contains(event.target as Node)) {
         closeDropdown();
       }
     }
@@ -315,8 +321,8 @@ try {
      */
     function init(): void {
       // Button events
-      button.addEventListener('click', handleButtonClick);
-      button.addEventListener('keydown', handleButtonKeydown);
+      _button.addEventListener('click', handleButtonClick);
+      _button.addEventListener('keydown', handleButtonKeydown);
 
       // List item events
       getItems().forEach(item => {

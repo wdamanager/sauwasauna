@@ -14,7 +14,7 @@ import MobileMenu from './ui/MobileMenu.astro';
 import { getLocalizedUrl, type Locale } from '../lib/i18n/routes';
 
 interface Props {
-  locale: string;
+  locale: Locale;
 }
 
 const { locale } = Astro.props;
@@ -448,16 +448,16 @@ const currentPath = Astro.url.pathname;
 
         if (scrollY === 0) {
           // Exactamente en el top (0px): MOSTRAR navbar TRANSPARENTE (sin logo visible)
-          navbar.classList.add('visible');
-          navbar.classList.add('transparent');
+          navbar?.classList.add('visible');
+          navbar?.classList.add('transparent');
         } else if (scrollY > 0 && scrollDirection === 'down') {
           // Cualquier scroll hacia abajo: OCULTAR navbar inmediatamente
-          navbar.classList.remove('visible');
-          navbar.classList.remove('transparent');
+          navbar?.classList.remove('visible');
+          navbar?.classList.remove('transparent');
         } else if (scrollDirection === 'up') {
           // Scrolleando hacia arriba: MOSTRAR navbar blanco (usuario quiere navegar)
-          navbar.classList.add('visible');
-          navbar.classList.remove('transparent');
+          navbar?.classList.add('visible');
+          navbar?.classList.remove('transparent');
         }
 
         lastScrollY = scrollY;
@@ -498,16 +498,16 @@ const currentPath = Astro.url.pathname;
 
         if (scrollY === 0) {
           // Exactamente en el top (0px): navbar transparente con logo blanco visible
-          navbar.classList.add('transparent');
-          navbar.classList.add('visible');
+          navbar?.classList.add('transparent');
+          navbar?.classList.add('visible');
         } else if (scrollY > 0 && scrollDirection === 'down') {
           // Cualquier scroll hacia abajo: OCULTAR navbar inmediatamente
-          navbar.classList.remove('visible');
-          navbar.classList.remove('transparent');
+          navbar?.classList.remove('visible');
+          navbar?.classList.remove('transparent');
         } else if (scrollDirection === 'up') {
           // Scrolleando hacia arriba: MOSTRAR navbar blanco con logo negro
-          navbar.classList.remove('transparent');
-          navbar.classList.add('visible');
+          navbar?.classList.remove('transparent');
+          navbar?.classList.add('visible');
         }
 
         lastScrollY = scrollY;

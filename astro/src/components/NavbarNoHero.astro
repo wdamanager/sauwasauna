@@ -16,7 +16,7 @@ import MobileMenu from './ui/MobileMenu.astro';
 import { getLocalizedUrl, type Locale } from '../lib/i18n/routes';
 
 interface Props {
-  locale: string;
+  locale: Locale;
 }
 
 const { locale } = Astro.props;
@@ -291,14 +291,14 @@ const currentPath = Astro.url.pathname;
       if (scrollY > threshold) {
         if (scrollDirection === 'down') {
           // Scrolleando hacia abajo: OCULTAR navbar
-          navbar.classList.add('hidden');
+          navbar?.classList.add('hidden');
         } else if (scrollDirection === 'up') {
           // Scrolleando hacia arriba: MOSTRAR navbar
-          navbar.classList.remove('hidden');
+          navbar?.classList.remove('hidden');
         }
       } else {
         // En el top: siempre visible
-        navbar.classList.remove('hidden');
+        navbar?.classList.remove('hidden');
       }
 
       lastScrollY = scrollY;

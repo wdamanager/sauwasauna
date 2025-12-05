@@ -521,7 +521,7 @@ const content = phasesContent[locale];
 <script>
   // Intersection Observer para animaciones de scroll
   class SessionPhasesController {
-    private observer: IntersectionObserver;
+    private observer: IntersectionObserver | null = null;
     private cards: NodeListOf<Element>;
 
     constructor() {
@@ -547,14 +547,14 @@ const content = phasesContent[locale];
             }, index * 150);
 
             // Dejar de observar una vez animado
-            this.observer.unobserve(entry.target);
+            this.observer?.unobserve(entry.target);
           }
         });
       }, options);
 
       // Observar cada card
       this.cards.forEach(card => {
-        this.observer.observe(card);
+        this.observer?.observe(card);
       });
     }
   }

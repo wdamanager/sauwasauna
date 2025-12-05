@@ -536,16 +536,16 @@ const { locale, title, subtitle } = Astro.props;
   }
 
   class JobApplicationForm {
-    private form: HTMLFormElement;
-    private submitBtn: HTMLButtonElement;
-    private locale: string;
+    private form: HTMLFormElement | null = null;
+    private submitBtn: HTMLButtonElement | null = null;
+    private locale: string = 'es';
     private content: any;
 
     constructor() {
-      this.form = document.getElementById('jobApplicationForm') as HTMLFormElement;
+      this.form = document.getElementById('jobApplicationForm') as HTMLFormElement | null;
       if (!this.form) return;
 
-      this.submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+      this.submitBtn = document.getElementById('submitBtn') as HTMLButtonElement | null;
       this.locale = this.form.dataset.locale || 'es';
       this.content = getCareersContent(this.locale as any);
 

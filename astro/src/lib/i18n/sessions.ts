@@ -7,10 +7,12 @@
  * - FR: sessionDetails.tituloFr, sessionDetails.subtituloFr, sessionDetails.sessionDescriptionFr
  * - EN: sessionDetails.tituloEn, sessionDetails.sessionSubtitleEn, sessionDetails.sessionDescriptionEn
  *
- * Fallback logic: Requested language → Spanish (if empty)
+ * NORMA GLOBAL: Si un campo ACF está vacío en el idioma solicitado,
+ * siempre hacer fallback a español (ES), que es el idioma base.
  */
 
 import type { Locale } from '../booking/types';
+import { getLocalizedValue, getLocalizedFields } from './fallback';
 
 /**
  * Localized session text fields
@@ -26,7 +28,7 @@ export interface LocalizedSessionFields {
  */
 export interface SaunaSession {
   title: string; // Spanish base
-  content: string; // Spanish base
+  content?: string; // Spanish base (optional to match booking/types)
   sessionDetails: {
     subtitulo: string | null; // Spanish base
     // Catalan
@@ -47,6 +49,10 @@ export interface SaunaSession {
 /**
  * Get localized session fields with automatic fallback to Spanish
  *
+ * Uses centralized fallback utility to ensure consistent behavior:
+ * - If requested language field is empty → fallback to Spanish
+ * - Spanish is the base language and always has content
+ *
  * @param session - Session object from GraphQL
  * @param lang - Requested language (es, ca, fr, en)
  * @returns Localized title, subtitle, and description
@@ -64,41 +70,30 @@ export function getLocalizedSession(
 ): LocalizedSessionFields {
   const details = session.sessionDetails;
 
-  // Spanish base values (always available)
-  const esTitle = session.title;
-  const esSubtitle = details.subtitulo || '';
-  const esDescription = session.content || '';
-
-  // Return requested language with fallback to Spanish
-  switch (lang) {
-    case 'ca':
-      return {
-        title: details.tituloCa || esTitle,
-        subtitle: details.subtituloCa || esSubtitle,
-        description: details.sessionDescriptionCa || esDescription,
-      };
-
-    case 'fr':
-      return {
-        title: details.tituloFr || esTitle,
-        subtitle: details.subtituloFr || esSubtitle,
-        description: details.sessionDescriptionFr || esDescription,
-      };
-
-    case 'en':
-      return {
-        title: details.tituloEn || esTitle,
-        subtitle: details.sessionSubtitleEn || esSubtitle,
-        description: details.sessionDescriptionEn || esDescription,
-      };
-
-    default: // 'es' or fallback
-      return {
-        title: esTitle,
-        subtitle: esSubtitle,
-        description: esDescription,
-      };
-  }
+  // Use centralized fallback utility for all fields
+  return getLocalizedFields(
+    {
+      title: {
+        es: session.title,
+        ca: details.tituloCa,
+        en: details.tituloEn,
+        fr: details.tituloFr,
+      },
+      subtitle: {
+        es: details.subtitulo,
+        ca: details.subtituloCa,
+        en: details.sessionSubtitleEn,
+        fr: details.subtituloFr,
+      },
+      description: {
+        es: session.content ?? null,
+        ca: details.sessionDescriptionCa,
+        en: details.sessionDescriptionEn,
+        fr: details.sessionDescriptionFr,
+      },
+    },
+    lang
+  );
 }
 
 /**

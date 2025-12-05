@@ -16,7 +16,7 @@ const t = getTranslation(locale);
 const currentYear = new Date().getFullYear();
 
 // Legal pages URLs - Usando el sistema centralizado de mapeo
-const legalUrls = getAllLegalUrls(locale);
+const legalUrls = getAllLegalUrls(locale) as { privacy: string; terms: string; cookies: string };
 
 // Navigation links
 const navLinks = [

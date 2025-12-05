@@ -18,7 +18,7 @@ const description = 'Safety and booking terms for SAUWA reservations. Informatio
 ---
 
 <Layout title={title} description={description} lang={lang} navbar="none">
-  <HreflangMeta customPaths={getHreflangPaths('CONDICIONES_CONTRATACION')} slot="head" />
+  <HreflangMeta customPaths={getHreflangPaths('CONDICIONES_CONTRATACION') as Record<string, string>} slot="head" />
 
   <NavbarNoHero locale={lang} />
 

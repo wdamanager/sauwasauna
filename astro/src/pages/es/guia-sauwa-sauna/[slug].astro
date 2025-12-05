@@ -64,7 +64,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 const { slug } = Astro.params;
-const { initialPost } = Astro.props;
+const { initialPost } = Astro.props as { initialPost: BlogPost };
 
 // Handle 404 case
 if (!initialPost) {
