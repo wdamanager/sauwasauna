@@ -1,0 +1,695 @@
+---
+/**
+ * WDA-963: Dynamic Partner Detail Page
+ * Route: /[locale]/[partnerSlug]/
+ * Example: /es/hotel-coma-bella/
+ *
+ * Shows partner information and lists all their sessions
+ */
+import type { GetStaticPaths } from 'astro';
+import Layout from '../../../layouts/Layout.astro';
+import NavbarScroll from '../../../components/NavbarScroll.astro';
+import FooterBlack from '../../../components/layout/FooterBlack.astro';
+import PartnerHero from '../../../components/partners/PartnerHero.astro';
+import { getAllSessions, type SessionData } from '../../../lib/sessions-queries';
+import { generateGoogleMapsUrl } from '../../../lib/utils/maps';
+import { getLocalizedValue } from '../../../lib/i18n/fallback';
+
+type Locale = 'es' | 'ca' | 'en' | 'fr';
+
+interface PartnerData {
+  slug: string;
+  title: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  web?: string;
+  heroImage?: string;
+  featuredImage?: {
+    sourceUrl: string;
+    altText: string;
+  };
+  sessions: SessionData[];
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  // Define locales inside getStaticPaths to ensure they're accessible
+  const pathLocales: Array<'es' | 'ca' | 'en' | 'fr'> = ['es', 'ca', 'en', 'fr'];
+
+  try {
+    const sessions = await getAllSessions();
+
+    if (!sessions || sessions.length === 0) {
+      console.warn('[WDA-963] No sessions found for partner paths');
+      return [];
+    }
+
+    // Group sessions by partner
+    const partnerMap = new Map<string, PartnerData>();
+
+    for (const session of sessions) {
+      if (!session.partner) continue;
+
+      const partnerSlug = session.partner.slug;
+
+      if (!partnerMap.has(partnerSlug)) {
+        partnerMap.set(partnerSlug, {
+          slug: session.partner.slug,
+          title: session.partner.title,
+          address: session.partner.address,
+          phone: session.partner.phone,
+          email: session.partner.email,
+          web: session.partner.web,
+          heroImage: session.partner.heroImage,
+          featuredImage: session.partner.featuredImage,
+          sessions: [],
+        });
+      }
+
+      partnerMap.get(partnerSlug)!.sessions.push(session);
+    }
+
+    // Generate paths for all locales × partners
+    const paths: Array<{
+      params: { locale: string; partnerSlug: string };
+      props: { partner: PartnerData };
+    }> = [];
+
+    for (const [partnerSlug, partner] of partnerMap) {
+      for (const locale of pathLocales) {
+        paths.push({
+          params: { locale, partnerSlug },
+          props: { partner },
+        });
+      }
+    }
+
+    console.log(`[WDA-963] Generated ${paths.length} partner detail paths`);
+    return paths;
+  } catch (error) {
+    console.error('[WDA-963] Error generating partner paths:', error);
+    return [];
+  }
+};
+
+const { locale, partnerSlug } = Astro.params;
+const { partner } = Astro.props;
+
+if (!partner) {
+  return Astro.redirect('/404');
+}
+
+// i18n content
+const i18n: Record<Locale, {
+  heroTitle: string;
+  heroCtaText: string;
+  sessionsLabel: string;
+  sessionsTitle: string;
+  noSessions: string;
+  people: string;
+  address: string;
+  phone: string;
+  email: string;
+  website: string;
+}> = {
+  es: {
+    heroTitle: 'SAUWA PARTNER',
+    heroCtaText: 'Ver sesiones',
+    sessionsLabel: 'SESIONES DISPONIBLES',
+    sessionsTitle: `Sesiones SAUWA en ${partner.title}`,
+    noSessions: 'No hay sesiones disponibles en este momento',
+    people: 'personas',
+    address: 'Dirección',
+    phone: 'Teléfono',
+    email: 'Email',
+    website: 'Web',
+  },
+  ca: {
+    heroTitle: 'SAUWA PARTNER',
+    heroCtaText: 'Veure sessions',
+    sessionsLabel: 'SESSIONS DISPONIBLES',
+    sessionsTitle: `Sessions SAUWA a ${partner.title}`,
+    noSessions: 'No hi ha sessions disponibles en aquest moment',
+    people: 'persones',
+    address: 'Adreça',
+    phone: 'Telèfon',
+    email: 'Email',
+    website: 'Web',
+  },
+  en: {
+    heroTitle: 'SAUWA PARTNER',
+    heroCtaText: 'View sessions',
+    sessionsLabel: 'AVAILABLE SESSIONS',
+    sessionsTitle: `SAUWA sessions at ${partner.title}`,
+    noSessions: 'No sessions available at this time',
+    people: 'people',
+    address: 'Address',
+    phone: 'Phone',
+    email: 'Email',
+    website: 'Website',
+  },
+  fr: {
+    heroTitle: 'SAUWA PARTNER',
+    heroCtaText: 'Voir les séances',
+    sessionsLabel: 'SÉANCES DISPONIBLES',
+    sessionsTitle: `Séances SAUWA à ${partner.title}`,
+    noSessions: 'Aucune séance disponible pour le moment',
+    people: 'personnes',
+    address: 'Adresse',
+    phone: 'Téléphone',
+    email: 'Email',
+    website: 'Site web',
+  },
+};
+
+const t = i18n[locale as Locale] || i18n.es;
+
+// SEO
+const seoTitle = `${partner.title} | ${t.heroTitle}`;
+const seoDescription = `${t.sessions} en ${partner.title}. SAUWA Sauna Andorra.`;
+
+// Hero image: priority to heroImage, fallback to featuredImage
+const heroImage = partner.heroImage || partner.featuredImage?.sourceUrl || '';
+const addressUrl = partner.address ? generateGoogleMapsUrl(partner.address) : undefined;
+
+// hreflang
+const allLocales: Locale[] = ['es', 'ca', 'en', 'fr'];
+const hreflangs = allLocales.map(loc => ({
+  locale: loc,
+  href: `https://sauwasauna.com/${loc}/${partnerSlug}/`,
+}));
+---
+
+<Layout title={seoTitle} description={seoDescription} lang={locale} pageType="partner">
+  <Fragment slot="head">
+    {hreflangs.map(({ locale: loc, href }) => (
+      <link rel="alternate" hreflang={loc} href={href} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={hreflangs[0].href} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={seoTitle} />
+    <meta property="og:description" content={seoDescription} />
+    {heroImage && <meta property="og:image" content={heroImage} />}
+  </Fragment>
+
+  <NavbarScroll locale={locale} />
+
+  <main class="partner-page">
+    <!-- Partner Hero - WDA-965 -->
+    <PartnerHero
+      title={t.heroTitle}
+      heading={partner.title}
+      address={partner.address}
+      addressUrl={addressUrl}
+      ctaText={t.heroCtaText}
+      ctaHref="#sesiones"
+      backgroundImage={heroImage}
+    />
+
+    <!-- Partner Info Card -->
+    <section class="partner-info section">
+      <div class="container">
+        <div class="partner-info__card">
+          {partner.featuredImage && (
+            <div class="partner-info__logo">
+              <img
+                src={partner.featuredImage.sourceUrl}
+                alt={partner.featuredImage.altText || partner.title}
+                loading="lazy"
+              />
+            </div>
+          )}
+
+          <div class="partner-info__details">
+            {partner.address && (
+              <div class="partner-info__item">
+                <svg class="partner-info__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <div class="partner-info__content">
+                  <span class="partner-info__label">{t.address}</span>
+                  <a
+                    href={addressUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="partner-info__value partner-info__value--link"
+                  >
+                    {partner.address}
+                  </a>
+                </div>
+              </div>
+            )}
+
+            {partner.phone && (
+              <div class="partner-info__item">
+                <svg class="partner-info__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                <div class="partner-info__content">
+                  <span class="partner-info__label">{t.phone}</span>
+                  <a href={`tel:${partner.phone}`} class="partner-info__value partner-info__value--link">
+                    {partner.phone}
+                  </a>
+                </div>
+              </div>
+            )}
+
+            {partner.email && (
+              <div class="partner-info__item">
+                <svg class="partner-info__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <div class="partner-info__content">
+                  <span class="partner-info__label">{t.email}</span>
+                  <a href={`mailto:${partner.email}`} class="partner-info__value partner-info__value--link">
+                    {partner.email}
+                  </a>
+                </div>
+              </div>
+            )}
+
+            {partner.web && (
+              <div class="partner-info__item">
+                <svg class="partner-info__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="2" y1="12" x2="22" y2="12"/>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                <div class="partner-info__content">
+                  <span class="partner-info__label">{t.website}</span>
+                  <a
+                    href={partner.web}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="partner-info__value partner-info__value--link"
+                  >
+                    {new URL(partner.web).hostname.replace('www.', '')}
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sessions List -->
+    <section id="sesiones" class="partner-sessions section section--bg-light">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-label">{t.sessionsLabel}</p>
+          <h2 class="section-title">{t.sessionsTitle}</h2>
+        </div>
+
+        {partner.sessions.length > 0 ? (
+          <div class="sessions-grid">
+            {partner.sessions.map((session) => {
+              const sessionTranslation = session.translations.find(t => t.locale === locale as Locale);
+              const sessionSlug = sessionTranslation?.slug || session.slug;
+              const sessionUrl = `/${locale}/${partnerSlug}/${sessionSlug}/`;
+
+              // Use centralized fallback utility (always falls back to Spanish if empty)
+              const localizedTitle = getLocalizedValue(
+                {
+                  es: session.title,
+                  ca: session.localizedTitle?.ca,
+                  en: session.localizedTitle?.en,
+                  fr: session.localizedTitle?.fr,
+                },
+                locale as Locale
+              );
+
+              const subtitle = getLocalizedValue(
+                {
+                  es: session.subtitle?.es,
+                  ca: session.subtitle?.ca,
+                  en: session.subtitle?.en,
+                  fr: session.subtitle?.fr,
+                },
+                locale as Locale
+              );
+
+              return (
+                <article class="session-card">
+                  <a href={sessionUrl} class="session-card__link">
+                    {session.featuredImage && (
+                      <div class="session-card__image">
+                        <img
+                          src={session.featuredImage.sourceUrl}
+                          alt={session.featuredImage.altText || localizedTitle}
+                          loading="lazy"
+                          width="400"
+                          height="240"
+                        />
+                      </div>
+                    )}
+                    <div class="session-card__content">
+                      <h3 class="session-card__title">{localizedTitle}</h3>
+                      {subtitle && <p class="session-card__subtitle">{subtitle}</p>}
+
+                      <div class="session-card__meta">
+                        <span class="session-card__meta-item">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                          </svg>
+                          {session.duration} min
+                        </span>
+                        <span class="session-card__meta-item">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                          </svg>
+                          {session.capacity} {t.people}
+                        </span>
+                        <span class="session-card__meta-item session-card__price">
+                          {session.price}€
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <p class="no-sessions">{t.noSessions}</p>
+        )}
+      </div>
+    </section>
+  </main>
+
+  <FooterBlack locale={locale} />
+</Layout>
+
+<style>
+  /* WDA-965: Partner page styles */
+  .partner-page {
+    min-height: 100vh;
+  }
+
+  /* Container - Same as blog page for consistent lateral margins */
+  .container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  /* Section spacing */
+  .section {
+    padding: 4rem 0;
+  }
+
+  .section--bg-light {
+    background: #f8f8f8;
+  }
+
+  /* Partner Info Card - Layout horizontal sin bordes */
+  .partner-info__card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .partner-info__logo {
+    flex-shrink: 0;
+    width: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .partner-info__logo img {
+    width: 100%;
+    height: auto;
+    max-height: 140px;
+    object-fit: contain;
+  }
+
+  .partner-info__details {
+    flex-shrink: 0;
+    width: 500px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .partner-info__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .partner-info__icon {
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+    color: var(--color-primary);
+  }
+
+  .partner-info__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .partner-info__label {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-secondary);
+  }
+
+  .partner-info__value {
+    font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--color-text-primary);
+  }
+
+  .partner-info__value--link {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    word-break: break-word;
+  }
+
+  .partner-info__value--link:hover {
+    color: var(--color-primary);
+  }
+
+  /* Section Header */
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-label {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-scale-sm);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--color-primary-hover);
+    margin: 0 0 0.75rem;
+  }
+
+  .section-title {
+    font-family: var(--font-family-secondary);
+    font-size: 2rem;
+    font-weight: var(--font-weight-light);
+    line-height: 1.3;
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  /* Sessions Grid */
+  .sessions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+
+  /* Session Card - estilo blog */
+  .session-card {
+    background: #ffffff;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 400ms ease-out;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .session-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .session-card__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .session-card__link:focus-visible {
+    outline: 3px solid #BA2515;
+    outline-offset: 2px;
+  }
+
+  .session-card__image {
+    width: 100%;
+    height: 240px;
+    overflow: hidden;
+    background: #f5f5f5;
+    position: relative;
+  }
+
+  .session-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 400ms ease-out;
+  }
+
+  .session-card:hover .session-card__image img {
+    transform: scale(1.1);
+  }
+
+  .session-card__content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex-grow: 1;
+  }
+
+  .session-card__title {
+    font-family: var(--font-family-secondary);
+    font-size: 1.25rem;
+    font-weight: var(--font-weight-medium);
+    line-height: 1.4;
+    color: var(--color-text-primary);
+    margin: 0;
+    transition: color 0.2s;
+  }
+
+  .session-card:hover .session-card__title {
+    color: var(--color-primary);
+  }
+
+  .session-card__subtitle {
+    font-family: var(--font-family-primary);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .session-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .session-card__meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-family-primary);
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+  }
+
+  .session-card__meta-item svg {
+    flex-shrink: 0;
+    color: var(--color-primary);
+  }
+
+  .session-card__price {
+    margin-left: auto;
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: var(--color-primary);
+  }
+
+  .no-sessions {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 1.125rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    .partner-info__card {
+      flex-direction: column;
+      align-items: center;
+      gap: 2.5rem;
+    }
+
+    .partner-info__logo {
+      width: 200px;
+    }
+
+    .partner-info__details {
+      width: 100%;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      justify-items: center;
+    }
+
+    .partner-info__item {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.5rem;
+    }
+
+    .partner-info__icon {
+      margin-top: 0;
+    }
+
+    .partner-info__content {
+      align-items: center;
+    }
+
+    .sessions-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .partner-info__card {
+      flex-direction: column;
+      align-items: center;
+      gap: 3rem;
+    }
+
+    .partner-info__logo {
+      width: 240px;
+    }
+
+    .partner-info__details {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
