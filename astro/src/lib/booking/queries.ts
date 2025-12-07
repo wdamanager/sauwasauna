@@ -1,6 +1,7 @@
 /**
  * Booking GraphQL Queries
  * WDA-900: Queries for SAUWA booking system
+ * WDA-974: Added GET_SESSION_TYPE query for differentiated booking flows
  *
  * These queries work with the sauwa-sauna-booking WordPress plugin
  * installed at backend.sauwasauna.com
@@ -9,6 +10,34 @@
  */
 
 export const BOOKING_QUERIES = {
+  /**
+   * Get session type and booking metadata
+   * WDA-974: Used to determine which booking flow to render
+   *
+   * @param sessionId - WordPress post ID of the session
+   */
+  GET_SESSION_TYPE: `
+    query GetSessionType($sessionId: ID!) {
+      session(id: $sessionId, idType: DATABASE_ID) {
+        databaseId
+        sessionDetails {
+          sessionType
+          includedPersons
+          usesSharedCapacity
+          requiresFullCapacity
+          baseSession {
+            node {
+              ... on SaunaSession {
+                databaseId
+                title
+              }
+            }
+          }
+        }
+      }
+    }
+  `,
+
   /**
    * Get session details by ID
    * Used to display session info (title, duration, capacity, price)

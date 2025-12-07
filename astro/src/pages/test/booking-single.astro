@@ -1,0 +1,52 @@
+---
+/**
+ * TEST PAGE: WDA-974 - Test session_type: single (ID: 224)
+ */
+import Layout from '../../layouts/Layout.astro';
+import BookingWidget from '../../components/booking/BookingWidget.astro';
+
+const sessionId = 224;
+---
+
+<Layout title="Test: single type (WDA-974)" description="Testing single session type" lang="es">
+  <main class="test-page">
+    <header class="test-header">
+      <h1>WDA-974: session_type = single</h1>
+      <p>Session ID: {sessionId} - Sesion Compartida E2E Test</p>
+    </header>
+
+    <nav class="session-selector">
+      <a href="/test/booking-single/">single (224)</a>
+      <a href="/test/booking-private/">private (226)</a>
+      <a href="/test/booking-voucher/">voucher (229)</a>
+    </nav>
+
+    <div class="expected">
+      <h3>Expected Behavior:</h3>
+      <ul>
+        <li>Standard calendar and time slot selection</li>
+        <li>Quantity selector for attendees</li>
+        <li>Add attendee button visible</li>
+        <li>No special info banner</li>
+      </ul>
+    </div>
+
+    <section class="booking-section">
+      <BookingWidget sessionId={sessionId} locale="es" />
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .test-page { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+  .test-header { text-align: center; margin-bottom: 2rem; padding: 2rem; background: linear-gradient(135deg, #406E51, #2D4F3A); color: white; border-radius: 8px; }
+  .test-header h1 { margin: 0 0 0.5rem; font-size: 1.75rem; }
+  .test-header p { margin: 0; opacity: 0.9; }
+  .session-selector { display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem; }
+  .session-selector a { padding: 0.75rem 1.5rem; background: #406E51; color: white; text-decoration: none; border-radius: 4px; }
+  .session-selector a:hover { background: #2D4F3A; }
+  .expected { background: #f5f5f5; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; }
+  .expected h3 { margin: 0 0 1rem; }
+  .expected ul { margin: 0; padding-left: 1.5rem; }
+  .booking-section { background: #f9fafb; padding: 2rem; border-radius: 8px; }
+</style>

@@ -114,6 +114,13 @@ const translations = {
       attendeeRemoved: 'Asistente eliminado',
       stepLabel: 'Paso',
     },
+    // WDA-974: Differentiated booking flows
+    packInfo: 'Este pack incluye entrada para {n} personas',
+    voucherInfo: 'Este bono incluye {n} entradas válidas por 12 meses',
+    privateInfo: 'Sesión privada - Uso exclusivo de la sauna',
+    voucherCodesTitle: 'Tus códigos de bono',
+    groupSize: '¿Cuántas personas vendrán?',
+    groupSizeOptional: '(opcional, solo informativo)',
   },
   ca: {
     selectDate: 'Selecciona una data',
@@ -196,6 +203,13 @@ const translations = {
       attendeeRemoved: 'Assistent eliminat',
       stepLabel: 'Pas',
     },
+    // WDA-974: Differentiated booking flows
+    packInfo: 'Aquest pack inclou entrada per a {n} persones',
+    voucherInfo: 'Aquest bo inclou {n} entrades vàlides per 12 mesos',
+    privateInfo: 'Sessió privada - Ús exclusiu de la sauna',
+    voucherCodesTitle: 'Els teus codis de bo',
+    groupSize: 'Quantes persones vindran?',
+    groupSizeOptional: '(opcional, només informatiu)',
   },
   en: {
     selectDate: 'Select a date',
@@ -278,6 +292,13 @@ const translations = {
       attendeeRemoved: 'Attendee removed',
       stepLabel: 'Step',
     },
+    // WDA-974: Differentiated booking flows
+    packInfo: 'This pack includes entry for {n} people',
+    voucherInfo: 'This voucher includes {n} entries valid for 12 months',
+    privateInfo: 'Private session - Exclusive use of the sauna',
+    voucherCodesTitle: 'Your voucher codes',
+    groupSize: 'How many people will come?',
+    groupSizeOptional: '(optional, informative only)',
   },
   fr: {
     selectDate: 'Sélectionnez une date',
@@ -360,6 +381,13 @@ const translations = {
       attendeeRemoved: 'Participant supprimé',
       stepLabel: 'Étape',
     },
+    // WDA-974: Differentiated booking flows
+    packInfo: 'Ce pack comprend l\'entrée pour {n} personnes',
+    voucherInfo: 'Ce bon comprend {n} entrées valables 12 mois',
+    privateInfo: 'Séance privée - Usage exclusif du sauna',
+    voucherCodesTitle: 'Vos codes de bon',
+    groupSize: 'Combien de personnes viendront?',
+    groupSizeOptional: '(optionnel, informatif uniquement)',
   },
 };
 
@@ -403,6 +431,16 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       <span class="step-number">4</span>
       <span class="step-label">{t.confirmation}</span>
     </button>
+  </div>
+
+  <!-- WDA-974: Session type info banner (hidden by default, shown by JS) -->
+  <div class="session-type-info hidden" role="status" data-session-type="">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="info-icon">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="16" x2="12" y2="12"></line>
+      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+    </svg>
+    <span class="session-type-text"></span>
   </div>
 
   <!-- Step 1: Calendar -->
@@ -879,6 +917,66 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     margin: 0 0.5rem;
     align-self: flex-start;
     margin-top: 15px; /* Center with step-number (32px / 2 - 1px) */
+  }
+
+  /* ============================================
+     WDA-974: SESSION TYPE INFO BANNER
+     ============================================ */
+
+  .session-type-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background: var(--booking-gray-50);
+    border: 1px solid var(--booking-gray-200);
+    border-radius: 8px;
+  }
+
+  .session-type-info.hidden {
+    display: none;
+  }
+
+  .session-type-info[data-session-type="pack"] {
+    background: #eff6ff;
+    border-color: #3b82f6;
+  }
+
+  .session-type-info[data-session-type="voucher"] {
+    background: #fef3c7;
+    border-color: #f59e0b;
+  }
+
+  .session-type-info[data-session-type="private"] {
+    background: #f3e8ff;
+    border-color: #a855f7;
+  }
+
+  .session-type-info .info-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .session-type-info[data-session-type="pack"] .info-icon {
+    color: #3b82f6;
+  }
+
+  .session-type-info[data-session-type="voucher"] .info-icon {
+    color: #f59e0b;
+  }
+
+  .session-type-info[data-session-type="private"] .info-icon {
+    color: #a855f7;
+  }
+
+  .session-type-text {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--booking-gray-700);
+    font-weight: 500;
   }
 
   /* ============================================
@@ -1973,6 +2071,9 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     // WDA-921: Rate limiting
     rateLimitUntil: number | null;
     rateLimitCountdown: number;
+    // WDA-974: Session type support
+    sessionType: 'single' | 'pack' | 'voucher' | 'private';
+    includedPersons: number | null;
   }
 
   class BookingWidgetController {
@@ -1994,6 +2095,9 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         attendeeCount: 1,
         rateLimitUntil: null,
         rateLimitCountdown: 0,
+        // WDA-974: Default to single type (backward compatible)
+        sessionType: 'single',
+        includedPersons: null,
       };
 
       this.init();
@@ -2001,6 +2105,8 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
 
     private async init(): Promise<void> {
       this.bindEvents();
+      // WDA-974: Load session type first
+      await this.loadSessionType();
       await this.loadAvailableDates();
       this.renderCalendar();
     }
@@ -2073,6 +2179,113 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
           this.resetWidget();
           break;
       }
+    }
+
+    // =========================================
+    // WDA-974: SESSION TYPE
+    // =========================================
+
+    private async loadSessionType(): Promise<void> {
+      try {
+        const response = await fetch('https://backend.sauwasauna.com/graphql', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: `
+              query GetSessionType($sessionId: ID!) {
+                session(id: $sessionId, idType: DATABASE_ID) {
+                  databaseId
+                  sessionDetails {
+                    sessionType
+                    includedPersons
+                  }
+                }
+              }
+            `,
+            variables: { sessionId: this.state.sessionId },
+          }),
+        });
+
+        const result = await response.json();
+        const sessionDetails = result?.data?.session?.sessionDetails;
+
+        if (sessionDetails) {
+          // WDA-974: sessionType comes as array from ACF select field, extract first value
+          const rawType = sessionDetails.sessionType;
+          this.state.sessionType = Array.isArray(rawType) ? rawType[0] : (rawType || 'single');
+          this.state.includedPersons = sessionDetails.includedPersons || null;
+
+          // Update UI based on session type
+          this.updateSessionTypeUI();
+        }
+      } catch (error) {
+        console.error('[BookingWidget] Error loading session type:', error);
+        // Fallback to single type (backward compatible)
+        this.state.sessionType = 'single';
+      }
+    }
+
+    private updateSessionTypeUI(): void {
+      const { sessionType, includedPersons, translations } = this.state;
+      const infoBanner = this.widget.querySelector('.session-type-info');
+      const infoBannerText = this.widget.querySelector('.session-type-text');
+
+      // Hide calendar for voucher purchases
+      if (sessionType === 'voucher') {
+        const calendarStep = this.widget.querySelector('[data-step="calendar"]');
+        const slotsStep = this.widget.querySelector('[data-step="slots"]');
+        calendarStep?.classList.add('hidden');
+        slotsStep?.classList.add('hidden');
+        // Update progress to skip calendar/slots steps
+        const calendarProgress = this.widget.querySelector('[data-step-index="0"]');
+        const slotsProgress = this.widget.querySelector('[data-step-index="1"]');
+        calendarProgress?.classList.add('hidden');
+        slotsProgress?.classList.add('hidden');
+        // Show form directly
+        this.showStep('form');
+      }
+
+      // Show info banner for pack, voucher, or private types
+      if (sessionType !== 'single' && infoBanner && infoBannerText) {
+        infoBanner.setAttribute('data-session-type', sessionType);
+
+        let infoText = '';
+        if (sessionType === 'pack' && includedPersons) {
+          infoText = translations.packInfo.replace('{n}', includedPersons);
+          // Set fixed attendee count for packs
+          this.state.attendeeCount = 1; // Start with 1, will add more below
+          this.state.maxCapacity = includedPersons;
+          // Pre-populate attendee forms for pack
+          setTimeout(() => this.initializePackAttendees(includedPersons), 100);
+        } else if (sessionType === 'voucher' && includedPersons) {
+          infoText = translations.voucherInfo.replace('{n}', includedPersons);
+        } else if (sessionType === 'private') {
+          infoText = translations.privateInfo;
+          // For private sessions, allow flexible attendee count up to max
+          // No pre-population needed
+        }
+
+        infoBannerText.textContent = infoText;
+        infoBanner.classList.remove('hidden');
+      }
+
+      // Disable add attendee button for pack/private types
+      if (sessionType === 'pack') {
+        // Pack types have fixed attendee count
+        const addAttendeeBtn = this.widget.querySelector('.add-attendee-btn');
+        addAttendeeBtn?.setAttribute('disabled', 'true');
+        addAttendeeBtn?.classList.add('hidden');
+      }
+    }
+
+    private initializePackAttendees(count: number): void {
+      // Add (count - 1) more attendees since we already have 1
+      for (let i = 1; i < count; i++) {
+        this.addAttendee();
+      }
+      // Update UI to reflect fixed count
+      this.updateAttendeesCount();
+      this.updateAddAttendeeButton();
     }
 
     // =========================================

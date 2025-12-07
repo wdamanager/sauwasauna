@@ -1,0 +1,53 @@
+---
+/**
+ * SessionGrid Component - WDA-963
+ * Responsive grid for session cards
+ */
+
+import type { Session } from '../../lib/types/sessions';
+import type { Locale } from '../../lib/types/blog';
+import SessionCard from './SessionCard.astro';
+
+export interface Props {
+  sessions: Session[];
+  partnerSlug: string;
+  locale?: Locale;
+  class?: string;
+}
+
+const { sessions, partnerSlug, locale = 'es', class: className = '' } = Astro.props;
+---
+
+<div class={`sessions-grid ${className}`}>
+  {sessions.map(session => (
+    <SessionCard
+      session={session}
+      partnerSlug={partnerSlug}
+      locale={locale}
+    />
+  ))}
+</div>
+
+<style>
+  .sessions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-6);
+  }
+
+  /* Tablet: 2 columns */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .sessions-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-5);
+    }
+  }
+
+  /* Mobile: 1 column */
+  @media (max-width: 767px) {
+    .sessions-grid {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-4);
+    }
+  }
+</style>

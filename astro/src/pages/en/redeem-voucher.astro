@@ -1,0 +1,100 @@
+---
+/**
+ * WDA-975: Voucher Redemption Page - EN
+ * Page for redeeming purchased vouchers
+ */
+
+import Layout from '../../layouts/Layout.astro';
+import NavbarScroll from '../../components/NavbarScroll.astro';
+import FooterBlack from '../../components/layout/FooterBlack.astro';
+import VoucherRedemptionFlow from '../../components/voucher/VoucherRedemptionFlow.astro';
+
+const locale = 'en';
+
+const seoTitle = 'Redeem Voucher | SAUWA SAUNA ANDORRA';
+const seoDescription = 'Redeem your SAUWA SAUNA voucher. Enter your code and book your Finnish sauna session in Andorra.';
+---
+
+<Layout title={seoTitle} description={seoDescription} lang={locale} pageType="voucher-redemption">
+  <NavbarScroll locale={locale} />
+
+  <main class="voucher-page">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-container">
+        <h1 class="hero-title">Redeem Your Voucher</h1>
+        <p class="hero-subtitle">
+          Enter your voucher code and book your Finnish sauna experience
+        </p>
+      </div>
+    </section>
+
+    <!-- Redemption Flow -->
+    <section class="redemption-section">
+      <VoucherRedemptionFlow locale={locale} />
+    </section>
+  </main>
+
+  <FooterBlack locale={locale} />
+</Layout>
+
+<style>
+  .voucher-page {
+    min-height: 100vh;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    background: linear-gradient(135deg, #406E51 0%, #2D4F3A 100%);
+    color: white;
+    padding: 6rem 2rem 4rem;
+    text-align: center;
+  }
+
+  .hero-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    font-family: 'Nunito Sans', sans-serif;
+  }
+
+  .hero-subtitle {
+    font-size: 1.125rem;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* Redemption Section */
+  .redemption-section {
+    background: #F9FAFB;
+    padding: 4rem 2rem;
+    min-height: 600px;
+  }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    .hero-section {
+      padding: 4rem 1rem 3rem;
+    }
+
+    .hero-title {
+      font-size: 1.875rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+    }
+
+    .redemption-section {
+      padding: 2rem 1rem;
+    }
+  }
+</style>

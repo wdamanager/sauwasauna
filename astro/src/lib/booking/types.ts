@@ -1,6 +1,7 @@
 /**
  * Booking Type Definitions
  * WDA-900: TypeScript interfaces for SAUWA booking system
+ * WDA-974: Added session type support for differentiated booking flows
  */
 
 // =============================================================================
@@ -8,6 +9,19 @@
 // =============================================================================
 
 export type Locale = 'es' | 'ca' | 'en' | 'fr';
+
+// =============================================================================
+// SESSION TYPES - WDA-974
+// =============================================================================
+
+/**
+ * Session type determines booking flow behavior
+ * - single: Standard booking with quantity selector
+ * - pack: Pre-paid pack with fixed number of entries
+ * - voucher: Gift voucher (no calendar, generates codes)
+ * - private: Private session (full capacity, no quantity selector)
+ */
+export type SessionType = 'single' | 'pack' | 'voucher' | 'private';
 
 // =============================================================================
 // SESSION (CPT: sauna_session)
@@ -93,6 +107,26 @@ export interface SessionDetails {
   sessionDescriptionEn?: string | null;
   /** Partner hosting this session (ACF Edge - direct node access) */
   partner: PartnerEdge | null;
+}
+
+/**
+ * Extended session details with booking type metadata
+ * WDA-974: Adds session type and capacity fields for differentiated flows
+ */
+export interface ExtendedSessionDetails extends SessionDetails {
+  /** Session type determines booking flow */
+  sessionType: SessionType;
+  /** Number of persons included (for pack/voucher types) */
+  includedPersons: number | null;
+  /** Whether session uses shared capacity calculation */
+  usesSharedCapacity: boolean;
+  /** Whether session requires full capacity booking */
+  requiresFullCapacity: boolean;
+  /** Base session for packs/vouchers (references another session) */
+  baseSession?: {
+    id: number;
+    title: string;
+  } | null;
 }
 
 /**
@@ -326,4 +360,74 @@ export interface AvailableDatesVariables {
 export interface DaySlotsVariables {
   sessionId: number;
   date: string;
+}
+
+// =============================================================================
+// VOUCHER REDEMPTION - WDA-975
+// =============================================================================
+
+/**
+ * Voucher error types
+ */
+export type VoucherError = 'invalid' | 'redeemed' | 'expired' | 'no_slots';
+
+/**
+ * Voucher validation response
+ * REST API: POST /wp-json/sauwa/v1/vouchers/validate
+ */
+export interface VoucherValidationResponse {
+  valid: boolean;
+  error?: VoucherError;
+  voucher?: {
+    code: string;
+    status: 'active' | 'redeemed' | 'expired';
+    expiresAt: string;
+    redeemedAt?: string;
+    baseSession: {
+      id: number;
+      title: string;
+    };
+    includedPersons: number;
+  };
+}
+
+/**
+ * Attendee data for voucher redemption
+ */
+export interface VoucherAttendee {
+  name: string;
+  email: string;
+  dni?: string;
+}
+
+/**
+ * Consents for voucher redemption
+ */
+export interface VoucherConsents {
+  privacy: boolean;
+  terms: boolean;
+}
+
+/**
+ * Voucher redemption request
+ * REST API: POST /wp-json/sauwa/v1/vouchers/redeem
+ */
+export interface VoucherRedemptionRequest {
+  code: string;
+  slot_date: string;
+  slot_time: string;
+  attendee: VoucherAttendee;
+  consents: VoucherConsents;
+  language: string;
+}
+
+/**
+ * Voucher redemption response
+ */
+export interface VoucherRedemptionResponse {
+  success: boolean;
+  booking_id?: number;
+  booking_number?: string;
+  ticket_url?: string;
+  error?: string;
 }

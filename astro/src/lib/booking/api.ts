@@ -366,3 +366,89 @@ export function getCapacityColor(capacity: {
   if (ratio > 0.2) return 'yellow';
   return 'red';
 }
+
+// =============================================================================
+// VOUCHER REDEMPTION - WDA-975
+// =============================================================================
+
+/**
+ * Validate voucher code
+ * REST API: POST /wp-json/sauwa/v1/vouchers/validate
+ *
+ * @param code - Voucher code (format: VCH-2025-XXXXXX-YYYY)
+ */
+export async function validateVoucher(
+  code: string
+): Promise<import('./types').VoucherValidationResponse> {
+  try {
+    const response = await fetch(`${BOOKING_CONFIG.restEndpoint}/vouchers/validate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      return {
+        valid: false,
+        error: result.error || 'invalid',
+      };
+    }
+
+    return result;
+  } catch (error) {
+    console.error('[Booking API] validateVoucher error:', error);
+    return {
+      valid: false,
+      error: 'invalid',
+    };
+  }
+}
+
+/**
+ * Redeem voucher for a booking
+ * REST API: POST /wp-json/sauwa/v1/vouchers/redeem
+ * NOT cached - always hits server
+ *
+ * @param data - Voucher redemption request data
+ */
+export async function redeemVoucher(
+  data: import('./types').VoucherRedemptionRequest
+): Promise<import('./types').VoucherRedemptionResponse> {
+  try {
+    const response = await fetch(`${BOOKING_CONFIG.restEndpoint}/vouchers/redeem`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: result.message || result.error || `Request failed: ${response.status}`,
+      };
+    }
+
+    // Clear cache for this date after successful redemption
+    if (result.success && data.slot_date) {
+      const sessionId = result.booking_id || 0;
+      const slotCacheKey = CACHE_KEYS.daySlots(sessionId, data.slot_date);
+      localStorage.removeItem(slotCacheKey);
+    }
+
+    return result;
+  } catch (error) {
+    console.error('[Booking API] redeemVoucher error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}

@@ -1,0 +1,1048 @@
+---
+/**
+ * VoucherRedemptionFlow - Voucher Redemption Widget
+ * WDA-975: Complete flow for redeeming purchased vouchers
+ *
+ * Flow:
+ * 1. Enter and validate voucher code
+ * 2. Select date and time slot
+ * 3. Enter attendee details
+ * 4. Show confirmation with ticket download
+ *
+ * Pattern: Client-side state management with multi-step form
+ */
+
+import { getLegalUrl } from '../../lib/wordpress/legal-slugs.js';
+
+export interface Props {
+  locale?: 'es' | 'ca' | 'en' | 'fr';
+  class?: string;
+}
+
+const { locale = 'es', class: className = '' } = Astro.props;
+
+// Translations for all supported languages
+const translations = {
+  es: {
+    pageTitle: 'Canjear tu bono',
+    // Step 1: Code Entry
+    step1Title: 'Introduce tu código',
+    codeLabel: 'Código del voucher',
+    codePlaceholder: 'VCH-2025-XXXXXX-YYYY',
+    validateButton: 'Validar código',
+    validating: 'Validando...',
+    // Step 2: Validated
+    step2Title: 'Código válido',
+    validCode: '¡Código válido!',
+    sessionLabel: 'Sesión',
+    validUntil: 'Válido hasta',
+    selectDateTime: 'Selecciona fecha y hora',
+    changeDate: 'Cambiar fecha',
+    prevMonth: 'Mes anterior',
+    nextMonth: 'Mes siguiente',
+    months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+    weekdays: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+    // Step 3: Attendee Form
+    step3Title: 'Datos del asistente',
+    attendeeDetails: 'Datos para la reserva',
+    nameLabel: 'Nombre completo',
+    emailLabel: 'Correo electrónico',
+    dniLabel: 'DNI/NIE (opcional)',
+    privacyLabel: 'Acepto la',
+    privacyLink: 'política de privacidad',
+    privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'es'),
+    termsLabel: 'Acepto las',
+    termsLink: 'condiciones de contratación',
+    termsUrl: getLegalUrl('CONDICIONES_CONTRATACION', 'es'),
+    confirmButton: 'Confirmar reserva',
+    changeSlot: 'Cambiar horario',
+    confirming: 'Procesando...',
+    // Step 4: Confirmation
+    step4Title: 'Reserva confirmada',
+    successTitle: '¡Reserva confirmada!',
+    yourTicket: 'Tu entrada para',
+    downloadPdf: 'Descargar ticket PDF',
+    addCalendar: 'Añadir al calendario',
+    bookingNumber: 'Número de reserva',
+    bookingDate: 'Fecha',
+    bookingTime: 'Hora',
+    newRedemption: 'Canjear otro voucher',
+    // Errors
+    errorInvalid: 'El código introducido no es válido',
+    errorRedeemed: 'Este código ya ha sido canjeado el {date}',
+    errorExpired: 'Este código expiró el {date}',
+    errorNoSlots: 'No hay disponibilidad para la fecha seleccionada',
+    errorGeneric: 'Ha ocurrido un error. Por favor, inténtalo de nuevo.',
+    // Validation
+    nameRequired: 'El nombre es obligatorio',
+    emailRequired: 'El email es obligatorio',
+    emailInvalid: 'El email no es válido',
+    privacyRequired: 'Debes aceptar la política de privacidad',
+    termsRequired: 'Debes aceptar las condiciones de contratación',
+    // Loading
+    loadingDates: 'Cargando fechas disponibles...',
+    loadingSlots: 'Cargando horarios...',
+    noSlots: 'No hay horarios disponibles para esta fecha',
+    noDates: 'No hay fechas disponibles',
+    // Slots
+    available: 'disponibles',
+    spots: 'plazas',
+    full: 'Completo',
+  },
+  ca: {
+    pageTitle: 'Bescanviar el teu bo',
+    step1Title: 'Introdueix el teu codi',
+    codeLabel: 'Codi del voucher',
+    codePlaceholder: 'VCH-2025-XXXXXX-YYYY',
+    validateButton: 'Validar codi',
+    validating: 'Validant...',
+    step2Title: 'Codi vàlid',
+    validCode: 'Codi vàlid!',
+    sessionLabel: 'Sessió',
+    validUntil: 'Vàlid fins',
+    selectDateTime: 'Selecciona data i hora',
+    changeDate: 'Canviar data',
+    prevMonth: 'Mes anterior',
+    nextMonth: 'Mes següent',
+    months: ['Gener', 'Febrer', 'Març', 'Abril', 'Maig', 'Juny', 'Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'],
+    weekdays: ['Dll', 'Dmt', 'Dmc', 'Dij', 'Dve', 'Dis', 'Dge'],
+    step3Title: 'Dades de l\'assistent',
+    attendeeDetails: 'Dades per a la reserva',
+    nameLabel: 'Nom complet',
+    emailLabel: 'Correu electrònic',
+    dniLabel: 'DNI/NIE (opcional)',
+    privacyLabel: 'Accepto la',
+    privacyLink: 'política de privacitat',
+    privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'ca'),
+    termsLabel: 'Accepto les',
+    termsLink: 'condicions de contractació',
+    termsUrl: getLegalUrl('CONDICIONES_CONTRATACION', 'ca'),
+    confirmButton: 'Confirmar reserva',
+    changeSlot: 'Canviar horari',
+    confirming: 'Processant...',
+    step4Title: 'Reserva confirmada',
+    successTitle: 'Reserva confirmada!',
+    yourTicket: 'La teva entrada per',
+    downloadPdf: 'Descarregar ticket PDF',
+    addCalendar: 'Afegir al calendari',
+    bookingNumber: 'Número de reserva',
+    bookingDate: 'Data',
+    bookingTime: 'Hora',
+    newRedemption: 'Bescanviar un altre voucher',
+    errorInvalid: 'El codi introduït no és vàlid',
+    errorRedeemed: 'Aquest codi ja ha estat bescanviat el {date}',
+    errorExpired: 'Aquest codi va expirar el {date}',
+    errorNoSlots: 'No hi ha disponibilitat per la data seleccionada',
+    errorGeneric: 'S\'ha produït un error. Si us plau, torna-ho a intentar.',
+    nameRequired: 'El nom és obligatori',
+    emailRequired: 'L\'email és obligatori',
+    emailInvalid: 'L\'email no és vàlid',
+    privacyRequired: 'Has d\'acceptar la política de privacitat',
+    termsRequired: 'Has d\'acceptar les condicions de contractació',
+    loadingDates: 'Carregant dates disponibles...',
+    loadingSlots: 'Carregant horaris...',
+    noSlots: 'No hi ha horaris disponibles per aquesta data',
+    noDates: 'No hi ha dates disponibles',
+    available: 'disponibles',
+    spots: 'places',
+    full: 'Complet',
+  },
+  en: {
+    pageTitle: 'Redeem your voucher',
+    step1Title: 'Enter your code',
+    codeLabel: 'Voucher code',
+    codePlaceholder: 'VCH-2025-XXXXXX-YYYY',
+    validateButton: 'Validate code',
+    validating: 'Validating...',
+    step2Title: 'Valid code',
+    validCode: 'Valid code!',
+    sessionLabel: 'Session',
+    validUntil: 'Valid until',
+    selectDateTime: 'Select date and time',
+    changeDate: 'Change date',
+    prevMonth: 'Previous month',
+    nextMonth: 'Next month',
+    months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    step3Title: 'Attendee details',
+    attendeeDetails: 'Booking information',
+    nameLabel: 'Full name',
+    emailLabel: 'Email address',
+    dniLabel: 'ID number (optional)',
+    privacyLabel: 'I accept the',
+    privacyLink: 'privacy policy',
+    privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'en'),
+    termsLabel: 'I accept the',
+    termsLink: 'terms and conditions',
+    termsUrl: getLegalUrl('CONDICIONES_CONTRATACION', 'en'),
+    confirmButton: 'Confirm booking',
+    changeSlot: 'Change time',
+    confirming: 'Processing...',
+    step4Title: 'Booking confirmed',
+    successTitle: 'Booking confirmed!',
+    yourTicket: 'Your ticket for',
+    downloadPdf: 'Download PDF ticket',
+    addCalendar: 'Add to calendar',
+    bookingNumber: 'Booking number',
+    bookingDate: 'Date',
+    bookingTime: 'Time',
+    newRedemption: 'Redeem another voucher',
+    errorInvalid: 'The code entered is not valid',
+    errorRedeemed: 'This code was already redeemed on {date}',
+    errorExpired: 'This code expired on {date}',
+    errorNoSlots: 'No availability for the selected date',
+    errorGeneric: 'An error occurred. Please try again.',
+    nameRequired: 'Name is required',
+    emailRequired: 'Email is required',
+    emailInvalid: 'Email is not valid',
+    privacyRequired: 'You must accept the privacy policy',
+    termsRequired: 'You must accept the terms and conditions',
+    loadingDates: 'Loading available dates...',
+    loadingSlots: 'Loading time slots...',
+    noSlots: 'No time slots available for this date',
+    noDates: 'No dates available',
+    available: 'available',
+    spots: 'spots',
+    full: 'Full',
+  },
+  fr: {
+    pageTitle: 'Échanger votre bon',
+    step1Title: 'Entrez votre code',
+    codeLabel: 'Code du voucher',
+    codePlaceholder: 'VCH-2025-XXXXXX-YYYY',
+    validateButton: 'Valider le code',
+    validating: 'Validation...',
+    step2Title: 'Code valide',
+    validCode: 'Code valide !',
+    sessionLabel: 'Session',
+    validUntil: 'Valable jusqu\'au',
+    selectDateTime: 'Sélectionnez date et heure',
+    changeDate: 'Changer la date',
+    prevMonth: 'Mois précédent',
+    nextMonth: 'Mois suivant',
+    months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+    weekdays: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+    step3Title: 'Détails du participant',
+    attendeeDetails: 'Informations de réservation',
+    nameLabel: 'Nom complet',
+    emailLabel: 'Adresse e-mail',
+    dniLabel: 'Numéro d\'identification (facultatif)',
+    privacyLabel: 'J\'accepte la',
+    privacyLink: 'politique de confidentialité',
+    privacyUrl: getLegalUrl('POLITICA_PRIVACIDAD', 'fr'),
+    termsLabel: 'J\'accepte les',
+    termsLink: 'conditions de service',
+    termsUrl: getLegalUrl('CONDICIONES_CONTRATACION', 'fr'),
+    confirmButton: 'Confirmer la réservation',
+    changeSlot: 'Changer l\'heure',
+    confirming: 'Traitement...',
+    step4Title: 'Réservation confirmée',
+    successTitle: 'Réservation confirmée !',
+    yourTicket: 'Votre billet pour',
+    downloadPdf: 'Télécharger le billet PDF',
+    addCalendar: 'Ajouter au calendrier',
+    bookingNumber: 'Numéro de réservation',
+    bookingDate: 'Date',
+    bookingTime: 'Heure',
+    newRedemption: 'Échanger un autre voucher',
+    errorInvalid: 'Le code saisi n\'est pas valide',
+    errorRedeemed: 'Ce code a déjà été échangé le {date}',
+    errorExpired: 'Ce code a expiré le {date}',
+    errorNoSlots: 'Aucune disponibilité pour la date sélectionnée',
+    errorGeneric: 'Une erreur s\'est produite. Veuillez réessayer.',
+    nameRequired: 'Le nom est obligatoire',
+    emailRequired: 'L\'e-mail est obligatoire',
+    emailInvalid: 'L\'e-mail n\'est pas valide',
+    privacyRequired: 'Vous devez accepter la politique de confidentialité',
+    termsRequired: 'Vous devez accepter les conditions de service',
+    loadingDates: 'Chargement des dates disponibles...',
+    loadingSlots: 'Chargement des créneaux horaires...',
+    noSlots: 'Aucun créneau horaire disponible pour cette date',
+    noDates: 'Aucune date disponible',
+    available: 'disponibles',
+    spots: 'places',
+    full: 'Complet',
+  },
+};
+
+const t = translations[locale];
+---
+
+<div class={`voucher-redemption ${className}`} data-locale={locale} data-translations={JSON.stringify(t)}>
+  <!-- Step Indicator -->
+  <div class="steps-indicator">
+    <div class="step" data-step="1" data-active="true">
+      <div class="step-number">1</div>
+      <div class="step-label">{t.step1Title}</div>
+    </div>
+    <div class="step" data-step="2">
+      <div class="step-number">2</div>
+      <div class="step-label">{t.step2Title}</div>
+    </div>
+    <div class="step" data-step="3">
+      <div class="step-number">3</div>
+      <div class="step-label">{t.step3Title}</div>
+    </div>
+    <div class="step" data-step="4">
+      <div class="step-number">4</div>
+      <div class="step-label">{t.step4Title}</div>
+    </div>
+  </div>
+
+  <!-- Step 1: Code Entry -->
+  <div class="step-content" data-step-content="1" data-active="true">
+    <div class="card">
+      <h2 class="step-title">{t.step1Title}</h2>
+      <form id="code-form" class="code-form">
+        <div class="form-group">
+          <label for="voucher-code" class="form-label">{t.codeLabel}</label>
+          <input
+            type="text"
+            id="voucher-code"
+            class="form-input"
+            placeholder={t.codePlaceholder}
+            pattern="VCH-\d{4}-[A-Z0-9]{6}-[A-Z0-9]{4}"
+            required
+          />
+        </div>
+        <div class="error-message" id="code-error" role="alert"></div>
+        <button type="submit" class="btn btn-primary" id="validate-btn">
+          <span class="btn-text">{t.validateButton}</span>
+          <span class="btn-loading hidden">{t.validating}</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Step 2: Date/Time Selection -->
+  <div class="step-content" data-step-content="2">
+    <div class="card">
+      <div class="voucher-info" id="voucher-info"></div>
+      <h2 class="step-title">{t.selectDateTime}</h2>
+      <div id="calendar-container" class="calendar-container"></div>
+      <div id="slots-container" class="slots-container hidden"></div>
+      <div class="error-message" id="date-error" role="alert"></div>
+    </div>
+  </div>
+
+  <!-- Step 3: Attendee Form -->
+  <div class="step-content" data-step-content="3">
+    <div class="card">
+      <h2 class="step-title">{t.attendeeDetails}</h2>
+      <div class="booking-summary" id="booking-summary"></div>
+      <form id="attendee-form" class="attendee-form">
+        <div class="form-group">
+          <label for="attendee-name" class="form-label">{t.nameLabel}</label>
+          <input
+            type="text"
+            id="attendee-name"
+            class="form-input"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="attendee-email" class="form-label">{t.emailLabel}</label>
+          <input
+            type="email"
+            id="attendee-email"
+            class="form-input"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="attendee-dni" class="form-label">{t.dniLabel}</label>
+          <input
+            type="text"
+            id="attendee-dni"
+            class="form-input"
+          />
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="privacy-consent" required />
+            <span>
+              {t.privacyLabel}
+              <a href={t.privacyUrl} target="_blank" rel="noopener">{t.privacyLink}</a>
+            </span>
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="terms-consent" required />
+            <span>
+              {t.termsLabel}
+              <a href={t.termsUrl} target="_blank" rel="noopener">{t.termsLink}</a>
+            </span>
+          </label>
+        </div>
+        <div class="error-message" id="form-error" role="alert"></div>
+        <div class="button-group">
+          <button type="button" class="btn btn-secondary" id="back-to-slots">
+            {t.changeSlot}
+          </button>
+          <button type="submit" class="btn btn-primary" id="confirm-btn">
+            <span class="btn-text">{t.confirmButton}</span>
+            <span class="btn-loading hidden">{t.confirming}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Step 4: Confirmation -->
+  <div class="step-content" data-step-content="4">
+    <div class="card confirmation-card">
+      <div class="success-icon">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="32" fill="#10B981" opacity="0.1"/>
+          <path d="M20 32L28 40L44 24" stroke="#10B981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="success-title">{t.successTitle}</h2>
+      <div id="confirmation-details" class="confirmation-details"></div>
+      <div class="action-buttons">
+        <button type="button" class="btn btn-primary" id="download-ticket">
+          {t.downloadPdf}
+        </button>
+        <button type="button" class="btn btn-secondary" id="add-calendar">
+          {t.addCalendar}
+        </button>
+      </div>
+      <button type="button" class="btn btn-link" id="new-redemption">
+        {t.newRedemption}
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Container */
+  .voucher-redemption {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  /* Steps Indicator */
+  .steps-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    position: relative;
+  }
+
+  .steps-indicator::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: #E5E7EB;
+    z-index: 0;
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #F3F4F6;
+    color: #9CA3AF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .step[data-active="true"] .step-number {
+    background: #406E51;
+    color: white;
+  }
+
+  .step-label {
+    font-size: 0.875rem;
+    color: #6B7280;
+    text-align: center;
+    transition: color 0.3s ease;
+  }
+
+  .step[data-active="true"] .step-label {
+    color: #406E51;
+    font-weight: 600;
+  }
+
+  /* Step Content */
+  .step-content {
+    display: none;
+  }
+
+  .step-content[data-active="true"] {
+    display: block;
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Card */
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .step-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Form Elements */
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #406E51;
+    box-shadow: 0 0 0 3px rgba(64, 110, 81, 0.1);
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    margin-top: 0.25rem;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+
+  .checkbox-label a {
+    color: #406E51;
+    text-decoration: underline;
+  }
+
+  /* Buttons */
+  .btn {
+    padding: 0.875rem 1.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .btn-primary {
+    background: #406E51;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #355A42;
+  }
+
+  .btn-secondary {
+    background: #F3F4F6;
+    color: #374151;
+  }
+
+  .btn-secondary:hover {
+    background: #E5E7EB;
+  }
+
+  .btn-link {
+    background: none;
+    color: #406E51;
+    text-decoration: underline;
+  }
+
+  .btn-loading {
+    display: none;
+  }
+
+  .btn[disabled] .btn-text {
+    display: none;
+  }
+
+  .btn[disabled] .btn-loading {
+    display: inline;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  /* Error Messages */
+  .error-message {
+    color: #DC2626;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    display: none;
+  }
+
+  .error-message:not(:empty) {
+    display: block;
+  }
+
+  /* Hidden Utility */
+  .hidden {
+    display: none !important;
+  }
+
+  /* Voucher Info */
+  .voucher-info {
+    background: #F0FDF4;
+    border: 2px solid #10B981;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  /* Success Icon */
+  .success-icon {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .success-title {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #10B981;
+    margin-bottom: 2rem;
+  }
+
+  .confirmation-details {
+    background: #F9FAFB;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    .voucher-redemption {
+      padding: 1rem;
+    }
+
+    .card {
+      padding: 1.5rem;
+    }
+
+    .steps-indicator {
+      margin-bottom: 2rem;
+    }
+
+    .step-label {
+      font-size: 0.75rem;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      font-size: 0.875rem;
+    }
+
+    .button-group,
+    .action-buttons {
+      flex-direction: column;
+    }
+
+    .btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import { validateVoucher, redeemVoucher, getAvailableDates, getDaySlots, formatDate, formatTime } from '../../lib/booking/api';
+  import type { VoucherValidationResponse, VoucherRedemptionRequest, TimeSlot } from '../../lib/booking/types';
+
+  // Get locale and translations from DOM (must be first!)
+  const container = document.querySelector('.voucher-redemption');
+  const locale = container?.getAttribute('data-locale') || 'es';
+
+  // Load translations from data attribute set by Astro
+  const translationsAttr = container?.getAttribute('data-translations');
+  if (translationsAttr) {
+    try {
+      (window as any).voucherTranslations = JSON.parse(translationsAttr);
+    } catch (e) {
+      console.error('[VoucherRedemptionFlow] Failed to parse translations:', e);
+      (window as any).voucherTranslations = {};
+    }
+  } else {
+    (window as any).voucherTranslations = {};
+  }
+
+  // State
+  let currentStep = 1;
+  let voucherData: VoucherValidationResponse['voucher'] | null = null;
+  let selectedDate: string | null = null;
+  let selectedSlot: TimeSlot | null = null;
+  let bookingResult: any = null;
+
+  // Helper: Navigate to step
+  function goToStep(step: number) {
+    // Update state
+    currentStep = step;
+
+    // Update indicator
+    document.querySelectorAll('.step').forEach((el, index) => {
+      el.setAttribute('data-active', index + 1 === step ? 'true' : 'false');
+    });
+
+    // Update content
+    document.querySelectorAll('.step-content').forEach((el, index) => {
+      el.setAttribute('data-active', index + 1 === step ? 'true' : 'false');
+    });
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Helper: Show error
+  function showError(elementId: string, message: string) {
+    const el = document.getElementById(elementId);
+    if (el) {
+      el.textContent = message;
+    }
+  }
+
+  // Helper: Clear error
+  function clearError(elementId: string) {
+    const el = document.getElementById(elementId);
+    if (el) {
+      el.textContent = '';
+    }
+  }
+
+  // Step 1: Validate Code
+  const codeForm = document.getElementById('code-form') as HTMLFormElement;
+  const validateBtn = document.getElementById('validate-btn') as HTMLButtonElement;
+
+  codeForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError('code-error');
+
+    const input = document.getElementById('voucher-code') as HTMLInputElement;
+    const code = input.value.trim().toUpperCase();
+
+    validateBtn.disabled = true;
+
+    const result = await validateVoucher(code);
+
+    if (result.valid && result.voucher) {
+      voucherData = result.voucher;
+      renderVoucherInfo();
+      loadCalendar();
+      goToStep(2);
+    } else {
+      const t = (window as any).voucherTranslations;
+      let errorMsg = t.errorInvalid;
+
+      if (result.error === 'redeemed' && result.voucher?.redeemedAt) {
+        errorMsg = t.errorRedeemed.replace('{date}', new Date(result.voucher.redeemedAt).toLocaleDateString());
+      } else if (result.error === 'expired' && result.voucher?.expiresAt) {
+        errorMsg = t.errorExpired.replace('{date}', new Date(result.voucher.expiresAt).toLocaleDateString());
+      }
+
+      showError('code-error', errorMsg);
+    }
+
+    validateBtn.disabled = false;
+  });
+
+  // Render voucher info
+  function renderVoucherInfo() {
+    if (!voucherData) return;
+
+    const infoEl = document.getElementById('voucher-info');
+    if (!infoEl) return;
+
+    const t = (window as any).voucherTranslations;
+    const expiryDate = new Date(voucherData.expiresAt).toLocaleDateString();
+
+    infoEl.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+        <div>
+          <div style="font-size: 0.875rem; color: #059669; font-weight: 600; margin-bottom: 0.5rem;">
+            ${t.validCode}
+          </div>
+          <div style="font-weight: 700; font-size: 1.25rem; color: #1F2937;">
+            ${voucherData.baseSession.title}
+          </div>
+        </div>
+        <div style="text-align: right; font-size: 0.875rem; color: #6B7280;">
+          <div>${t.validUntil}</div>
+          <div style="font-weight: 600;">${expiryDate}</div>
+        </div>
+      </div>
+      <div style="padding-top: 1rem; border-top: 1px solid #D1FAE5; font-size: 0.875rem; color: #059669;">
+        ${t.codeLabel}: <strong>${voucherData.code}</strong>
+      </div>
+    `;
+  }
+
+  // Load calendar (simplified - you may want to reuse BookingWidget calendar logic)
+  async function loadCalendar() {
+    if (!voucherData) return;
+
+    const calendarContainer = document.getElementById('calendar-container');
+    if (!calendarContainer) return;
+
+    calendarContainer.innerHTML = '<p>Calendario de fechas disponibles (implementar)</p>';
+
+    // TODO: Implement full calendar logic similar to BookingWidget
+    // For now, show a simple date picker
+    const today = new Date().toISOString().split('T')[0];
+    calendarContainer.innerHTML = `
+      <input
+        type="date"
+        id="date-picker"
+        min="${today}"
+        class="form-input"
+        style="width: 100%;"
+      />
+    `;
+
+    const datePicker = document.getElementById('date-picker') as HTMLInputElement;
+    datePicker?.addEventListener('change', async (e) => {
+      const date = (e.target as HTMLInputElement).value;
+      if (date) {
+        selectedDate = date;
+        await loadSlots(date);
+      }
+    });
+  }
+
+  // Load time slots
+  async function loadSlots(date: string) {
+    if (!voucherData) return;
+
+    const slotsContainer = document.getElementById('slots-container');
+    if (!slotsContainer) return;
+
+    slotsContainer.innerHTML = '<p>Cargando horarios...</p>';
+    slotsContainer.classList.remove('hidden');
+
+    const dayData = await getDaySlots({
+      sessionId: voucherData.baseSession.id,
+      date: date,
+    });
+
+    if (!dayData || !dayData.slots.length) {
+      const t = (window as any).voucherTranslations;
+      showError('date-error', t.noSlots);
+      slotsContainer.classList.add('hidden');
+      return;
+    }
+
+    clearError('date-error');
+
+    // Render slots
+    const slotsHTML = dayData.slots
+      .filter((slot) => slot.bookable)
+      .map((slot) => `
+        <button
+          type="button"
+          class="slot-btn"
+          data-slot='${JSON.stringify(slot)}'
+          ${!slot.bookable ? 'disabled' : ''}
+        >
+          <div class="slot-time">${formatTime(slot.startTime)}</div>
+          <div class="slot-capacity">${slot.capacity.available} ${(window as any).voucherTranslations.available}</div>
+        </button>
+      `)
+      .join('');
+
+    slotsContainer.innerHTML = `<div class="slots-grid">${slotsHTML}</div>`;
+
+    // Add click handlers
+    document.querySelectorAll('.slot-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const slotData = (e.currentTarget as HTMLElement).getAttribute('data-slot');
+        if (slotData) {
+          selectedSlot = JSON.parse(slotData);
+          renderBookingSummary();
+          goToStep(3);
+        }
+      });
+    });
+  }
+
+  // Render booking summary
+  function renderBookingSummary() {
+    if (!voucherData || !selectedDate || !selectedSlot) return;
+
+    const summaryEl = document.getElementById('booking-summary');
+    if (!summaryEl) return;
+
+    const t = (window as any).voucherTranslations;
+
+    summaryEl.innerHTML = `
+      <div style="background: #F9FAFB; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+        <div style="font-weight: 600; margin-bottom: 0.5rem;">${voucherData.baseSession.title}</div>
+        <div style="font-size: 0.875rem; color: #6B7280;">
+          ${formatDate(selectedDate, locale)} - ${formatTime(selectedSlot.startTime)}
+        </div>
+      </div>
+    `;
+  }
+
+  // Step 3: Submit attendee form
+  const attendeeForm = document.getElementById('attendee-form') as HTMLFormElement;
+  const confirmBtn = document.getElementById('confirm-btn') as HTMLButtonElement;
+  const backToSlotsBtn = document.getElementById('back-to-slots');
+
+  backToSlotsBtn?.addEventListener('click', () => {
+    goToStep(2);
+  });
+
+  attendeeForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError('form-error');
+
+    if (!voucherData || !selectedDate || !selectedSlot) return;
+
+    const name = (document.getElementById('attendee-name') as HTMLInputElement).value;
+    const email = (document.getElementById('attendee-email') as HTMLInputElement).value;
+    const dni = (document.getElementById('attendee-dni') as HTMLInputElement).value;
+    const privacyConsent = (document.getElementById('privacy-consent') as HTMLInputElement).checked;
+    const termsConsent = (document.getElementById('terms-consent') as HTMLInputElement).checked;
+
+    if (!privacyConsent || !termsConsent) {
+      const t = (window as any).voucherTranslations;
+      showError('form-error', t.privacyRequired);
+      return;
+    }
+
+    confirmBtn.disabled = true;
+
+    const request: VoucherRedemptionRequest = {
+      code: voucherData.code,
+      slot_date: selectedDate,
+      slot_time: formatTime(selectedSlot.startTime),
+      attendee: {
+        name,
+        email,
+        dni: dni || undefined,
+      },
+      consents: {
+        privacy: privacyConsent,
+        terms: termsConsent,
+      },
+      language: locale,
+    };
+
+    const result = await redeemVoucher(request);
+
+    if (result.success) {
+      bookingResult = result;
+      renderConfirmation();
+      goToStep(4);
+    } else {
+      const t = (window as any).voucherTranslations;
+      showError('form-error', result.error || t.errorGeneric);
+    }
+
+    confirmBtn.disabled = false;
+  });
+
+  // Render confirmation
+  function renderConfirmation() {
+    if (!bookingResult || !voucherData || !selectedDate || !selectedSlot) return;
+
+    const detailsEl = document.getElementById('confirmation-details');
+    if (!detailsEl) return;
+
+    const t = (window as any).voucherTranslations;
+
+    detailsEl.innerHTML = `
+      <div style="margin-bottom: 1rem;">
+        <div style="font-size: 0.875rem; color: #6B7280; margin-bottom: 0.25rem;">${t.bookingNumber}</div>
+        <div style="font-weight: 600; font-size: 1.125rem;">${bookingResult.booking_number}</div>
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <div style="font-size: 0.875rem; color: #6B7280; margin-bottom: 0.25rem;">${t.yourTicket}</div>
+        <div style="font-weight: 600;">${voucherData.baseSession.title}</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+          <div style="font-size: 0.875rem; color: #6B7280; margin-bottom: 0.25rem;">${t.bookingDate}</div>
+          <div style="font-weight: 600;">${formatDate(selectedDate, locale)}</div>
+        </div>
+        <div>
+          <div style="font-size: 0.875rem; color: #6B7280; margin-bottom: 0.25rem;">${t.bookingTime}</div>
+          <div style="font-weight: 600;">${formatTime(selectedSlot.startTime)}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Action buttons
+  document.getElementById('download-ticket')?.addEventListener('click', () => {
+    if (bookingResult?.ticket_url) {
+      window.open(bookingResult.ticket_url, '_blank');
+    }
+  });
+
+  document.getElementById('add-calendar')?.addEventListener('click', () => {
+    // TODO: Implement add to calendar functionality
+    alert('Add to calendar feature coming soon');
+  });
+
+  document.getElementById('new-redemption')?.addEventListener('click', () => {
+    window.location.reload();
+  });
+</script>
