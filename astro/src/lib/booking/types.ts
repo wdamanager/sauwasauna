@@ -305,6 +305,7 @@ export interface CreateBookingRequest {
 /**
  * Response from booking creation
  * REST API response
+ * WDA-1003: Added voucher_codes for voucher purchases
  */
 export interface CreateBookingResponse {
   success: boolean;
@@ -313,6 +314,8 @@ export interface CreateBookingResponse {
   total_amount?: number;
   message?: string;
   error?: string;
+  /** WDA-1003: Generated voucher codes for voucher session types */
+  voucher_codes?: string[];
 }
 
 // =============================================================================

@@ -119,6 +119,9 @@ const translations = {
     voucherInfo: 'Este bono incluye {n} entradas válidas por 12 meses',
     privateInfo: 'Sesión privada - Uso exclusivo de la sauna',
     voucherCodesTitle: 'Tus códigos de bono',
+    voucherCodesNote: 'Guarda estos códigos. Los recibirás también por email.',
+    voucherSuccessTitle: '¡Compra de bono confirmada!',
+    voucherSuccessMessage: 'Recibirás un email con tus códigos de bono.',
     groupSize: '¿Cuántas personas vendrán?',
     groupSizeOptional: '(opcional, solo informativo)',
     // WDA-1002: Pack slot capacity
@@ -211,6 +214,9 @@ const translations = {
     voucherInfo: 'Aquest bo inclou {n} entrades vàlides per 12 mesos',
     privateInfo: 'Sessió privada - Ús exclusiu de la sauna',
     voucherCodesTitle: 'Els teus codis de bo',
+    voucherCodesNote: 'Guarda aquests codis. Els rebràs també per email.',
+    voucherSuccessTitle: 'Compra de bo confirmada!',
+    voucherSuccessMessage: 'Rebràs un email amb els teus codis de bo.',
     groupSize: 'Quantes persones vindran?',
     groupSizeOptional: '(opcional, només informatiu)',
     // WDA-1002: Pack slot capacity
@@ -303,6 +309,9 @@ const translations = {
     voucherInfo: 'This voucher includes {n} entries valid for 12 months',
     privateInfo: 'Private session - Exclusive use of the sauna',
     voucherCodesTitle: 'Your voucher codes',
+    voucherCodesNote: 'Save these codes. You will also receive them by email.',
+    voucherSuccessTitle: 'Voucher purchase confirmed!',
+    voucherSuccessMessage: 'You will receive an email with your voucher codes.',
     groupSize: 'How many people will come?',
     groupSizeOptional: '(optional, informative only)',
     // WDA-1002: Pack slot capacity
@@ -395,6 +404,9 @@ const translations = {
     voucherInfo: 'Ce bon comprend {n} entrées valables 12 mois',
     privateInfo: 'Séance privée - Usage exclusif du sauna',
     voucherCodesTitle: 'Vos codes de bon',
+    voucherCodesNote: 'Conservez ces codes. Vous les recevrez également par email.',
+    voucherSuccessTitle: 'Achat de bon confirmé !',
+    voucherSuccessMessage: 'Vous recevrez un email avec vos codes de bon.',
     groupSize: 'Combien de personnes viendront?',
     groupSizeOptional: '(optionnel, informatif uniquement)',
     // WDA-1002: Pack slot capacity
@@ -756,8 +768,8 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         <h3 class="success-title">{t.successTitle}</h3>
         <p class="success-message">{t.successMessage}</p>
 
-        <!-- Booking Details -->
-        <div class="booking-details">
+        <!-- Booking Details (shown for regular bookings) -->
+        <div class="booking-details booking-details--regular">
           <div class="detail-row">
             <span class="detail-label">{t.bookingNumber}:</span>
             <span class="detail-value booking-number"></span>
@@ -774,6 +786,13 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
             <span class="detail-label">{t.bookingAttendees}:</span>
             <span class="detail-value confirmed-attendees"></span>
           </div>
+        </div>
+
+        <!-- WDA-1003: Voucher Codes (shown for voucher purchases) -->
+        <div class="voucher-codes-section hidden">
+          <h4 class="voucher-codes-title">{t.voucherCodesTitle}</h4>
+          <div class="voucher-codes-list"></div>
+          <p class="voucher-codes-note">{t.voucherCodesNote}</p>
         </div>
 
         <button type="button" class="new-booking-button" data-action="new-booking">
@@ -1916,6 +1935,83 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
 
   .confirmation-error.hidden {
     display: none;
+  }
+
+  /* WDA-1003: Voucher Codes Section */
+  .voucher-codes-section {
+    background: linear-gradient(135deg, var(--booking-gray-50), #fff);
+    border: 2px solid var(--booking-success);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .voucher-codes-section.hidden {
+    display: none;
+  }
+
+  .voucher-codes-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--booking-gray-900);
+    margin: 0 0 1rem;
+  }
+
+  .voucher-codes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .voucher-code-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: white;
+    border: 1px solid var(--booking-gray-200);
+    border-radius: 8px;
+    padding: 0.875rem 1rem;
+  }
+
+  .voucher-code {
+    font-family: 'Courier New', monospace;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--booking-primary);
+    letter-spacing: 0.05em;
+  }
+
+  .copy-code-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: var(--booking-gray-100);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--booking-gray-600);
+  }
+
+  .copy-code-btn:hover {
+    background: var(--booking-gray-200);
+    color: var(--booking-gray-900);
+  }
+
+  .copy-code-btn.copied {
+    background: var(--booking-success);
+    color: white;
+  }
+
+  .voucher-codes-note {
+    font-size: 0.875rem;
+    color: var(--booking-gray-500);
+    margin: 1rem 0 0;
   }
 
   /* ============================================
@@ -3196,28 +3292,82 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     // CONFIRMATION
     // =========================================
 
-    private showConfirmation(result: { booking_number?: string; success: boolean }): void {
+    // WDA-1003: Extended to support voucher_codes
+    private showConfirmation(result: { booking_number?: string; success: boolean; voucher_codes?: string[] }): void {
       const successEl = this.widget.querySelector('.confirmation-success');
       const errorEl = this.widget.querySelector('.confirmation-error');
+      const { sessionType, translations } = this.state;
 
       if (result.success) {
-        // Populate booking details
-        const bookingNumber = this.widget.querySelector('.booking-number');
-        const confirmedDate = this.widget.querySelector('.confirmed-date');
-        const confirmedTime = this.widget.querySelector('.confirmed-time');
-        const confirmedAttendees = this.widget.querySelector('.confirmed-attendees');
+        const isVoucher = sessionType === 'voucher';
 
-        if (bookingNumber) {
-          bookingNumber.textContent = result.booking_number || '-';
+        // Update titles for voucher purchases
+        const successTitle = this.widget.querySelector('.success-title');
+        const successMessage = this.widget.querySelector('.success-message');
+        if (isVoucher && successTitle && successMessage) {
+          successTitle.textContent = translations.voucherSuccessTitle;
+          successMessage.textContent = translations.voucherSuccessMessage;
         }
-        if (confirmedDate && this.state.selectedDate) {
-          confirmedDate.textContent = formatDate(this.state.selectedDate, this.state.locale);
-        }
-        if (confirmedTime && this.state.selectedSlot) {
-          confirmedTime.textContent = `${formatTime(this.state.selectedSlot.startTime)} - ${formatTime(this.state.selectedSlot.endTime)}`;
-        }
-        if (confirmedAttendees) {
-          confirmedAttendees.textContent = String(this.state.attendeeCount);
+
+        // Show/hide appropriate sections based on session type
+        const regularDetails = this.widget.querySelector('.booking-details--regular');
+        const voucherSection = this.widget.querySelector('.voucher-codes-section');
+
+        if (isVoucher && result.voucher_codes?.length) {
+          // Hide regular booking details for vouchers (no date/time)
+          regularDetails?.classList.add('hidden');
+
+          // Show voucher codes
+          const codesList = this.widget.querySelector('.voucher-codes-list');
+          if (codesList && result.voucher_codes) {
+            codesList.innerHTML = result.voucher_codes.map(code => `
+              <div class="voucher-code-item">
+                <code class="voucher-code">${code}</code>
+                <button type="button" class="copy-code-btn" data-code="${code}" aria-label="Copiar código">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
+            `).join('');
+
+            // Add copy functionality
+            codesList.querySelectorAll('.copy-code-btn').forEach(btn => {
+              btn.addEventListener('click', () => {
+                const code = (btn as HTMLButtonElement).dataset.code;
+                if (code) {
+                  navigator.clipboard.writeText(code).then(() => {
+                    btn.classList.add('copied');
+                    setTimeout(() => btn.classList.remove('copied'), 2000);
+                  });
+                }
+              });
+            });
+          }
+          voucherSection?.classList.remove('hidden');
+        } else {
+          // Regular booking - show date/time details
+          regularDetails?.classList.remove('hidden');
+          voucherSection?.classList.add('hidden');
+
+          const bookingNumber = this.widget.querySelector('.booking-number');
+          const confirmedDate = this.widget.querySelector('.confirmed-date');
+          const confirmedTime = this.widget.querySelector('.confirmed-time');
+          const confirmedAttendees = this.widget.querySelector('.confirmed-attendees');
+
+          if (bookingNumber) {
+            bookingNumber.textContent = result.booking_number || '-';
+          }
+          if (confirmedDate && this.state.selectedDate) {
+            confirmedDate.textContent = formatDate(this.state.selectedDate, this.state.locale);
+          }
+          if (confirmedTime && this.state.selectedSlot) {
+            confirmedTime.textContent = `${formatTime(this.state.selectedSlot.startTime)} - ${formatTime(this.state.selectedSlot.endTime)}`;
+          }
+          if (confirmedAttendees) {
+            confirmedAttendees.textContent = String(this.state.attendeeCount);
+          }
         }
 
         successEl?.classList.remove('hidden');
