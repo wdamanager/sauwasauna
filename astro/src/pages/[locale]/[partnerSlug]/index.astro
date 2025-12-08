@@ -339,11 +339,6 @@ const hreflangs = allLocales.map(loc => ({
         <!-- Sessions List - WDA-998: Grouped by type -->
         <section id="sesiones" class="partner-sessions section section--bg-light">
           <div class="container">
-            <div class="section-header">
-              <p class="section-label">{t.sessionsLabel}</p>
-              <h2 class="section-title">{t.sessionsTitle}</h2>
-            </div>
-
             {partner.sessions.length > 0 ? (
               <div class="sessions-by-type" data-dynamic="sessions-list">
                 {Array.from(groupedSessions).map(([type, sessions]) => (
