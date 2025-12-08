@@ -57,21 +57,14 @@ const sectionContent = getSectionContent(locale, type);
   }
 
   .session-type-section__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 1.5rem;
+    justify-content: center;
   }
 
-  /* Responsive */
-  @media (max-width: 767px) {
-    .session-type-section__grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  @media (min-width: 768px) and (max-width: 1023px) {
-    .session-type-section__grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .session-type-section__grid > :global(article) {
+    flex: 0 1 280px;
+    max-width: 350px;
   }
 </style>
