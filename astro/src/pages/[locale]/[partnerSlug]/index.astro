@@ -15,9 +15,12 @@ import FooterBlack from '../../../components/layout/FooterBlack.astro';
 import PartnerHero from '../../../components/partners/PartnerHero.astro';
 import DynamicContent from '../../../components/core/DynamicContent.astro';
 import PartnerSkeleton from '../../../components/core/skeletons/PartnerSkeleton.astro';
-import { getPublicSessions, type SessionData } from '../../../lib/sessions-queries';
+// WDA-998: New components for session type grouping
+import SessionTypeSection from '../../../components/partners/SessionTypeSection.astro';
+import { getPublicSessions, groupSessionsByType, type SessionData, type SessionType } from '../../../lib/sessions-queries';
 import { generateGoogleMapsUrl } from '../../../lib/utils/maps';
 import { getLocalizedValue } from '../../../lib/i18n/fallback';
+import { getSessionTypesI18n } from '../../../lib/i18n/sessionTypes';
 
 type Locale = 'es' | 'ca' | 'en' | 'fr';
 
@@ -168,6 +171,9 @@ const i18n: Record<Locale, {
 };
 
 const t = i18n[locale as Locale] || i18n.es;
+
+// WDA-998: Group sessions by type for organized display
+const groupedSessions = groupSessionsByType(partner.sessions);
 
 // WDA-990: Generate content hash for change detection
 function generateContentHash(data: unknown): string {
@@ -330,7 +336,7 @@ const hreflangs = allLocales.map(loc => ({
           </div>
         </section>
 
-        <!-- Sessions List -->
+        <!-- Sessions List - WDA-998: Grouped by type -->
         <section id="sesiones" class="partner-sessions section section--bg-light">
           <div class="container">
             <div class="section-header">
@@ -339,77 +345,15 @@ const hreflangs = allLocales.map(loc => ({
             </div>
 
             {partner.sessions.length > 0 ? (
-              <div class="sessions-grid" data-dynamic="sessions-list">
-            {partner.sessions.map((session) => {
-              const sessionTranslation = session.translations.find(t => t.locale === locale as Locale);
-              const sessionSlug = sessionTranslation?.slug || session.slug;
-              const sessionUrl = `/${locale}/${partnerSlug}/${sessionSlug}/`;
-
-              // Use centralized fallback utility (always falls back to Spanish if empty)
-              const localizedTitle = getLocalizedValue(
-                {
-                  es: session.title,
-                  ca: session.localizedTitle?.ca,
-                  en: session.localizedTitle?.en,
-                  fr: session.localizedTitle?.fr,
-                },
-                locale as Locale
-              );
-
-              const subtitle = getLocalizedValue(
-                {
-                  es: session.subtitle?.es,
-                  ca: session.subtitle?.ca,
-                  en: session.subtitle?.en,
-                  fr: session.subtitle?.fr,
-                },
-                locale as Locale
-              );
-
-              return (
-                <article class="session-card">
-                  <a href={sessionUrl} class="session-card__link">
-                    {session.featuredImage && (
-                      <div class="session-card__image">
-                        <img
-                          src={session.featuredImage.sourceUrl}
-                          alt={session.featuredImage.altText || localizedTitle}
-                          loading="lazy"
-                          width="400"
-                          height="240"
-                        />
-                      </div>
-                    )}
-                    <div class="session-card__content">
-                      <h3 class="session-card__title">{localizedTitle}</h3>
-                      {subtitle && <p class="session-card__subtitle">{subtitle}</p>}
-
-                      <div class="session-card__meta">
-                        <span class="session-card__meta-item">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <polyline points="12 6 12 12 16 14"/>
-                          </svg>
-                          {session.duration} min
-                        </span>
-                        <span class="session-card__meta-item">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                          </svg>
-                          {session.capacity} {t.people}
-                        </span>
-                        <span class="session-card__meta-item session-card__price">
-                          {session.price}€
-                        </span>
-                      </div>
-                    </div>
-                  </a>
-                </article>
-              );
-            })}
+              <div class="sessions-by-type" data-dynamic="sessions-list">
+                {Array.from(groupedSessions).map(([type, sessions]) => (
+                  <SessionTypeSection
+                    type={type}
+                    sessions={sessions}
+                    locale={locale as 'es' | 'ca' | 'en' | 'fr'}
+                    partnerSlug={partnerSlug}
+                  />
+                ))}
               </div>
             ) : (
               <p class="no-sessions">{t.noSessions}</p>
@@ -552,120 +496,11 @@ const hreflangs = allLocales.map(loc => ({
     margin: 0;
   }
 
-  /* Sessions Grid */
-  .sessions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  /* WDA-998: Sessions grouped by type container */
+  .sessions-by-type {
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
-  }
-
-  /* Session Card - estilo blog */
-  .session-card {
-    background: #ffffff;
-    border-radius: 4px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: all 400ms ease-out;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .session-card:hover {
-    transform: scale(1.03);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
-  }
-
-  .session-card__link {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    text-decoration: none;
-    color: inherit;
-  }
-
-  .session-card__link:focus-visible {
-    outline: 3px solid #BA2515;
-    outline-offset: 2px;
-  }
-
-  .session-card__image {
-    width: 100%;
-    height: 240px;
-    overflow: hidden;
-    background: #f5f5f5;
-    position: relative;
-  }
-
-  .session-card__image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 400ms ease-out;
-  }
-
-  .session-card:hover .session-card__image img {
-    transform: scale(1.1);
-  }
-
-  .session-card__content {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    flex-grow: 1;
-  }
-
-  .session-card__title {
-    font-family: var(--font-family-secondary);
-    font-size: 1.25rem;
-    font-weight: var(--font-weight-medium);
-    line-height: 1.4;
-    color: var(--color-text-primary);
-    margin: 0;
-    transition: color 0.2s;
-  }
-
-  .session-card:hover .session-card__title {
-    color: var(--color-primary);
-  }
-
-  .session-card__subtitle {
-    font-family: var(--font-family-primary);
-    font-size: 0.875rem;
-    line-height: 1.6;
-    color: var(--color-text-secondary);
-    margin: 0;
-  }
-
-  .session-card__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-top: auto;
-    padding-top: 1rem;
-    border-top: 1px solid #f0f0f0;
-  }
-
-  .session-card__meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-family: var(--font-family-primary);
-    font-size: 0.875rem;
-    color: var(--color-text-secondary);
-  }
-
-  .session-card__meta-item svg {
-    flex-shrink: 0;
-    color: var(--color-primary);
-  }
-
-  .session-card__price {
-    margin-left: auto;
-    font-weight: 600;
-    font-size: 1.125rem;
-    color: var(--color-primary);
   }
 
   .no-sessions {
@@ -706,10 +541,6 @@ const hreflangs = allLocales.map(loc => ({
 
     .partner-info__content {
       align-items: center;
-    }
-
-    .sessions-grid {
-      grid-template-columns: 1fr;
     }
   }
 

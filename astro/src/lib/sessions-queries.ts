@@ -388,6 +388,15 @@ async function getPartnerById(id: number): Promise<WPPartnerNode | null> {
  * Simplified Session type for WDA-963 dynamic routes
  * WDA-986: Added sauwaPartnerId for two-query pattern
  */
+/**
+ * Session type for WDA-998 categorization
+ * - single: Individual sessions (price per person)
+ * - pack: Group packs (fixed price for included persons)
+ * - voucher: Vouchers/bonuses (N sessions, validity period)
+ * - private: Private sessions (exclusive use)
+ */
+export type SessionType = 'single' | 'pack' | 'voucher' | 'private';
+
 export interface SessionData {
   id: string;
   databaseId: number;
@@ -404,6 +413,12 @@ export interface SessionData {
   duration: number;
   capacity: number;
   price: number;
+  // WDA-998: New fields for session type categorization
+  sessionType?: SessionType;
+  includedPersons?: number;
+  voucherValidityMonths?: number;
+  usesSharedCapacity?: boolean;
+  requiresFullCapacity?: boolean;
   subtitle?: {
     es?: string;
     ca?: string;
@@ -698,8 +713,22 @@ interface SauwaPublicSessionsResponse {
 }
 
 /**
+ * Map GraphQL sessionType to our SessionType
+ * WDA-998: Normalize session types from backend
+ */
+function mapSessionType(backendType?: string): SessionType {
+  if (!backendType) return 'single';
+  const normalized = backendType.toLowerCase();
+  if (normalized === 'pack' || normalized === 'group') return 'pack';
+  if (normalized === 'voucher' || normalized === 'bono' || normalized === 'bonus') return 'voucher';
+  if (normalized === 'private' || normalized === 'privado' || normalized === 'privada') return 'private';
+  return 'single'; // Default: individual sessions
+}
+
+/**
  * Transform SauwaPublicSession to SessionData format
  * WDA-988: Converts the new query format to existing SessionData type
+ * WDA-998: Added sessionType, includedPersons, and related fields
  */
 function transformPublicSession(session: SauwaPublicSession): SessionData {
   return {
@@ -710,6 +739,11 @@ function transformPublicSession(session: SauwaPublicSession): SessionData {
     duration: 90, // Default, would need to be added to GraphQL if needed
     capacity: session.inventory?.capacity || 6,
     price: session.inventory ? session.inventory.priceCents / 100 : 0,
+    // WDA-998: Session type categorization
+    sessionType: mapSessionType(session.sessionType),
+    includedPersons: session.includedPersons,
+    usesSharedCapacity: session.usesSharedCapacity,
+    requiresFullCapacity: session.requiresFullCapacity,
     featuredImage: session.featuredImage ? {
       sourceUrl: session.featuredImage.sourceUrl,
       altText: session.featuredImage.altText || '',
@@ -789,4 +823,41 @@ export async function getPublicSessions(options?: {
     console.warn('[getPublicSessions] Falling back to getAllSessions');
     return getAllSessions();
   }
+}
+
+/**
+ * WDA-998: Group sessions by type for partner page display
+ * Returns a Map with session types in display order: single, pack, voucher, private
+ */
+export function groupSessionsByType(
+  sessions: SessionData[]
+): Map<SessionType, SessionData[]> {
+  const grouped = new Map<SessionType, SessionData[]>();
+
+  // Initialize with empty arrays in display order
+  const displayOrder: SessionType[] = ['single', 'pack', 'voucher', 'private'];
+  for (const type of displayOrder) {
+    grouped.set(type, []);
+  }
+
+  // Group sessions
+  for (const session of sessions) {
+    const type = session.sessionType || 'single';
+    const group = grouped.get(type);
+    if (group) {
+      group.push(session);
+    } else {
+      // Handle unexpected types as 'single'
+      grouped.get('single')!.push(session);
+    }
+  }
+
+  // Remove empty groups
+  for (const type of displayOrder) {
+    if (grouped.get(type)!.length === 0) {
+      grouped.delete(type);
+    }
+  }
+
+  return grouped;
 }

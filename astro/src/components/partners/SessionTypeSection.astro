@@ -1,0 +1,95 @@
+---
+/**
+ * WDA-998: Session Type Section Component
+ * Groups sessions by type with localized titles and subtitles
+ */
+import type { SessionData, SessionType } from '../../lib/sessions-queries';
+import { getSectionContent, type Locale } from '../../lib/i18n/sessionTypes';
+import SessionCard from './SessionCard.astro';
+
+interface Props {
+  type: SessionType;
+  sessions: SessionData[];
+  locale: Locale;
+  partnerSlug: string;
+}
+
+const { type, sessions, locale, partnerSlug } = Astro.props;
+
+// Skip rendering if no sessions
+if (sessions.length === 0) {
+  return null;
+}
+
+const sectionContent = getSectionContent(locale, type);
+---
+
+<section class={`session-type-section session-type-section--${type}`}>
+  <header class="session-type-section__header">
+    <h3 class="session-type-section__title">{sectionContent.title}</h3>
+    <p class="session-type-section__subtitle">{sectionContent.subtitle}</p>
+  </header>
+
+  <div class="session-type-section__grid">
+    {sessions.map((session) => (
+      <SessionCard
+        session={session}
+        type={type}
+        locale={locale}
+        partnerSlug={partnerSlug}
+      />
+    ))}
+  </div>
+</section>
+
+<style>
+  .session-type-section {
+    margin-bottom: 3rem;
+  }
+
+  .session-type-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .session-type-section__header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .session-type-section__title {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-scale-sm);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--color-primary-hover);
+    margin: 0 0 0.5rem;
+  }
+
+  .session-type-section__subtitle {
+    font-family: var(--font-family-secondary);
+    font-size: 1rem;
+    font-weight: var(--font-weight-regular);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .session-type-section__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    .session-type-section__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .session-type-section__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
