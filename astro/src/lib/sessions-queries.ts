@@ -54,7 +54,8 @@ function setCachedData<T>(key: string, data: T): void {
 
 /**
  * GraphQL Query: Get all sessions for getStaticPaths
- * WDA-963: Uses real WordPress GraphQL schema (sessions, not sauwaSessions)
+ * WDA-963: Uses real WordPress GraphQL schema
+ * WDA-986: Uses sauwaPartnerId to avoid ACF bug with nested partner { node { ... } }
  */
 export const GET_ALL_SESSIONS_QUERY = `
   query GetAllSessions {
@@ -64,6 +65,8 @@ export const GET_ALL_SESSIONS_QUERY = `
         databaseId
         slug
         title
+        content
+        sauwaPartnerId
         sessionDetails {
           sessionDuration
           sessionCapacity
@@ -71,38 +74,13 @@ export const GET_ALL_SESSIONS_QUERY = `
           subtitulo
           tituloCa
           subtituloCa
+          sessionDescriptionCa
           tituloEn
           sessionSubtitleEn
+          sessionDescriptionEn
           tituloFr
           subtituloFr
-          partner {
-            node {
-              ... on Partner {
-                id
-                databaseId
-                slug
-                title
-                partnerInformation {
-                  partnerAddress
-                  partnerPhone
-                  partnerEmail
-                  partnerWeb
-                  partnerHeroImage {
-                    node {
-                      sourceUrl
-                      altText
-                    }
-                  }
-                }
-                featuredImage {
-                  node {
-                    sourceUrl
-                    altText
-                  }
-                }
-              }
-            }
-          }
+          sessionDescriptionFr
         }
         featuredImage {
           node {
@@ -123,8 +101,42 @@ export const GET_ALL_SESSIONS_QUERY = `
 `;
 
 /**
+ * GraphQL Query: Get partner by ID
+ * WDA-986: Second query to fetch partner data separately (avoids ACF bug)
+ */
+export const GET_PARTNER_BY_ID_QUERY = `
+  query GetPartnerById($id: ID!) {
+    partner(id: $id, idType: DATABASE_ID) {
+      id
+      databaseId
+      slug
+      title
+      partnerInformation {
+        partnerAddress
+        partnerPhone
+        partnerEmail
+        partnerWeb
+        partnerHeroImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+      }
+      featuredImage {
+        node {
+          sourceUrl
+          altText
+        }
+      }
+    }
+  }
+`;
+
+/**
  * GraphQL Query: Get session by ID with full details
  * WDA-963: Uses real WordPress GraphQL schema
+ * WDA-986: Uses sauwaPartnerId to avoid ACF bug
  */
 export const GET_SESSION_BY_ID_QUERY = `
   query GetSessionById($id: ID!) {
@@ -134,42 +146,21 @@ export const GET_SESSION_BY_ID_QUERY = `
       slug
       title
       content
+      sauwaPartnerId
       sessionDetails {
         sessionDuration
         sessionCapacity
         sessionPrice
         subtitulo
+        tituloCa
         subtituloCa
+        sessionDescriptionCa
+        tituloEn
         sessionSubtitleEn
+        sessionDescriptionEn
+        tituloFr
         subtituloFr
-        partner {
-          node {
-            ... on Partner {
-              id
-              databaseId
-              slug
-              title
-              partnerInformation {
-                partnerAddress
-                partnerPhone
-                partnerEmail
-                partnerWeb
-                partnerHeroImage {
-                  node {
-                    sourceUrl
-                    altText
-                  }
-                }
-              }
-              featuredImage {
-                node {
-                  sourceUrl
-                  altText
-                }
-              }
-            }
-          }
-        }
+        sessionDescriptionFr
       }
       featuredImage {
         node {
@@ -216,6 +207,7 @@ export const GET_SESSION_BY_ID_REALTIME_QUERY = `
 
 /**
  * WordPress GraphQL response types (real schema)
+ * WDA-986: Uses sauwaPartnerId instead of nested partner { node { ... } }
  */
 interface WPSessionNode {
   id: string;
@@ -223,40 +215,21 @@ interface WPSessionNode {
   slug: string;
   title: string;
   content?: string;
+  sauwaPartnerId?: number;
   sessionDetails: {
     sessionDuration: number;
     sessionCapacity: number;
     sessionPrice: number;
     subtitulo?: string;
+    tituloCa?: string;
     subtituloCa?: string;
+    sessionDescriptionCa?: string;
+    tituloEn?: string;
     sessionSubtitleEn?: string;
+    sessionDescriptionEn?: string;
+    tituloFr?: string;
     subtituloFr?: string;
-    partner?: {
-      node: {
-        id: string;
-        databaseId: number;
-        slug: string;
-        title: string;
-        partnerInformation?: {
-          partnerAddress?: string;
-          partnerPhone?: string;
-          partnerEmail?: string;
-          partnerWeb?: string;
-          partnerHeroImage?: {
-            node: {
-              sourceUrl: string;
-              altText?: string;
-            };
-          };
-        };
-        featuredImage?: {
-          node: {
-            sourceUrl: string;
-            altText?: string;
-          };
-        };
-      };
-    };
+    sessionDescriptionFr?: string;
   };
   featuredImage?: {
     node: {
@@ -281,6 +254,35 @@ interface WPSessionNode {
   };
 }
 
+/**
+ * Partner response type for the second query
+ * WDA-986: Two-query pattern
+ */
+interface WPPartnerNode {
+  id: string;
+  databaseId: number;
+  slug: string;
+  title: string;
+  partnerInformation?: {
+    partnerAddress?: string;
+    partnerPhone?: string;
+    partnerEmail?: string;
+    partnerWeb?: string;
+    partnerHeroImage?: {
+      node: {
+        sourceUrl: string;
+        altText?: string;
+      };
+    };
+  };
+  featuredImage?: {
+    node: {
+      sourceUrl: string;
+      altText?: string;
+    };
+  };
+}
+
 interface WPSessionsResponse {
   sessions: {
     nodes: WPSessionNode[];
@@ -291,17 +293,21 @@ interface WPSessionByIdResponse {
   session: WPSessionNode;
 }
 
+interface WPPartnerByIdResponse {
+  partner: WPPartnerNode | null;
+}
+
 /**
  * Transform WordPress session to internal SessionData type
+ * WDA-986: Partner data is passed separately from second query
  */
-function transformWPSession(wpSession: WPSessionNode): SessionData {
-  const partner = wpSession.sessionDetails?.partner?.node;
-
+function transformWPSession(wpSession: WPSessionNode, partner?: WPPartnerNode | null): SessionData {
   return {
     id: wpSession.id,
     databaseId: wpSession.databaseId,
     slug: wpSession.slug,
     title: wpSession.title,
+    sauwaPartnerId: wpSession.sauwaPartnerId,
     localizedTitle: {
       es: wpSession.title,
       ca: wpSession.sessionDetails?.tituloCa,
@@ -317,6 +323,12 @@ function transformWPSession(wpSession: WPSessionNode): SessionData {
       ca: wpSession.sessionDetails?.subtituloCa,
       en: wpSession.sessionDetails?.sessionSubtitleEn,
       fr: wpSession.sessionDetails?.subtituloFr,
+    },
+    description: {
+      es: wpSession.content,
+      ca: wpSession.sessionDetails?.sessionDescriptionCa,
+      en: wpSession.sessionDetails?.sessionDescriptionEn,
+      fr: wpSession.sessionDetails?.sessionDescriptionFr,
     },
     featuredImage: wpSession.featuredImage?.node ? {
       sourceUrl: wpSession.featuredImage.node.sourceUrl,
@@ -347,13 +359,41 @@ function transformWPSession(wpSession: WPSessionNode): SessionData {
 }
 
 /**
+ * Fetch partner by ID
+ * WDA-986: Second query in the two-query pattern
+ */
+async function getPartnerById(id: number): Promise<WPPartnerNode | null> {
+  const cacheKey = getCacheKey('GET_PARTNER', { id });
+  const cached = getCachedData<WPPartnerByIdResponse>(cacheKey);
+
+  if (cached) {
+    return cached.partner;
+  }
+
+  try {
+    const data = await graphqlQuery<WPPartnerByIdResponse>(
+      GET_PARTNER_BY_ID_QUERY,
+      { id: String(id) }
+    );
+
+    setCachedData(cacheKey, data);
+    return data.partner;
+  } catch (error) {
+    console.error('[getPartnerById] Error:', error);
+    return null; // Fail gracefully, session can still work without partner
+  }
+}
+
+/**
  * Simplified Session type for WDA-963 dynamic routes
+ * WDA-986: Added sauwaPartnerId for two-query pattern
  */
 export interface SessionData {
   id: string;
   databaseId: number;
   slug: string;
   title: string;
+  sauwaPartnerId?: number;
   localizedTitle?: {
     es?: string;
     ca?: string;
@@ -365,6 +405,12 @@ export interface SessionData {
   capacity: number;
   price: number;
   subtitle?: {
+    es?: string;
+    ca?: string;
+    en?: string;
+    fr?: string;
+  };
+  description?: {
     es?: string;
     ca?: string;
     en?: string;
@@ -402,16 +448,18 @@ export interface SessionData {
 
 /**
  * Fetch all sessions (for getStaticPaths)
+ * WDA-986: Uses two-query pattern - first gets sessions, then fetches partners in parallel
  */
 export async function getAllSessions(): Promise<SessionData[]> {
-  const cacheKey = getCacheKey('GET_ALL_SESSIONS');
-  const cached = getCachedData<WPSessionsResponse>(cacheKey);
+  const cacheKey = getCacheKey('GET_ALL_SESSIONS_WITH_PARTNERS');
+  const cached = getCachedData<SessionData[]>(cacheKey);
 
   if (cached) {
-    return cached.sessions.nodes.map(transformWPSession);
+    return cached;
   }
 
   try {
+    // First query: get all sessions with sauwaPartnerId
     const data = await graphqlQuery<WPSessionsResponse>(GET_ALL_SESSIONS_QUERY);
 
     if (!data.sessions || !data.sessions.nodes) {
@@ -419,8 +467,33 @@ export async function getAllSessions(): Promise<SessionData[]> {
       return [];
     }
 
-    setCachedData(cacheKey, data);
-    return data.sessions.nodes.map(transformWPSession);
+    // Collect unique partner IDs
+    const partnerIds = [...new Set(
+      data.sessions.nodes
+        .map(s => s.sauwaPartnerId)
+        .filter((id): id is number => id != null && id > 0)
+    )];
+
+    // Second query: fetch all partners in parallel
+    const partnersMap = new Map<number, WPPartnerNode>();
+    if (partnerIds.length > 0) {
+      const partnerPromises = partnerIds.map(id => getPartnerById(id));
+      const partners = await Promise.all(partnerPromises);
+      partners.forEach((partner, index) => {
+        if (partner) {
+          partnersMap.set(partnerIds[index], partner);
+        }
+      });
+    }
+
+    // Transform sessions with partner data
+    const sessions = data.sessions.nodes.map(session => {
+      const partner = session.sauwaPartnerId ? partnersMap.get(session.sauwaPartnerId) : undefined;
+      return transformWPSession(session, partner);
+    });
+
+    setCachedData(cacheKey, sessions);
+    return sessions;
   } catch (error) {
     console.error('[getAllSessions] Error:', error);
     throw error;
@@ -429,16 +502,18 @@ export async function getAllSessions(): Promise<SessionData[]> {
 
 /**
  * Fetch single session by ID with full details
+ * WDA-986: Uses two-query pattern - first gets session, then fetches partner
  */
 export async function getSessionById(id: string | number): Promise<SessionData | null> {
-  const cacheKey = getCacheKey('GET_SESSION', { id });
-  const cached = getCachedData<WPSessionByIdResponse>(cacheKey);
+  const cacheKey = getCacheKey('GET_SESSION_WITH_PARTNER', { id });
+  const cached = getCachedData<SessionData>(cacheKey);
 
   if (cached) {
-    return transformWPSession(cached.session);
+    return cached;
   }
 
   try {
+    // First query: get session with sauwaPartnerId
     const data = await graphqlQuery<WPSessionByIdResponse>(
       GET_SESSION_BY_ID_QUERY,
       { id: String(id) }
@@ -448,8 +523,15 @@ export async function getSessionById(id: string | number): Promise<SessionData |
       return null;
     }
 
-    setCachedData(cacheKey, data);
-    return transformWPSession(data.session);
+    // Second query: get partner if sauwaPartnerId exists
+    let partner: WPPartnerNode | null = null;
+    if (data.session.sauwaPartnerId) {
+      partner = await getPartnerById(data.session.sauwaPartnerId);
+    }
+
+    const sessionData = transformWPSession(data.session, partner);
+    setCachedData(cacheKey, sessionData);
+    return sessionData;
   } catch (error) {
     console.error('[getSessionById] Error:', error);
     throw error;
@@ -497,4 +579,214 @@ export async function getSessionRealtime(id: string | number): Promise<{ id: str
  */
 export function clearSessionCache(): void {
   cache.clear();
+}
+
+/**
+ * GraphQL Query: Get public sessions (filtered by sale_enabled and availability rules)
+ * WDA-988: Uses sauwaPublicSessions query for frontend display
+ */
+export const GET_PUBLIC_SESSIONS_QUERY = `
+  query GetPublicSessions($first: Int, $where: SauwaPublicSessionsFilterInput) {
+    sauwaPublicSessions(first: $first, where: $where) {
+      id
+      databaseId
+      slug
+      title
+      sessionType
+      usesSharedCapacity
+      includedPersons
+      requiresFullCapacity
+      availabilityStatus
+      featuredImage {
+        sourceUrl
+        altText
+      }
+      partner {
+        id
+        databaseId
+        slug
+        name
+        description
+        email
+        phone
+        web
+        address {
+          street
+          city
+          postalCode
+          country
+          googleMapsUrl
+        }
+        featuredImage {
+          sourceUrl
+          altText
+        }
+        heroImage {
+          sourceUrl
+          altText
+        }
+      }
+      inventory {
+        capacity
+        available
+        reserved
+        booked
+        priceCents
+        currency
+        saleEnabled
+      }
+    }
+  }
+`;
+
+/**
+ * Response type for sauwaPublicSessions
+ * WDA-988: Matches the SauwaPublicSession GraphQL type
+ */
+interface SauwaPublicSession {
+  id: string;
+  databaseId: number;
+  slug: string;
+  title: string;
+  sessionType?: string;
+  usesSharedCapacity: boolean;
+  includedPersons?: number;
+  requiresFullCapacity: boolean;
+  availabilityStatus: 'active' | 'no_future_dates';
+  featuredImage?: {
+    sourceUrl: string;
+    altText?: string;
+  };
+  partner?: {
+    id: string;
+    databaseId: number;
+    slug: string;
+    name: string;
+    description?: string;
+    email?: string;
+    phone?: string;
+    web?: string;
+    address?: {
+      street?: string;
+      city?: string;
+      postalCode?: string;
+      country?: string;
+      googleMapsUrl?: string;
+    };
+    featuredImage?: {
+      sourceUrl: string;
+      altText?: string;
+    };
+    heroImage?: {
+      sourceUrl: string;
+      altText?: string;
+    };
+  };
+  inventory?: {
+    capacity: number;
+    available: number;
+    reserved: number;
+    booked: number;
+    priceCents: number;
+    currencyCode: string;
+    saleEnabled: boolean;
+  };
+}
+
+interface SauwaPublicSessionsResponse {
+  sauwaPublicSessions: SauwaPublicSession[];
+}
+
+/**
+ * Transform SauwaPublicSession to SessionData format
+ * WDA-988: Converts the new query format to existing SessionData type
+ */
+function transformPublicSession(session: SauwaPublicSession): SessionData {
+  return {
+    id: session.id,
+    databaseId: session.databaseId,
+    slug: session.slug,
+    title: session.title,
+    duration: 90, // Default, would need to be added to GraphQL if needed
+    capacity: session.inventory?.capacity || 6,
+    price: session.inventory ? session.inventory.priceCents / 100 : 0,
+    featuredImage: session.featuredImage ? {
+      sourceUrl: session.featuredImage.sourceUrl,
+      altText: session.featuredImage.altText || '',
+    } : undefined,
+    partner: session.partner ? {
+      id: session.partner.id,
+      databaseId: session.partner.databaseId,
+      slug: session.partner.slug,
+      title: session.partner.name,
+      address: session.partner.address?.street
+        ? `${session.partner.address.street}, ${session.partner.address.city || ''}`
+        : undefined,
+      phone: session.partner.phone,
+      email: session.partner.email,
+      web: session.partner.web,
+      heroImage: session.partner.heroImage?.sourceUrl,
+      featuredImage: session.partner.featuredImage ? {
+        sourceUrl: session.partner.featuredImage.sourceUrl,
+        altText: session.partner.featuredImage.altText || '',
+      } : undefined,
+    } : undefined,
+    translations: [],
+  };
+}
+
+/**
+ * Fetch public sessions (filtered by sale_enabled and availability rules)
+ * WDA-988: Uses sauwaPublicSessions for frontend display
+ * Only returns sessions that are:
+ * - Published
+ * - Have sales enabled (sale_enabled = 1)
+ * - Have at least one active availability rule
+ */
+export async function getPublicSessions(options?: {
+  partnerId?: number;
+  sessionType?: string;
+  first?: number;
+}): Promise<SessionData[]> {
+  const cacheKey = getCacheKey('GET_PUBLIC_SESSIONS', options);
+  const cached = getCachedData<SessionData[]>(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
+  try {
+    const variables: Record<string, any> = {
+      first: options?.first || 100,
+    };
+
+    if (options?.partnerId || options?.sessionType) {
+      variables.where = {};
+      if (options.partnerId) {
+        variables.where.partnerId = options.partnerId;
+      }
+      if (options.sessionType) {
+        variables.where.sessionType = options.sessionType;
+      }
+    }
+
+    const data = await graphqlQuery<SauwaPublicSessionsResponse>(
+      GET_PUBLIC_SESSIONS_QUERY,
+      variables
+    );
+
+    if (!data.sauwaPublicSessions) {
+      console.warn('[getPublicSessions] No sessions returned');
+      return [];
+    }
+
+    const sessions = data.sauwaPublicSessions.map(transformPublicSession);
+    setCachedData(cacheKey, sessions);
+    return sessions;
+  } catch (error) {
+    console.error('[getPublicSessions] Error:', error);
+    // Fallback to getAllSessions if sauwaPublicSessions fails
+    console.warn('[getPublicSessions] Falling back to getAllSessions');
+    return getAllSessions();
+  }
 }

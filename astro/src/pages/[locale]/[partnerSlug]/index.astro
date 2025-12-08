@@ -11,7 +11,7 @@ import Layout from '../../../layouts/Layout.astro';
 import NavbarScroll from '../../../components/NavbarScroll.astro';
 import FooterBlack from '../../../components/layout/FooterBlack.astro';
 import PartnerHero from '../../../components/partners/PartnerHero.astro';
-import { getAllSessions, type SessionData } from '../../../lib/sessions-queries';
+import { getPublicSessions, type SessionData } from '../../../lib/sessions-queries';
 import { generateGoogleMapsUrl } from '../../../lib/utils/maps';
 import { getLocalizedValue } from '../../../lib/i18n/fallback';
 
@@ -37,7 +37,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const pathLocales: Array<'es' | 'ca' | 'en' | 'fr'> = ['es', 'ca', 'en', 'fr'];
 
   try {
-    const sessions = await getAllSessions();
+    // WDA-988: Use getPublicSessions to only include sessions with availability rules
+    const sessions = await getPublicSessions();
 
     if (!sessions || sessions.length === 0) {
       console.warn('[WDA-963] No sessions found for partner paths');

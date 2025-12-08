@@ -13,6 +13,7 @@ import BookingWidget from '../../../../components/booking/BookingWidget.astro';
 import CollaboratorsSection from '../../../../components/booking/CollaboratorsSection.astro';
 import { getAllSessions, type SessionData } from '../../../../lib/sessions-queries';
 import { getBookingContent } from '../../../../lib/i18n/booking';
+import { getLocalizedSession } from '../../../../lib/i18n/sessions';
 
 type Locale = 'es' | 'ca' | 'en' | 'fr';
 const locales: Locale[] = ['es', 'ca', 'en', 'fr'];
@@ -75,18 +76,35 @@ if (!session || !session.partner) {
   return Astro.redirect('/404');
 }
 
-// Get localized content
+// Get localized content (fallback for static sections like "About")
 const content = getBookingContent(locale as Locale, 'puertasAbiertas');
+
+// Get localized session fields from ACF with Spanish fallback
+const localizedSession = getLocalizedSession({
+  title: session.title,
+  content: session.content,
+  sessionDetails: {
+    subtitulo: session.subtitle?.es || null,
+    tituloCa: session.localizedTitle?.ca || null,
+    subtituloCa: session.subtitle?.ca || null,
+    sessionDescriptionCa: session.description?.ca || null,
+    tituloEn: session.localizedTitle?.en || null,
+    sessionSubtitleEn: session.subtitle?.en || null,
+    sessionDescriptionEn: session.description?.en || null,
+    tituloFr: session.localizedTitle?.fr || null,
+    subtituloFr: session.subtitle?.fr || null,
+    sessionDescriptionFr: session.description?.fr || null,
+  }
+}, locale as Locale);
 
 // Session data
 const sessionId = session.databaseId;
-const sessionTitle = session.title;
+const sessionTitle = localizedSession.title;
+const sessionSubtitle = localizedSession.subtitle;
+const sessionDescription = localizedSession.description;
 const duration = session.duration;
 const capacity = session.capacity;
 const price = session.price;
-
-// Get subtitle from ACF or fallback to hardcoded content
-const subtitle = session.subtitle?.[locale] || content.hero.subtitle;
 
 // Partner data
 const partner = session.partner ? {
@@ -159,11 +177,12 @@ const hreflangs = locales.map(loc => {
     <SessionHero
       title={content.hero.title}
       heading={sessionTitle}
-      subtitle={subtitle}
+      subtitle={sessionSubtitle}
       duration={duration}
       capacity={capacity}
       price={price}
       location={partner?.name}
+      partnerSlug={partner?.slug}
       ctaText={content.hero.ctaText}
       ctaHref="#reserva"
       backgroundImage={backgroundImage}
@@ -171,46 +190,21 @@ const hreflangs = locales.map(loc => {
       sessionId={sessionId}
     />
 
-    <!-- About Section -->
-    <section class="section section--bg-white" data-about-section>
-      <div class="container container--narrow">
-        <header class="section-header section-header--center">
-          <h2 class="section-label section-label--primary">{content.about.title}</h2>
-          <h3 class="section-title section-title--center">{content.about.heading}</h3>
-        </header>
+    <!-- About Section - Only show if session has description content -->
+    {sessionDescription && sessionDescription.trim() !== '' && (
+      <section class="section section--bg-white" data-about-section>
+        <div class="container container--narrow">
+          <header class="section-header section-header--center">
+            <h2 class="section-label section-label--primary">{content.about.title}</h2>
+            <h3 class="section-title section-title--center">{content.about.heading}</h3>
+          </header>
 
-        <div class="about-content" data-hydrate="about-content">
-          {content.about.description.map((paragraph) => (
-            <p class="about-text">{paragraph}</p>
-          ))}
-
-          <ul class="highlights-list" data-hydrate="highlights-list">
-            {content.about.highlights.map((item) => (
-              <li class="highlights-item">
-                <svg
-                  class="highlights-icon"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M5 13L9 17L19 7"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
+          <div class="about-content" data-hydrate="about-content">
+            <div class="about-text" set:html={sessionDescription} />
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    )}
 
     <!-- Booking Section -->
     <section id="reserva" class="section section--bg-light booking-section">
@@ -248,7 +242,42 @@ const hreflangs = locales.map(loc => {
     font-size: var(--font-scale-md);
     line-height: var(--line-height-relaxed);
     color: var(--color-text-primary);
-    margin-bottom: 1.5rem;
+  }
+
+  /* WordPress content typography */
+  :global(.about-content .about-text p) {
+    margin-bottom: 1.25rem;
+  }
+
+  :global(.about-content .about-text p:last-child) {
+    margin-bottom: 0;
+  }
+
+  :global(.about-content .about-text ul),
+  :global(.about-content .about-text ol) {
+    margin: 1rem 0 1.5rem 1.5rem;
+    padding: 0;
+  }
+
+  :global(.about-content .about-text li) {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+
+  :global(.about-content .about-text strong),
+  :global(.about-content .about-text b) {
+    font-weight: var(--font-weight-semibold, 600);
+  }
+
+  :global(.about-content .about-text em),
+  :global(.about-content .about-text i) {
+    font-style: italic;
+  }
+
+  :global(.about-content .about-text br) {
+    display: block;
+    content: "";
+    margin-top: 0.5rem;
   }
 
   :global(.about-content .highlights-list) {
