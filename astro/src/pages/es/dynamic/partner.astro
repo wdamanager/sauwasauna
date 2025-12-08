@@ -1,0 +1,177 @@
+---
+/**
+ * WDA-990: Dynamic Partner Page (ES)
+ * Catch-all fallback for partner URLs not generated at build time
+ *
+ * Route: /es/dynamic/partner.html?slug=xxx
+ *
+ * This page is reached via .htaccess rewrite when a partner URL
+ * doesn't exist as a static page. It loads content dynamically
+ * from WordPress and redirects to 404 if the slug doesn't exist.
+ */
+import Layout from '../../../layouts/Layout.astro';
+import NavbarScroll from '../../../components/NavbarScroll.astro';
+import FooterBlack from '../../../components/layout/FooterBlack.astro';
+import DynamicPageLoader from '../../../components/core/DynamicPageLoader.astro';
+import PartnerSkeleton from '../../../components/core/skeletons/PartnerSkeleton.astro';
+
+const locale = 'es';
+
+// i18n content
+const i18n = {
+  pageTitle: 'Cargando partner... | SAUWA SAUNA',
+  metaDescription: 'Cargando informacion del partner SAUWA.',
+  loadingText: 'Cargando...',
+  notFoundTitle: 'Partner no encontrado',
+  notFoundMessage: 'El partner que buscas no existe o ha sido eliminado.',
+  backHome: 'Volver al inicio',
+};
+---
+
+<Layout title={i18n.pageTitle} description={i18n.metaDescription} lang={locale} pageType="partner" navbar="none">
+  <NavbarScroll locale={locale} />
+
+  <main class="dynamic-partner-page" data-page-type="dynamic-partner" data-locale={locale}>
+    <DynamicPageLoader
+      contentType="partner"
+      slug=""
+      locale={locale}
+      notFoundUrl={`/${locale}/404/`}
+    >
+      <PartnerSkeleton slot="skeleton" showHero={true} showInfo={true} showSessions={true} sessionCount={3} />
+
+      <Fragment slot="notfound">
+        <div class="notfound-container">
+          <h1 class="notfound-title">404</h1>
+          <h2 class="notfound-heading">{i18n.notFoundTitle}</h2>
+          <p class="notfound-message">{i18n.notFoundMessage}</p>
+          <a href={`/${locale}/`} class="notfound-btn">{i18n.backHome}</a>
+        </div>
+      </Fragment>
+    </DynamicPageLoader>
+  </main>
+
+  <FooterBlack locale={locale} />
+</Layout>
+
+<script>
+  /**
+   * Client-side initialization for dynamic partner page
+   * Extracts slug from URL query parameter and updates loader
+   */
+  function initDynamicPartner() {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get('slug');
+
+    if (!slug) {
+      console.error('[DynamicPartner] No slug provided in URL');
+      window.location.href = `/${document.documentElement.lang || 'es'}/404/`;
+      return;
+    }
+
+    // Update the DynamicPageLoader with the slug
+    const loader = document.querySelector('[data-loader]');
+    if (loader) {
+      loader.setAttribute('data-slug', slug);
+
+      // Trigger a re-initialization by dispatching a custom event
+      const event = new CustomEvent('dynamic:init', { detail: { slug } });
+      loader.dispatchEvent(event);
+    }
+
+    // Update page URL without .htaccess visible (for bookmarking/sharing)
+    const locale = document.querySelector('[data-locale]')?.getAttribute('data-locale') || 'es';
+    const cleanUrl = `/${locale}/${slug}/`;
+
+    if (window.history && window.history.replaceState) {
+      window.history.replaceState({ slug }, '', cleanUrl);
+    }
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDynamicPartner);
+  } else {
+    initDynamicPartner();
+  }
+
+  // Handle Astro page transitions
+  document.addEventListener('astro:page-load', initDynamicPartner);
+</script>
+
+<style>
+  .dynamic-partner-page {
+    min-height: 100vh;
+  }
+
+  .notfound-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .notfound-title {
+    font-family: var(--font-family-secondary, 'Nunito Sans', system-ui);
+    font-size: 8rem;
+    font-weight: 200;
+    color: var(--color-primary, #DB4529);
+    margin: 0;
+    line-height: 1;
+  }
+
+  .notfound-heading {
+    font-family: var(--font-family-secondary, 'Nunito Sans', system-ui);
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--color-text-primary, #1a1a1a);
+    margin: 1rem 0 0.5rem;
+  }
+
+  .notfound-message {
+    font-family: var(--font-family-primary, 'Inter', system-ui);
+    font-size: 1.125rem;
+    color: var(--color-text-secondary, #6b7280);
+    margin: 0 0 2rem;
+    max-width: 400px;
+  }
+
+  .notfound-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 2rem;
+    font-family: var(--font-family-primary, 'Inter', system-ui);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #ffffff;
+    background: var(--color-primary, #DB4529);
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+
+  .notfound-btn:hover {
+    background: var(--color-primary-hover, #BA2515);
+  }
+
+  @media (max-width: 767px) {
+    .notfound-title {
+      font-size: 5rem;
+    }
+
+    .notfound-heading {
+      font-size: 1.5rem;
+    }
+
+    .notfound-message {
+      font-size: 1rem;
+    }
+  }
+</style>

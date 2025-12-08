@@ -1,0 +1,276 @@
+---
+/**
+ * DynamicContent.astro
+ * WDA-990: Wrapper component for SSG + Client Hydration pattern
+ *
+ * This component:
+ * 1. Renders SSG content immediately (good for SEO and initial load)
+ * 2. Hydrates with fresh data from GraphQL on client-side
+ * 3. Detects changes and updates DOM if content has changed
+ *
+ * Usage:
+ * <DynamicContent
+ *   contentType="partner"
+ *   slug="hotel-coma-bella"
+ *   locale="es"
+ *   initialHash="abc123"
+ * >
+ *   <PartnerSkeleton slot="skeleton" />
+ *   <div slot="content">...SSG content...</div>
+ * </DynamicContent>
+ */
+
+export interface Props {
+  /** Type of content to hydrate */
+  contentType: 'partner' | 'session';
+  /** Slug identifier for the content */
+  slug: string;
+  /** Current locale */
+  locale: 'es' | 'ca' | 'en' | 'fr';
+  /** Hash of SSG data for change detection (optional) */
+  initialHash?: string;
+  /** Partner slug (required for session content type) */
+  partnerSlug?: string;
+  /** Additional CSS class */
+  class?: string;
+  /** Disable hydration (render SSG only) */
+  static?: boolean;
+}
+
+const {
+  contentType,
+  slug,
+  locale,
+  initialHash = '',
+  partnerSlug = '',
+  class: className = '',
+  static: isStatic = false,
+} = Astro.props;
+
+// Generate unique ID for this instance
+const instanceId = `dynamic-${contentType}-${slug}-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div
+  id={instanceId}
+  class:list={['dynamic-content', className]}
+  data-dynamic-content
+  data-content-type={contentType}
+  data-slug={slug}
+  data-locale={locale}
+  data-initial-hash={initialHash}
+  data-partner-slug={partnerSlug}
+  data-static={isStatic ? 'true' : 'false'}
+>
+  <!-- Skeleton slot: shown while loading -->
+  <div data-skeleton class="dynamic-content__skeleton">
+    <slot name="skeleton" />
+  </div>
+
+  <!-- Content slot: SSG content, updated on hydration -->
+  <div data-content class="dynamic-content__content">
+    <slot name="content" />
+  </div>
+
+  <!-- Error state: hidden by default -->
+  <div data-error class="dynamic-content__error hidden">
+    <slot name="error" />
+  </div>
+</div>
+
+{!isStatic && (
+  <script>
+    /**
+     * Client-side hydration script for DynamicContent
+     * Runs once per page load, handles all DynamicContent instances
+     */
+    import {
+      fetchPartnerBySlug,
+      fetchSessionBySlug,
+      onDynamicContent,
+      type Locale,
+    } from '../../lib/dynamic-content-client';
+
+    import {
+      renderPartner,
+      renderSession,
+      showError,
+      showContent,
+    } from '../../lib/dynamic-renderers';
+
+    // Hydration delay to let SSG content render first
+    const HYDRATION_DELAY = 100;
+
+    // Track hydrated instances to avoid duplicate hydration
+    const hydratedInstances = new Set<string>();
+
+    /**
+     * Hydrate a single DynamicContent instance
+     */
+    async function hydrateInstance(container: HTMLElement): Promise<void> {
+      const instanceId = container.id;
+
+      // Skip if already hydrated or static
+      if (hydratedInstances.has(instanceId)) return;
+      if (container.dataset.static === 'true') return;
+
+      hydratedInstances.add(instanceId);
+
+      const contentType = container.dataset.contentType as 'partner' | 'session';
+      const slug = container.dataset.slug || '';
+      const locale = (container.dataset.locale || 'es') as Locale;
+      const initialHash = container.dataset.initialHash || '';
+      // partnerSlug reserved for future use with session lists
+      const _partnerSlug = container.dataset.partnerSlug || '';
+      void _partnerSlug;
+
+      if (!slug) {
+        console.warn('[DynamicContent] Missing slug for instance:', instanceId);
+        return;
+      }
+
+      try {
+        if (contentType === 'partner') {
+          const result = await fetchPartnerBySlug(slug, initialHash);
+
+          if (result.data) {
+            // Only re-render if content changed or no initial hash
+            if (result.changed || !initialHash) {
+              renderPartner(container, result.data, locale);
+            } else {
+              // Content unchanged, just show it
+              showContent(container);
+            }
+          }
+        } else if (contentType === 'session') {
+          const result = await fetchSessionBySlug(slug, initialHash);
+
+          if (result.data) {
+            if (result.changed || !initialHash) {
+              renderSession(container, result.data, locale);
+            } else {
+              showContent(container);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('[DynamicContent] Hydration error:', error);
+        showError(container, locale, () => {
+          hydratedInstances.delete(instanceId);
+          hydrateInstance(container);
+        });
+      }
+    }
+
+    /**
+     * Initialize hydration for all DynamicContent instances
+     */
+    function initHydration(): void {
+      const containers = document.querySelectorAll<HTMLElement>('[data-dynamic-content]');
+
+      containers.forEach(container => {
+        // Delay hydration slightly to prioritize SSG rendering
+        setTimeout(() => hydrateInstance(container), HYDRATION_DELAY);
+      });
+    }
+
+    // Subscribe to content events for debugging/analytics
+    if (import.meta.env.DEV) {
+      onDynamicContent('content:changed', (event) => {
+        console.log('[DynamicContent] Content changed:', event.contentType, event.slug);
+      });
+
+      onDynamicContent('content:error', (event) => {
+        console.error('[DynamicContent] Error:', event.contentType, event.slug, event.error);
+      });
+    }
+
+    // Initialize on DOM ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initHydration);
+    } else {
+      initHydration();
+    }
+
+    // Re-hydrate on Astro page transitions (View Transitions API)
+    document.addEventListener('astro:page-load', () => {
+      hydratedInstances.clear();
+      initHydration();
+    });
+  </script>
+)}
+
+<style>
+  .dynamic-content {
+    position: relative;
+  }
+
+  .dynamic-content__skeleton {
+    transition: opacity 0.2s ease-out;
+  }
+
+  .dynamic-content__skeleton.hidden {
+    display: none;
+  }
+
+  .dynamic-content__content {
+    transition: opacity 0.2s ease-in;
+  }
+
+  .dynamic-content__content.hidden {
+    display: none;
+  }
+
+  .dynamic-content__error {
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .dynamic-content__error.hidden {
+    display: none;
+  }
+
+  /* Global error styles */
+  :global(.dynamic-error) {
+    padding: 2rem;
+    text-align: center;
+    background: #fef2f2;
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+
+  :global(.dynamic-error__title) {
+    font-family: var(--font-family-secondary, system-ui);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #991b1b;
+    margin: 0 0 0.5rem;
+  }
+
+  :global(.dynamic-error__message) {
+    font-family: var(--font-family-primary, system-ui);
+    font-size: 0.875rem;
+    color: #7f1d1d;
+    margin: 0 0 1rem;
+  }
+
+  :global(.dynamic-error__retry) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.5rem;
+    font-family: var(--font-family-primary, system-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #ffffff;
+    background: #dc2626;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  :global(.dynamic-error__retry:hover) {
+    background: #b91c1c;
+  }
+</style>

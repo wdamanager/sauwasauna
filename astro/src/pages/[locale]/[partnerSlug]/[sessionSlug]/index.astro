@@ -1,8 +1,11 @@
 ---
 /**
  * WDA-963: Dynamic Session Detail Page
+ * WDA-990: Enhanced with SSG + Client Hydration pattern
  * Route: /[locale]/[partnerSlug]/[sessionSlug]/
  * Example: /es/hotel-coma-bella/jornadas-de-puertas-abiertas-sauwa/
+ *
+ * SSG content is rendered immediately, then hydrated with fresh data on client
  */
 import type { GetStaticPaths } from 'astro';
 import Layout from '../../../../layouts/Layout.astro';
@@ -11,6 +14,8 @@ import FooterBlack from '../../../../components/layout/FooterBlack.astro';
 import SessionHero from '../../../../components/booking/SessionHero.astro';
 import BookingWidget from '../../../../components/booking/BookingWidget.astro';
 import CollaboratorsSection from '../../../../components/booking/CollaboratorsSection.astro';
+import DynamicContent from '../../../../components/core/DynamicContent.astro';
+import SessionSkeleton from '../../../../components/core/skeletons/SessionSkeleton.astro';
 import { getAllSessions, type SessionData } from '../../../../lib/sessions-queries';
 import { getBookingContent } from '../../../../lib/i18n/booking';
 import { getLocalizedSession } from '../../../../lib/i18n/sessions';
@@ -121,6 +126,23 @@ const partner = session.partner ? {
 // Featured image
 const backgroundImage = session.featuredImage?.sourceUrl || '';
 
+// WDA-990: Generate content hash for change detection
+function generateContentHash(data: unknown): string {
+  return JSON.stringify(data).split('').reduce((hash, char) => {
+    return ((hash << 5) - hash) + char.charCodeAt(0);
+  }, 0).toString(36);
+}
+
+const initialHash = generateContentHash({
+  title: sessionTitle,
+  subtitle: sessionSubtitle,
+  description: sessionDescription,
+  duration,
+  capacity,
+  price,
+  partnerId: partner?.slug,
+});
+
 // SEO
 const seoTitle = session.seo?.title || `${sessionTitle} | SAUWA SAUNA`;
 const seoDescription = session.seo?.metaDesc || content.seoDescription;
@@ -174,56 +196,69 @@ const hreflangs = locales.map(loc => {
   <NavbarScroll locale={locale} />
 
   <main>
-    <SessionHero
-      title={content.hero.title}
-      heading={sessionTitle}
-      subtitle={sessionSubtitle}
-      duration={duration}
-      capacity={capacity}
-      price={price}
-      location={partner?.name}
-      partnerSlug={partner?.slug}
-      ctaText={content.hero.ctaText}
-      ctaHref="#reserva"
-      backgroundImage={backgroundImage}
-      locale={locale}
-      sessionId={sessionId}
-    />
+    <!-- WDA-990: DynamicContent wrapper for SSG + Client Hydration -->
+    <DynamicContent
+      contentType="session"
+      slug={session.slug}
+      locale={locale as 'es' | 'ca' | 'en' | 'fr'}
+      initialHash={initialHash}
+      partnerSlug={partnerSlug}
+    >
+      <SessionSkeleton slot="skeleton" showHero={false} showAbout={true} showBooking={false} showCollaborators={false} />
 
-    <!-- About Section - Only show if session has description content -->
-    {sessionDescription && sessionDescription.trim() !== '' && (
-      <section class="section section--bg-white" data-about-section>
-        <div class="container container--narrow">
-          <header class="section-header section-header--center">
-            <h2 class="section-label section-label--primary">{content.about.title}</h2>
-            <h3 class="section-title section-title--center">{content.about.heading}</h3>
-          </header>
+      <Fragment slot="content">
+        <SessionHero
+          title={content.hero.title}
+          heading={sessionTitle}
+          subtitle={sessionSubtitle}
+          duration={duration}
+          capacity={capacity}
+          price={price}
+          location={partner?.name}
+          partnerSlug={partner?.slug}
+          ctaText={content.hero.ctaText}
+          ctaHref="#reserva"
+          backgroundImage={backgroundImage}
+          locale={locale}
+          sessionId={sessionId}
+        />
 
-          <div class="about-content" data-hydrate="about-content">
-            <div class="about-text" set:html={sessionDescription} />
+        <!-- About Section - Only show if session has description content -->
+        {sessionDescription && sessionDescription.trim() !== '' && (
+          <section class="section section--bg-white" data-about-section>
+            <div class="container container--narrow">
+              <header class="section-header section-header--center">
+                <h2 class="section-label section-label--primary">{content.about.title}</h2>
+                <h3 class="section-title section-title--center" data-dynamic="session-title">{content.about.heading}</h3>
+              </header>
+
+              <div class="about-content" data-hydrate="about-content">
+                <div class="about-text" data-dynamic="session-description" set:html={sessionDescription} />
+              </div>
+            </div>
+          </section>
+        )}
+
+        <!-- Booking Section -->
+        <section id="reserva" class="section section--bg-light booking-section">
+          <div class="container">
+            <header class="section-header section-header--center">
+              <h2 class="section-label section-label--primary">{content.booking.sectionTitle}</h2>
+              <h3 class="section-title section-title--center">{content.booking.sectionSubtitle}</h3>
+            </header>
+
+            <BookingWidget sessionId={sessionId} locale={locale} />
           </div>
-        </div>
-      </section>
-    )}
+        </section>
 
-    <!-- Booking Section -->
-    <section id="reserva" class="section section--bg-light booking-section">
-      <div class="container">
-        <header class="section-header section-header--center">
-          <h2 class="section-label section-label--primary">{content.booking.sectionTitle}</h2>
-          <h3 class="section-title section-title--center">{content.booking.sectionSubtitle}</h3>
-        </header>
-
-        <BookingWidget sessionId={sessionId} locale={locale} />
-      </div>
-    </section>
-
-    <!-- Collaborators Section -->
-    <CollaboratorsSection
-      partner={partner}
-      sponsors={sponsors}
-      locale={locale}
-    />
+        <!-- Collaborators Section -->
+        <CollaboratorsSection
+          partner={partner}
+          sponsors={sponsors}
+          locale={locale}
+        />
+      </Fragment>
+    </DynamicContent>
   </main>
 
   <FooterBlack locale={locale} />

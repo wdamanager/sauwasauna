@@ -1,0 +1,263 @@
+---
+/**
+ * DynamicPageLoader.astro
+ * WDA-990: Catch-all page loader for URLs not generated at build time
+ *
+ * This component is used on catch-all routes to:
+ * 1. Show a skeleton while validating the URL
+ * 2. Fetch content dynamically if the URL is valid
+ * 3. Redirect to 404 if the URL doesn't exist
+ *
+ * Usage in catch-all route:
+ * <DynamicPageLoader
+ *   contentType="partner"
+ *   slug={partnerSlug}
+ *   locale="es"
+ * >
+ *   <PartnerSkeleton slot="skeleton" />
+ * </DynamicPageLoader>
+ */
+
+export interface Props {
+  /** Type of content to load */
+  contentType: 'partner' | 'session';
+  /** Slug identifier */
+  slug: string;
+  /** Current locale */
+  locale: 'es' | 'ca' | 'en' | 'fr';
+  /** Partner slug (required for session content type) */
+  partnerSlug?: string;
+  /** URL to redirect to on 404 */
+  notFoundUrl?: string;
+}
+
+const {
+  contentType,
+  slug,
+  locale,
+  partnerSlug = '',
+  notFoundUrl = `/${locale}/404/`,
+} = Astro.props;
+
+const instanceId = `loader-${contentType}-${slug}-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div
+  id={instanceId}
+  class="dynamic-page-loader"
+  data-loader
+  data-content-type={contentType}
+  data-slug={slug}
+  data-locale={locale}
+  data-partner-slug={partnerSlug}
+  data-not-found-url={notFoundUrl}
+>
+  <!-- Loading state with skeleton -->
+  <div data-loader-skeleton class="loader__skeleton">
+    <slot name="skeleton" />
+  </div>
+
+  <!-- Content container (populated dynamically) -->
+  <div data-loader-content class="loader__content hidden">
+    <slot name="content" />
+  </div>
+
+  <!-- Not found state -->
+  <div data-loader-notfound class="loader__notfound hidden">
+    <slot name="notfound">
+      <div class="notfound-message">
+        <h2>404</h2>
+        <p>Content not found</p>
+      </div>
+    </slot>
+  </div>
+</div>
+
+<script>
+  /**
+   * Client-side loader for catch-all pages
+   */
+  import {
+    partnerSlugExists,
+    sessionSlugExists,
+    fetchPartnerBySlug,
+    fetchSessionBySlug,
+    type Locale,
+  } from '../../lib/dynamic-content-client';
+
+  import {
+    renderPartner,
+    renderSession,
+    showError,
+  } from '../../lib/dynamic-renderers';
+
+  /**
+   * Load and render dynamic content
+   */
+  async function loadContent(container: HTMLElement): Promise<void> {
+    const contentType = container.dataset.contentType as 'partner' | 'session';
+    const slug = container.dataset.slug || '';
+    const locale = (container.dataset.locale || 'es') as Locale;
+    const partnerSlug = container.dataset.partnerSlug || '';
+    const notFoundUrl = container.dataset.notFoundUrl || `/${locale}/404/`;
+
+    const skeletonEl = container.querySelector('[data-loader-skeleton]');
+    const contentEl = container.querySelector('[data-loader-content]');
+    const notFoundEl = container.querySelector('[data-loader-notfound]');
+
+    if (!slug) {
+      console.error('[DynamicPageLoader] Missing slug');
+      window.location.href = notFoundUrl;
+      return;
+    }
+
+    try {
+      // First, validate that the slug exists
+      let exists = false;
+
+      if (contentType === 'partner') {
+        exists = await partnerSlugExists(slug);
+      } else if (contentType === 'session') {
+        exists = await sessionSlugExists(slug, partnerSlug);
+      }
+
+      if (!exists) {
+        // Slug doesn't exist, show 404 or redirect
+        console.warn('[DynamicPageLoader] Slug not found:', slug);
+        skeletonEl?.classList.add('hidden');
+        notFoundEl?.classList.remove('hidden');
+
+        // Redirect after a short delay
+        setTimeout(() => {
+          window.location.href = notFoundUrl;
+        }, 2000);
+        return;
+      }
+
+      // Fetch the content
+      if (contentType === 'partner') {
+        const result = await fetchPartnerBySlug(slug);
+
+        if (result.data && contentEl) {
+          skeletonEl?.classList.add('hidden');
+          contentEl.classList.remove('hidden');
+          renderPartner(contentEl, result.data, locale);
+        }
+      } else if (contentType === 'session') {
+        const result = await fetchSessionBySlug(slug);
+
+        if (result.data && contentEl) {
+          skeletonEl?.classList.add('hidden');
+          contentEl.classList.remove('hidden');
+          renderSession(contentEl, result.data, locale);
+        }
+      }
+    } catch (error) {
+      console.error('[DynamicPageLoader] Error loading content:', error);
+      skeletonEl?.classList.add('hidden');
+      showError(container, locale, () => loadContent(container));
+    }
+  }
+
+  /**
+   * Initialize all loaders on the page
+   */
+  function initLoaders(): void {
+    const loaders = document.querySelectorAll<HTMLElement>('[data-loader]');
+    loaders.forEach(loader => {
+      // Only auto-load if slug is already set (SSG pages)
+      // For dynamic catch-all pages, wait for dynamic:init event
+      const slug = loader.dataset.slug;
+      if (slug && slug.trim() !== '') {
+        loadContent(loader);
+      }
+    });
+  }
+
+  /**
+   * Setup event listeners for dynamic initialization
+   * Used by catch-all pages that receive slug via query params
+   */
+  function setupDynamicInit(): void {
+    const loaders = document.querySelectorAll<HTMLElement>('[data-loader]');
+    loaders.forEach(loader => {
+      // Listen for dynamic:init event from catch-all pages
+      loader.addEventListener('dynamic:init', ((event: CustomEvent) => {
+        const { slug, partner } = event.detail || {};
+        if (slug) {
+          loader.dataset.slug = slug;
+          if (partner) {
+            loader.dataset.partnerSlug = partner;
+          }
+          loadContent(loader);
+        }
+      }) as EventListener);
+    });
+  }
+
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      initLoaders();
+      setupDynamicInit();
+    });
+  } else {
+    initLoaders();
+    setupDynamicInit();
+  }
+
+  // Handle Astro page transitions
+  document.addEventListener('astro:page-load', () => {
+    initLoaders();
+    setupDynamicInit();
+  });
+</script>
+
+<style>
+  .dynamic-page-loader {
+    min-height: 50vh;
+  }
+
+  .loader__skeleton {
+    transition: opacity 0.2s ease-out;
+  }
+
+  .loader__skeleton.hidden {
+    display: none;
+  }
+
+  .loader__content {
+    transition: opacity 0.2s ease-in;
+  }
+
+  .loader__content.hidden {
+    display: none;
+  }
+
+  .loader__notfound {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    text-align: center;
+  }
+
+  .loader__notfound.hidden {
+    display: none;
+  }
+
+  .notfound-message h2 {
+    font-family: var(--font-family-secondary, system-ui);
+    font-size: 4rem;
+    font-weight: 300;
+    color: var(--color-text-secondary, #6b7280);
+    margin: 0 0 0.5rem;
+  }
+
+  .notfound-message p {
+    font-family: var(--font-family-primary, system-ui);
+    font-size: 1.125rem;
+    color: var(--color-text-secondary, #6b7280);
+    margin: 0;
+  }
+</style>

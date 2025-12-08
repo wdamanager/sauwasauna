@@ -1,0 +1,92 @@
+---
+/**
+ * WDA-990: Dynamic Session Page (CA)
+ * Catch-all fallback for session URLs not generated at build time
+ */
+import Layout from '../../../layouts/Layout.astro';
+import NavbarScroll from '../../../components/NavbarScroll.astro';
+import FooterBlack from '../../../components/layout/FooterBlack.astro';
+import DynamicPageLoader from '../../../components/core/DynamicPageLoader.astro';
+import SessionSkeleton from '../../../components/core/skeletons/SessionSkeleton.astro';
+
+const locale = 'ca';
+
+const i18n = {
+  pageTitle: 'Carregant sessio... | SAUWA SAUNA',
+  metaDescription: 'Carregant informacio de la sessio SAUWA.',
+  notFoundTitle: 'Sessio no trobada',
+  notFoundMessage: 'La sessio que busques no existeix o ha estat eliminada.',
+  backHome: 'Tornar a l\'inici',
+};
+---
+
+<Layout title={i18n.pageTitle} description={i18n.metaDescription} lang={locale} pageType="booking" navbar="none">
+  <NavbarScroll locale={locale} />
+
+  <main class="dynamic-session-page" data-page-type="dynamic-session" data-locale={locale}>
+    <DynamicPageLoader
+      contentType="session"
+      slug=""
+      locale={locale}
+      partnerSlug=""
+      notFoundUrl={`/${locale}/404/`}
+    >
+      <SessionSkeleton slot="skeleton" showHero={true} showAbout={true} showBooking={true} showCollaborators={false} />
+
+      <Fragment slot="notfound">
+        <div class="notfound-container">
+          <h1 class="notfound-title">404</h1>
+          <h2 class="notfound-heading">{i18n.notFoundTitle}</h2>
+          <p class="notfound-message">{i18n.notFoundMessage}</p>
+          <a href={`/${locale}/`} class="notfound-btn">{i18n.backHome}</a>
+        </div>
+      </Fragment>
+    </DynamicPageLoader>
+  </main>
+
+  <FooterBlack locale={locale} />
+</Layout>
+
+<script>
+  function initDynamicSession() {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get('slug');
+    const partner = params.get('partner');
+
+    if (!slug) {
+      window.location.href = `/${document.documentElement.lang || 'ca'}/404/`;
+      return;
+    }
+
+    const loader = document.querySelector('[data-loader]');
+    if (loader) {
+      loader.setAttribute('data-slug', slug);
+      if (partner) loader.setAttribute('data-partner-slug', partner);
+      loader.dispatchEvent(new CustomEvent('dynamic:init', { detail: { slug, partner } }));
+    }
+
+    const locale = document.querySelector('[data-locale]')?.getAttribute('data-locale') || 'ca';
+    const cleanUrl = partner ? `/${locale}/${partner}/${slug}/` : `/${locale}/${slug}/`;
+    if (window.history?.replaceState) {
+      window.history.replaceState({ slug, partner }, '', cleanUrl);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDynamicSession);
+  } else {
+    initDynamicSession();
+  }
+  document.addEventListener('astro:page-load', initDynamicSession);
+</script>
+
+<style>
+  .dynamic-session-page { min-height: 100vh; }
+  .notfound-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; padding: 2rem; text-align: center; }
+  .notfound-title { font-family: var(--font-family-secondary, 'Nunito Sans', system-ui); font-size: 8rem; font-weight: 200; color: var(--color-primary, #DB4529); margin: 0; line-height: 1; }
+  .notfound-heading { font-family: var(--font-family-secondary, 'Nunito Sans', system-ui); font-size: 2rem; font-weight: 300; color: var(--color-text-primary, #1a1a1a); margin: 1rem 0 0.5rem; }
+  .notfound-message { font-family: var(--font-family-primary, 'Inter', system-ui); font-size: 1.125rem; color: var(--color-text-secondary, #6b7280); margin: 0 0 2rem; max-width: 400px; }
+  .notfound-btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.875rem 2rem; font-family: var(--font-family-primary, 'Inter', system-ui); font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #ffffff; background: var(--color-primary, #DB4529); border: none; border-radius: 4px; text-decoration: none; transition: background-color 0.2s ease; }
+  .notfound-btn:hover { background: var(--color-primary-hover, #BA2515); }
+  @media (max-width: 767px) { .notfound-title { font-size: 5rem; } .notfound-heading { font-size: 1.5rem; } }
+</style>

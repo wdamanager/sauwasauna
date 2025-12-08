@@ -1,0 +1,269 @@
+---
+/**
+ * WDA-990: Custom 404 Page
+ * Shown when a URL doesn't exist and can't be loaded dynamically
+ *
+ * Features:
+ * - Detects user language from URL or browser
+ * - Shows localized error message
+ * - Provides navigation back to home
+ */
+import Layout from '../layouts/Layout.astro';
+import NavbarScroll from '../components/NavbarScroll.astro';
+import FooterBlack from '../components/layout/FooterBlack.astro';
+
+// Default to Spanish, will be overridden client-side based on URL
+const defaultLocale = 'es';
+
+// i18n content for all locales
+const i18n = {
+  es: {
+    title: 'Pagina no encontrada | SAUWA SAUNA',
+    heading: 'Pagina no encontrada',
+    message: 'Lo sentimos, la pagina que buscas no existe o ha sido movida.',
+    backHome: 'Volver al inicio',
+    searchLabel: 'Buscar en SAUWA',
+  },
+  ca: {
+    title: 'Pagina no trobada | SAUWA SAUNA',
+    heading: 'Pagina no trobada',
+    message: 'Ho sentim, la pagina que busques no existeix o ha estat moguda.',
+    backHome: 'Tornar a l\'inici',
+    searchLabel: 'Cercar a SAUWA',
+  },
+  en: {
+    title: 'Page not found | SAUWA SAUNA',
+    heading: 'Page not found',
+    message: 'Sorry, the page you are looking for does not exist or has been moved.',
+    backHome: 'Back to home',
+    searchLabel: 'Search SAUWA',
+  },
+  fr: {
+    title: 'Page non trouvee | SAUWA SAUNA',
+    heading: 'Page non trouvee',
+    message: 'Desole, la page que vous recherchez n\'existe pas ou a ete deplacee.',
+    backHome: 'Retour a l\'accueil',
+    searchLabel: 'Rechercher sur SAUWA',
+  },
+};
+
+const t = i18n[defaultLocale];
+---
+
+<Layout title={t.title} description={t.message} lang={defaultLocale} pageType="error" navbar="none">
+  <NavbarScroll locale={defaultLocale} />
+
+  <main class="error-page" data-page-type="404">
+    <div class="error-container">
+      <div class="error-content">
+        <h1 class="error-code">404</h1>
+        <h2 class="error-heading" data-i18n="heading">{t.heading}</h2>
+        <p class="error-message" data-i18n="message">{t.message}</p>
+
+        <div class="error-actions">
+          <a href="/es/" class="error-btn error-btn--primary" data-i18n-href="home" data-i18n="backHome">
+            {t.backHome}
+          </a>
+        </div>
+
+        <div class="error-illustration">
+          <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Sauna bucket illustration -->
+            <ellipse cx="100" cy="160" rx="60" ry="10" fill="#e5e7eb"/>
+            <path d="M50 80 L50 150 C50 160 70 170 100 170 C130 170 150 160 150 150 L150 80" stroke="#DB4529" stroke-width="4" fill="none"/>
+            <ellipse cx="100" cy="80" rx="50" ry="15" stroke="#DB4529" stroke-width="4" fill="#fff"/>
+            <path d="M70 60 C70 40 100 30 100 30 C100 30 130 40 130 60" stroke="#DB4529" stroke-width="4" fill="none"/>
+            <!-- Steam -->
+            <path d="M80 50 Q75 35 80 20" stroke="#9ca3af" stroke-width="2" fill="none" opacity="0.5">
+              <animate attributeName="d" values="M80 50 Q75 35 80 20;M80 50 Q85 35 80 20;M80 50 Q75 35 80 20" dur="2s" repeatCount="indefinite"/>
+            </path>
+            <path d="M100 45 Q95 30 100 15" stroke="#9ca3af" stroke-width="2" fill="none" opacity="0.5">
+              <animate attributeName="d" values="M100 45 Q95 30 100 15;M100 45 Q105 30 100 15;M100 45 Q95 30 100 15" dur="2.5s" repeatCount="indefinite"/>
+            </path>
+            <path d="M120 50 Q115 35 120 20" stroke="#9ca3af" stroke-width="2" fill="none" opacity="0.5">
+              <animate attributeName="d" values="M120 50 Q115 35 120 20;M120 50 Q125 35 120 20;M120 50 Q115 35 120 20" dur="2.2s" repeatCount="indefinite"/>
+            </path>
+            <!-- Question mark -->
+            <text x="100" y="125" text-anchor="middle" font-size="40" font-weight="bold" fill="#DB4529">?</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <FooterBlack locale={defaultLocale} />
+</Layout>
+
+<script>
+  /**
+   * Client-side locale detection for 404 page
+   * Updates content based on URL path or browser language
+   */
+  const i18n: Record<string, { heading: string; message: string; backHome: string }> = {
+    es: {
+      heading: 'Pagina no encontrada',
+      message: 'Lo sentimos, la pagina que buscas no existe o ha sido movida.',
+      backHome: 'Volver al inicio',
+    },
+    ca: {
+      heading: 'Pagina no trobada',
+      message: 'Ho sentim, la pagina que busques no existeix o ha estat moguda.',
+      backHome: 'Tornar a l\'inici',
+    },
+    en: {
+      heading: 'Page not found',
+      message: 'Sorry, the page you are looking for does not exist or has been moved.',
+      backHome: 'Back to home',
+    },
+    fr: {
+      heading: 'Page non trouvee',
+      message: 'Desole, la page que vous recherchez n\'existe pas ou a ete deplacee.',
+      backHome: 'Retour a l\'accueil',
+    },
+  };
+
+  function detectLocale(): string {
+    // Try to detect from URL path
+    const path = window.location.pathname;
+    const match = path.match(/^\/(es|ca|en|fr)\//);
+    if (match) return match[1];
+
+    // Fallback to browser language
+    const browserLang = navigator.language.split('-')[0];
+    if (['es', 'ca', 'en', 'fr'].includes(browserLang)) return browserLang;
+
+    return 'es';
+  }
+
+  function updateContent() {
+    const locale = detectLocale();
+    const t = i18n[locale] || i18n.es;
+
+    // Update text content
+    const headingEl = document.querySelector('[data-i18n="heading"]');
+    const messageEl = document.querySelector('[data-i18n="message"]');
+    const btnEl = document.querySelector('[data-i18n="backHome"]');
+
+    if (headingEl) headingEl.textContent = t.heading;
+    if (messageEl) messageEl.textContent = t.message;
+    if (btnEl) {
+      btnEl.textContent = t.backHome;
+      (btnEl as HTMLAnchorElement).href = `/${locale}/`;
+    }
+
+    // Update html lang attribute
+    document.documentElement.lang = locale;
+  }
+
+  // Run on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateContent);
+  } else {
+    updateContent();
+  }
+</script>
+
+<style>
+  .error-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #ffffff 0%, #f8f8f8 100%);
+  }
+
+  .error-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 2rem;
+  }
+
+  .error-content {
+    text-align: center;
+  }
+
+  .error-code {
+    font-family: var(--font-family-secondary, 'Nunito Sans', system-ui);
+    font-size: 10rem;
+    font-weight: 200;
+    line-height: 1;
+    color: var(--color-primary, #DB4529);
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .error-heading {
+    font-family: var(--font-family-secondary, 'Nunito Sans', system-ui);
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--color-text-primary, #1a1a1a);
+    margin: 0 0 1rem;
+  }
+
+  .error-message {
+    font-family: var(--font-family-primary, 'Inter', system-ui);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--color-text-secondary, #6b7280);
+    margin: 0 0 2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .error-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .error-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 2rem;
+    font-family: var(--font-family-primary, 'Inter', system-ui);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .error-btn--primary {
+    color: #ffffff;
+    background: var(--color-primary, #DB4529);
+  }
+
+  .error-btn--primary:hover {
+    background: var(--color-primary-hover, #BA2515);
+    transform: translateY(-2px);
+  }
+
+  .error-illustration {
+    margin-top: 3rem;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 767px) {
+    .error-code {
+      font-size: 6rem;
+    }
+
+    .error-heading {
+      font-size: 1.5rem;
+    }
+
+    .error-message {
+      font-size: 1rem;
+    }
+
+    .error-illustration svg {
+      width: 150px;
+      height: 150px;
+    }
+  }
+</style>

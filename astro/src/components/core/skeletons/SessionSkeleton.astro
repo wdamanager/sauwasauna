@@ -1,0 +1,414 @@
+---
+/**
+ * SessionSkeleton.astro
+ * WDA-990: Loading skeleton for session detail pages
+ *
+ * Displays animated placeholder content while session data is loading.
+ * Matches the layout structure of the session/booking page.
+ */
+
+export interface Props {
+  /** Show hero section skeleton */
+  showHero?: boolean;
+  /** Show about/description section skeleton */
+  showAbout?: boolean;
+  /** Show booking widget skeleton */
+  showBooking?: boolean;
+  /** Show collaborators section skeleton */
+  showCollaborators?: boolean;
+}
+
+const {
+  showHero = true,
+  showAbout = true,
+  showBooking = true,
+  showCollaborators = false,
+} = Astro.props;
+---
+
+<div class="session-skeleton">
+  {showHero && (
+    <div class="skeleton-hero">
+      <div class="skeleton-hero__overlay">
+        <div class="skeleton-hero__content">
+          <div class="skeleton-line skeleton-line--label"></div>
+          <div class="skeleton-line skeleton-line--title"></div>
+          <div class="skeleton-line skeleton-line--subtitle"></div>
+
+          <div class="skeleton-hero__meta">
+            <div class="skeleton-meta-item"></div>
+            <div class="skeleton-meta-item"></div>
+            <div class="skeleton-meta-item"></div>
+            <div class="skeleton-meta-item"></div>
+          </div>
+
+          <div class="skeleton-btn"></div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showAbout && (
+    <section class="skeleton-about">
+      <div class="skeleton-about__container">
+        <div class="skeleton-about__header">
+          <div class="skeleton-line skeleton-line--label skeleton-line--center"></div>
+          <div class="skeleton-line skeleton-line--title skeleton-line--center"></div>
+        </div>
+        <div class="skeleton-about__content">
+          <div class="skeleton-line skeleton-line--full"></div>
+          <div class="skeleton-line skeleton-line--full"></div>
+          <div class="skeleton-line skeleton-line--full"></div>
+          <div class="skeleton-line skeleton-line--md"></div>
+          <div class="skeleton-line skeleton-line--full" style="margin-top: 1rem;"></div>
+          <div class="skeleton-line skeleton-line--full"></div>
+          <div class="skeleton-line skeleton-line--lg"></div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {showBooking && (
+    <section class="skeleton-booking">
+      <div class="skeleton-booking__container">
+        <div class="skeleton-booking__header">
+          <div class="skeleton-line skeleton-line--label skeleton-line--center"></div>
+          <div class="skeleton-line skeleton-line--title skeleton-line--center"></div>
+        </div>
+        <div class="skeleton-booking__widget">
+          <div class="skeleton-calendar">
+            <div class="skeleton-calendar__header">
+              <div class="skeleton-icon"></div>
+              <div class="skeleton-line skeleton-line--sm"></div>
+              <div class="skeleton-icon"></div>
+            </div>
+            <div class="skeleton-calendar__days">
+              {Array.from({ length: 7 }).map(() => (
+                <div class="skeleton-line skeleton-line--xs"></div>
+              ))}
+            </div>
+            <div class="skeleton-calendar__grid">
+              {Array.from({ length: 35 }).map(() => (
+                <div class="skeleton-calendar__cell"></div>
+              ))}
+            </div>
+          </div>
+          <div class="skeleton-booking__summary">
+            <div class="skeleton-line skeleton-line--md"></div>
+            <div class="skeleton-line skeleton-line--sm"></div>
+            <div class="skeleton-line skeleton-line--sm"></div>
+            <div class="skeleton-btn skeleton-btn--full"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {showCollaborators && (
+    <section class="skeleton-collaborators">
+      <div class="skeleton-collaborators__container">
+        <div class="skeleton-line skeleton-line--label skeleton-line--center"></div>
+        <div class="skeleton-collaborators__logos">
+          <div class="skeleton-box skeleton-box--logo-sm"></div>
+          <div class="skeleton-box skeleton-box--logo-sm"></div>
+          <div class="skeleton-box skeleton-box--logo-sm"></div>
+        </div>
+      </div>
+    </section>
+  )}
+</div>
+
+<style>
+  /* Base skeleton animation */
+  @keyframes skeleton-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .session-skeleton {
+    width: 100%;
+  }
+
+  /* Skeleton elements base */
+  .skeleton-line,
+  .skeleton-box,
+  .skeleton-icon,
+  .skeleton-btn,
+  .skeleton-meta-item,
+  .skeleton-calendar__cell {
+    background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+    border-radius: 4px;
+  }
+
+  /* Line variations */
+  .skeleton-line {
+    height: 1rem;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .skeleton-line--xs {
+    height: 0.75rem;
+    width: 30px;
+  }
+
+  .skeleton-line--sm {
+    height: 1rem;
+    width: 120px;
+  }
+
+  .skeleton-line--md {
+    height: 1rem;
+    width: 60%;
+  }
+
+  .skeleton-line--lg {
+    height: 1rem;
+    width: 80%;
+  }
+
+  .skeleton-line--full {
+    width: 100%;
+  }
+
+  .skeleton-line--label {
+    height: 0.75rem;
+    width: 120px;
+    margin-bottom: 0.75rem;
+  }
+
+  .skeleton-line--title {
+    height: 2rem;
+    width: 50%;
+    margin-bottom: 0.75rem;
+  }
+
+  .skeleton-line--subtitle {
+    height: 1rem;
+    width: 70%;
+    margin-bottom: 1.5rem;
+  }
+
+  .skeleton-line--center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Button skeleton */
+  .skeleton-btn {
+    height: 48px;
+    width: 180px;
+    border-radius: 4px;
+    margin-top: 1rem;
+  }
+
+  .skeleton-btn--full {
+    width: 100%;
+  }
+
+  /* Icon skeleton */
+  .skeleton-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  /* Meta item skeleton */
+  .skeleton-meta-item {
+    width: 100px;
+    height: 40px;
+    border-radius: 8px;
+  }
+
+  /* Box skeleton */
+  .skeleton-box--logo-sm {
+    width: 120px;
+    height: 60px;
+  }
+
+  /* Hero skeleton */
+  .skeleton-hero {
+    width: 100%;
+    height: 70vh;
+    min-height: 500px;
+    background: #1a1a1a;
+    position: relative;
+  }
+
+  .skeleton-hero__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .skeleton-hero__content {
+    text-align: center;
+    padding: 2rem;
+    max-width: 600px;
+  }
+
+  .skeleton-hero .skeleton-line,
+  .skeleton-hero .skeleton-btn,
+  .skeleton-hero .skeleton-meta-item {
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+    background-size: 200% 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .skeleton-hero__meta {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* About section skeleton */
+  .skeleton-about {
+    padding: 4rem 1rem;
+    background: #ffffff;
+  }
+
+  .skeleton-about__container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .skeleton-about__header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .skeleton-about__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Booking section skeleton */
+  .skeleton-booking {
+    padding: 4rem 1rem;
+    background: #f8f8f8;
+  }
+
+  .skeleton-booking__container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .skeleton-booking__header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .skeleton-booking__widget {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 2rem;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Calendar skeleton */
+  .skeleton-calendar {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .skeleton-calendar__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+  }
+
+  .skeleton-calendar__days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+    justify-items: center;
+  }
+
+  .skeleton-calendar__grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+  }
+
+  .skeleton-calendar__cell {
+    aspect-ratio: 1;
+    border-radius: 4px;
+  }
+
+  /* Booking summary skeleton */
+  .skeleton-booking__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f9fafb;
+    border-radius: 8px;
+  }
+
+  /* Collaborators skeleton */
+  .skeleton-collaborators {
+    padding: 3rem 1rem;
+    background: #ffffff;
+  }
+
+  .skeleton-collaborators__container {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .skeleton-collaborators__logos {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 1.5rem;
+  }
+
+  /* Responsive */
+  @media (max-width: 767px) {
+    .skeleton-hero {
+      height: 80vh;
+    }
+
+    .skeleton-hero__meta {
+      gap: 0.75rem;
+    }
+
+    .skeleton-meta-item {
+      width: 80px;
+      height: 32px;
+    }
+
+    .skeleton-booking__widget {
+      grid-template-columns: 1fr;
+    }
+
+    .skeleton-collaborators__logos {
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .skeleton-box--logo-sm {
+      width: 100px;
+      height: 50px;
+    }
+  }
+</style>
