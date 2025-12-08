@@ -702,6 +702,199 @@ const t = translations[locale];
       width: 100%;
     }
   }
+
+  /* ============================================
+     CALENDAR - WDA-1006
+     ============================================ */
+
+  .calendar-container {
+    position: relative;
+  }
+
+  .calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .calendar-nav {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #F3F4F6;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .calendar-nav:hover {
+    background: #E5E7EB;
+  }
+
+  .calendar-nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .calendar-nav svg {
+    width: 20px;
+    height: 20px;
+    color: #374151;
+  }
+
+  .calendar-month-year {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1F2937;
+  }
+
+  .calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 0.5rem;
+  }
+
+  .weekday {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6B7280;
+    padding: 0.5rem 0;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  /* WDA-1006: Estilos para dias del calendario (usando :global para elementos dinamicos) */
+  :global(.calendar-day) {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: transparent;
+    color: #374151;
+    min-height: 40px;
+    position: relative;
+  }
+
+  :global(.calendar-day.empty) {
+    cursor: default;
+  }
+
+  :global(.calendar-day.disabled) {
+    color: #D1D5DB;
+    cursor: not-allowed;
+  }
+
+  /* Estado: disponible */
+  :global(.calendar-day.available) {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #1F2937 !important;
+    position: relative;
+  }
+
+  :global(.calendar-day.available)::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #10B981;
+  }
+
+  :global(.calendar-day.available:hover) {
+    background: #406E51 !important;
+    color: white !important;
+  }
+
+  :global(.calendar-day.available:hover)::after {
+    background: white;
+  }
+
+  /* Estado: seleccionado */
+  :global(.calendar-day.selected) {
+    background: #406E51 !important;
+    color: white !important;
+  }
+
+  :global(.calendar-day.selected)::after {
+    background: white;
+  }
+
+  /* Estado: hoy */
+  :global(.calendar-day.today) {
+    box-shadow: inset 0 0 0 2px #406E51;
+  }
+
+  /* Loading del calendario */
+  .calendar-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: #6B7280;
+    font-size: 0.875rem;
+  }
+
+  /* ============================================
+     TIME SLOTS - WDA-1006
+     ============================================ */
+
+  .slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .slot-btn {
+    padding: 1rem;
+    background: white;
+    border: 2px solid #E5E7EB;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .slot-btn:hover:not(:disabled) {
+    border-color: #406E51;
+    box-shadow: 0 2px 8px rgba(64, 110, 81, 0.15);
+  }
+
+  .slot-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .slot-time {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin-bottom: 0.25rem;
+  }
+
+  .slot-capacity {
+    font-size: 0.75rem;
+    color: #10B981;
+  }
 </style>
 
 <script>
@@ -731,6 +924,10 @@ const t = translations[locale];
   let selectedDate: string | null = null;
   let selectedSlot: TimeSlot | null = null;
   let bookingResult: any = null;
+
+  // WDA-1006: Calendar state
+  let currentMonth = new Date();
+  let availableDates: Map<string, { date: string; hasSlots: boolean; slotCount: number }> = new Map();
 
   // Helper: Navigate to step
   function goToStep(step: number) {
@@ -834,36 +1031,185 @@ const t = translations[locale];
     `;
   }
 
-  // Load calendar (simplified - you may want to reuse BookingWidget calendar logic)
+  // WDA-1006: Load calendar with available dates from API
   async function loadCalendar() {
     if (!voucherData) return;
 
     const calendarContainer = document.getElementById('calendar-container');
     if (!calendarContainer) return;
 
-    calendarContainer.innerHTML = '<p>Calendario de fechas disponibles (implementar)</p>';
+    const t = (window as any).voucherTranslations;
 
-    // TODO: Implement full calendar logic similar to BookingWidget
-    // For now, show a simple date picker
-    const today = new Date().toISOString().split('T')[0];
-    calendarContainer.innerHTML = `
-      <input
-        type="date"
-        id="date-picker"
-        min="${today}"
-        class="form-input"
-        style="width: 100%;"
-      />
-    `;
+    // Show loading state
+    calendarContainer.innerHTML = `<div class="calendar-loading">${t.loadingDates}</div>`;
 
-    const datePicker = document.getElementById('date-picker') as HTMLInputElement;
-    datePicker?.addEventListener('change', async (e) => {
-      const date = (e.target as HTMLInputElement).value;
-      if (date) {
-        selectedDate = date;
-        await loadSlots(date);
+    // Fetch available dates for the session
+    // Calculate date range: from today to 3 months ahead
+    const today = new Date();
+    const startDate = today.toISOString().split('T')[0];
+    const endDateObj = new Date(today);
+    endDateObj.setMonth(endDateObj.getMonth() + 3);
+    const endDate = endDateObj.toISOString().split('T')[0];
+
+    try {
+      const dates = await getAvailableDates({
+        sessionId: voucherData.baseSession.id,
+        startDate,
+        endDate
+      });
+
+      // Store available dates in Map for quick lookup
+      availableDates.clear();
+      if (dates && dates.length > 0) {
+        dates.forEach((d: { date: string; hasSlots: boolean; slotCount?: number }) => {
+          availableDates.set(d.date, {
+            date: d.date,
+            hasSlots: d.hasSlots,
+            slotCount: d.slotCount || 0
+          });
+        });
       }
+
+      // Render the calendar structure
+      calendarContainer.innerHTML = `
+        <div class="calendar-header">
+          <button type="button" class="calendar-nav prev-month" aria-label="${t.prevMonth}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+          <span class="calendar-month-year"></span>
+          <button type="button" class="calendar-nav next-month" aria-label="${t.nextMonth}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+        <div class="calendar-weekdays">
+          ${t.weekdays.map((day: string) => `<div class="weekday">${day}</div>`).join('')}
+        </div>
+        <div class="calendar-grid"></div>
+      `;
+
+      // Bind navigation events
+      const prevBtn = calendarContainer.querySelector('.prev-month');
+      const nextBtn = calendarContainer.querySelector('.next-month');
+
+      prevBtn?.addEventListener('click', () => navigateMonth(-1));
+      nextBtn?.addEventListener('click', () => navigateMonth(1));
+
+      // Initial render
+      renderCalendar();
+
+    } catch (error) {
+      console.error('[VoucherRedemptionFlow] Error loading available dates:', error);
+      calendarContainer.innerHTML = `<div class="calendar-loading">${t.noDates}</div>`;
+    }
+  }
+
+  // WDA-1006: Render calendar grid for current month
+  function renderCalendar() {
+    const t = (window as any).voucherTranslations;
+    const calendarContainer = document.getElementById('calendar-container');
+    if (!calendarContainer) return;
+
+    // Update month/year display
+    const monthYearEl = calendarContainer.querySelector('.calendar-month-year');
+    if (monthYearEl) {
+      const months = t.months as string[];
+      monthYearEl.textContent = `${months[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
+    }
+
+    // Get first day of month and total days
+    const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+    const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+    const startOffset = (firstDay.getDay() + 6) % 7; // Monday = 0
+    const totalDays = lastDay.getDate();
+
+    // Build calendar grid
+    const grid = calendarContainer.querySelector('.calendar-grid');
+    if (!grid) return;
+
+    let html = '';
+
+    // Empty cells for offset
+    for (let i = 0; i < startOffset; i++) {
+      html += '<button type="button" class="calendar-day empty" disabled></button>';
+    }
+
+    // Day cells
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Helper to format date as YYYY-MM-DD without timezone issues
+    const toLocalDateString = (d: Date): string => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    for (let day = 1; day <= totalDays; day++) {
+      const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+      const dateStr = toLocalDateString(date);
+      const isToday = date.getTime() === today.getTime();
+      const isPast = date < today;
+      const dateData = availableDates.get(dateStr);
+      const isAvailable = dateData?.hasSlots === true;
+      const isSelected = dateStr === selectedDate;
+
+      const classes = ['calendar-day'];
+      if (isToday) classes.push('today');
+      if (isPast) classes.push('disabled');
+      else if (isAvailable) {
+        classes.push('available');
+      } else {
+        classes.push('disabled');
+      }
+      if (isSelected) classes.push('selected');
+
+      html += `
+        <button
+          type="button"
+          class="${classes.join(' ')}"
+          data-date="${dateStr}"
+          ${isPast || !isAvailable ? 'disabled' : ''}
+        >
+          ${day}
+        </button>
+      `;
+    }
+
+    grid.innerHTML = html;
+
+    // Bind click events to available days
+    grid.querySelectorAll('.calendar-day.available').forEach((dayBtn) => {
+      dayBtn.addEventListener('click', async (e) => {
+        const dateStr = (e.currentTarget as HTMLElement).dataset.date;
+        if (dateStr) {
+          selectedDate = dateStr;
+          renderCalendar(); // Update selection visual
+          await loadSlots(dateStr);
+        }
+      });
     });
+
+    // Update navigation buttons - disable prev if showing current month
+    const prevBtn = calendarContainer.querySelector('.prev-month') as HTMLButtonElement;
+    if (prevBtn) {
+      const prevMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
+      prevBtn.disabled = prevMonth < new Date(today.getFullYear(), today.getMonth());
+    }
+  }
+
+  // WDA-1006: Navigate to previous/next month
+  function navigateMonth(delta: number) {
+    currentMonth = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth() + delta,
+      1
+    );
+    renderCalendar();
   }
 
   // Load time slots
