@@ -610,6 +610,7 @@ export const GET_PUBLIC_SESSIONS_QUERY = `
       sessionType
       usesSharedCapacity
       includedPersons
+      voucherValidityMonths
       requiresFullCapacity
       availabilityStatus
       duration
@@ -667,6 +668,7 @@ interface SauwaPublicSession {
   sessionType?: string;
   usesSharedCapacity: boolean;
   includedPersons?: number;
+  voucherValidityMonths?: number;
   requiresFullCapacity: boolean;
   availabilityStatus: 'active' | 'no_future_dates';
   duration?: number;
@@ -744,6 +746,7 @@ function transformPublicSession(session: SauwaPublicSession): SessionData {
     // WDA-998: Session type categorization
     sessionType: mapSessionType(session.sessionType),
     includedPersons: session.includedPersons,
+    voucherValidityMonths: session.voucherValidityMonths,
     usesSharedCapacity: session.usesSharedCapacity,
     requiresFullCapacity: session.requiresFullCapacity,
     featuredImage: session.featuredImage ? {

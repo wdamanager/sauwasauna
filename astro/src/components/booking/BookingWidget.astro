@@ -116,7 +116,7 @@ const translations = {
     },
     // WDA-974: Differentiated booking flows
     packInfo: 'Este pack incluye entrada para {n} personas',
-    voucherInfo: 'Este bono incluye {n} entradas válidas por 12 meses',
+    voucherInfo: 'Este bono incluye {n} entradas válidas por {m} meses',
     privateInfo: 'Sesión privada - Uso exclusivo de la sauna',
     voucherCodesTitle: 'Tus códigos de bono',
     voucherCodesNote: 'Guarda estos códigos. Los recibirás también por email.',
@@ -214,7 +214,7 @@ const translations = {
     },
     // WDA-974: Differentiated booking flows
     packInfo: 'Aquest pack inclou entrada per a {n} persones',
-    voucherInfo: 'Aquest bo inclou {n} entrades vàlides per 12 mesos',
+    voucherInfo: 'Aquest bo inclou {n} entrades vàlides per {m} mesos',
     privateInfo: 'Sessió privada - Ús exclusiu de la sauna',
     voucherCodesTitle: 'Els teus codis de bo',
     voucherCodesNote: 'Guarda aquests codis. Els rebràs també per email.',
@@ -312,7 +312,7 @@ const translations = {
     },
     // WDA-974: Differentiated booking flows
     packInfo: 'This pack includes entry for {n} people',
-    voucherInfo: 'This voucher includes {n} entries valid for 12 months',
+    voucherInfo: 'This voucher includes {n} entries valid for {m} months',
     privateInfo: 'Private session - Exclusive use of the sauna',
     voucherCodesTitle: 'Your voucher codes',
     voucherCodesNote: 'Save these codes. You will also receive them by email.',
@@ -410,7 +410,7 @@ const translations = {
     },
     // WDA-974: Differentiated booking flows
     packInfo: 'Ce pack comprend l\'entrée pour {n} personnes',
-    voucherInfo: 'Ce bon comprend {n} entrées valables 12 mois',
+    voucherInfo: 'Ce bon comprend {n} entrées valables {m} mois',
     privateInfo: 'Séance privée - Usage exclusif du sauna',
     voucherCodesTitle: 'Vos codes de bon',
     voucherCodesNote: 'Conservez ces codes. Vous les recevrez également par email.',
@@ -2223,6 +2223,8 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     // WDA-974: Session type support
     sessionType: 'single' | 'pack' | 'voucher' | 'private';
     includedPersons: number | null;
+    // WDA-1008: Voucher validity from backend
+    voucherValidityMonths: number;
   }
 
   class BookingWidgetController {
@@ -2247,6 +2249,8 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         // WDA-974: Default to single type (backward compatible)
         sessionType: 'single',
         includedPersons: null,
+        // WDA-1008: Default voucher validity
+        voucherValidityMonths: 12,
       };
 
       this.init();
@@ -2347,6 +2351,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
                   sessionDetails {
                     sessionType
                     includedPersons
+                    voucherValidityMonths
                   }
                 }
               }
@@ -2363,6 +2368,8 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
           const rawType = sessionDetails.sessionType;
           this.state.sessionType = Array.isArray(rawType) ? rawType[0] : (rawType || 'single');
           this.state.includedPersons = sessionDetails.includedPersons || null;
+          // WDA-1008: Store voucher validity months for display
+          this.state.voucherValidityMonths = sessionDetails.voucherValidityMonths || 12;
 
           // Update UI based on session type
           this.updateSessionTypeUI();
@@ -2438,7 +2445,10 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
           // Pre-populate attendee forms for pack
           setTimeout(() => this.initializePackAttendees(includedPersons), 100);
         } else if (sessionType === 'voucher' && includedPersons) {
-          infoText = translations.voucherInfo.replace('{n}', includedPersons);
+          // WDA-1008: Use dynamic validity months from backend
+          infoText = translations.voucherInfo
+            .replace('{n}', String(includedPersons))
+            .replace('{m}', String(this.state.voucherValidityMonths));
         } else if (sessionType === 'private') {
           infoText = translations.privateInfo;
           // For private sessions, allow flexible attendee count up to max
