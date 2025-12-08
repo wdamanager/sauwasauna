@@ -13,6 +13,7 @@ import { BOOKING_QUERIES } from './queries';
 import type {
   SaunaSession,
   SessionResponse,
+  PartnerResponse,
   DateAvailability,
   AvailableDatesResponse,
   DayAvailability,
@@ -129,6 +130,7 @@ async function graphqlFetch<T>(
 /**
  * Get session details by ID (server-side/build time)
  * Use this in Astro pages for SSG
+ * WDA-986: Now uses two-query pattern to avoid ACF partner field 500 error
  *
  * @param sessionId - WordPress post ID
  */
@@ -138,6 +140,26 @@ export async function fetchSessionServer(sessionId: number): Promise<SaunaSessio
       BOOKING_QUERIES.GET_SESSION,
       { sessionId: String(sessionId) }
     );
+
+    if (!data.session) {
+      return null;
+    }
+
+    // WDA-986: Fetch partner separately if sauwaPartnerId exists
+    if (data.session.sauwaPartnerId) {
+      try {
+        const partnerData = await graphqlFetch<PartnerResponse>(
+          BOOKING_QUERIES.GET_PARTNER,
+          { partnerId: String(data.session.sauwaPartnerId) }
+        );
+        if (partnerData.partner) {
+          data.session.partner = partnerData.partner;
+        }
+      } catch (partnerError) {
+        console.warn('[Booking API] Could not fetch partner:', partnerError);
+        // Continue without partner data
+      }
+    }
 
     return data.session;
   } catch (error) {
@@ -149,6 +171,7 @@ export async function fetchSessionServer(sessionId: number): Promise<SaunaSessio
 /**
  * Get session details by ID (client-side)
  * Cached for 5 minutes in localStorage
+ * WDA-986: Now uses two-query pattern to avoid ACF partner field 500 error
  *
  * @param sessionId - WordPress post ID
  */
@@ -167,10 +190,27 @@ export async function getSession(sessionId: number): Promise<SaunaSession | null
       { sessionId: String(sessionId) }
     );
 
-    if (data.session) {
-      setCachedData(cacheKey, data.session);
+    if (!data.session) {
+      return null;
     }
 
+    // WDA-986: Fetch partner separately if sauwaPartnerId exists
+    if (data.session.sauwaPartnerId) {
+      try {
+        const partnerData = await graphqlFetch<PartnerResponse>(
+          BOOKING_QUERIES.GET_PARTNER,
+          { partnerId: String(data.session.sauwaPartnerId) }
+        );
+        if (partnerData.partner) {
+          data.session.partner = partnerData.partner;
+        }
+      } catch (partnerError) {
+        console.warn('[Booking API] Could not fetch partner:', partnerError);
+        // Continue without partner data
+      }
+    }
+
+    setCachedData(cacheKey, data.session);
     return data.session;
   } catch (error) {
     console.error('[Booking API] getSession error:', error);

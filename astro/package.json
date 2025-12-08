@@ -10,7 +10,16 @@
     "astro": "astro",
     "type-check": "astro check",
     "lint": "eslint . --ext .js,.ts,.astro",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "playwright test",
+    "test:smoke": "playwright test tests/e2e-smoke.spec.ts",
+    "test:booking": "playwright test tests/e2e-booking-*.spec.ts",
+    "test:locale": "playwright test tests/e2e-multi-locale.spec.ts",
+    "test:mobile": "playwright test tests/e2e-cross-browser.spec.ts --project=mobile-chrome --project=mobile-safari",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report test-results/html"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.5",

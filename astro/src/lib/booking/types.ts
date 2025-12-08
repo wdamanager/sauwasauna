@@ -44,14 +44,17 @@ export interface FeaturedImage {
 /**
  * Sauna session from WordPress CPT
  * GraphQL query: saunaSession
+ * WDA-986: Added sauwaPartnerId for two-query pattern (partner queried separately)
  */
 export interface SaunaSession {
   databaseId: number;
   title: string;
   content?: string;
   slug?: string;
+  sauwaPartnerId?: number | null;
   featuredImage?: FeaturedImage | null;
   sessionDetails: SessionDetails;
+  partner?: SessionPartner | null;
 }
 
 /**
@@ -105,8 +108,7 @@ export interface SessionDetails {
   tituloEn?: string | null;
   sessionSubtitleEn?: string | null;
   sessionDescriptionEn?: string | null;
-  /** Partner hosting this session (ACF Edge - direct node access) */
-  partner: PartnerEdge | null;
+  /** WDA-986: Partner field removed - use sauwaPartnerId on parent SaunaSession instead */
 }
 
 /**
@@ -135,6 +137,14 @@ export interface ExtendedSessionDetails extends SessionDetails {
  */
 export interface SessionResponse {
   session: SaunaSession | null;
+}
+
+/**
+ * GraphQL response wrapper for partner query
+ * WDA-986: Added for two-query pattern
+ */
+export interface PartnerResponse {
+  partner: SessionPartner | null;
 }
 
 // =============================================================================

@@ -44,6 +44,7 @@ export const BOOKING_QUERIES = {
    *
    * Note: Query name is "session" (not "saunaSession") per schema
    * SessionDetails fields: sessionDuration, sessionCapacity, sessionPrice, sessionDescription
+   * WDA-986: Removed nested partner field (causes 500 error), use sauwaPartnerId instead
    */
   GET_SESSION: `
     query GetSession($sessionId: ID!) {
@@ -52,6 +53,7 @@ export const BOOKING_QUERIES = {
         title
         content
         slug
+        sauwaPartnerId
         featuredImage {
           node {
             sourceUrl
@@ -77,27 +79,32 @@ export const BOOKING_QUERIES = {
           tituloEn
           sessionSubtitleEn
           sessionDescriptionEn
-          partner {
-            node {
-              ... on Partner {
-                databaseId
-                title
-                slug
-                partnerInformation {
-                  partnerAddress
-                  partnerPhone
-                  partnerEmail
-                  partnerWeb
-                  partnerActive
-                }
-                featuredImage {
-                  node {
-                    sourceUrl
-                    altText
-                  }
-                }
-              }
-            }
+        }
+      }
+    }
+  `,
+
+  /**
+   * Get partner by ID
+   * WDA-986: Separate query for partner data (two-query pattern)
+   */
+  GET_PARTNER: `
+    query GetPartner($partnerId: ID!) {
+      partner(id: $partnerId, idType: DATABASE_ID) {
+        databaseId
+        title
+        slug
+        partnerInformation {
+          partnerAddress
+          partnerPhone
+          partnerEmail
+          partnerWeb
+          partnerActive
+        }
+        featuredImage {
+          node {
+            sourceUrl
+            altText
           }
         }
       }
