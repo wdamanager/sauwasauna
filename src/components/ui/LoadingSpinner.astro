@@ -1,0 +1,100 @@
+---
+/**
+ * LoadingSpinner Component - WDA-963
+ * Simple loading spinner for async operations
+ */
+
+export interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+}
+
+const { size = 'md', class: className = '' } = Astro.props;
+
+const sizeMap = {
+  sm: '24px',
+  md: '48px',
+  lg: '64px',
+};
+---
+
+<div class={`loading-spinner ${className}`} role="status" aria-live="polite" aria-label="Cargando...">
+  <svg
+    class="spinner-svg"
+    width={sizeMap[size]}
+    height={sizeMap[size]}
+    viewBox="0 0 50 50"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle
+      class="spinner-circle"
+      cx="25"
+      cy="25"
+      r="20"
+      fill="none"
+      stroke-width="4"
+    />
+  </svg>
+  <span class="sr-only">Cargando...</span>
+</div>
+
+<style>
+  .loading-spinner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .spinner-svg {
+    animation: rotate 1s linear infinite;
+  }
+
+  .spinner-circle {
+    stroke: var(--color-primary);
+    stroke-linecap: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 25;
+    animation: dash 1.5s ease-in-out infinite;
+  }
+
+  @keyframes rotate {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes dash {
+    0% {
+      stroke-dasharray: 1, 150;
+      stroke-dashoffset: 0;
+    }
+    50% {
+      stroke-dasharray: 90, 150;
+      stroke-dashoffset: -35;
+    }
+    100% {
+      stroke-dasharray: 90, 150;
+      stroke-dashoffset: -124;
+    }
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .spinner-svg,
+    .spinner-circle {
+      animation: none;
+    }
+  }
+</style>

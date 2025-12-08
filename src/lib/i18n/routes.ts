@@ -45,6 +45,22 @@ export const ROUTE_TRANSLATIONS: Record<string, Record<Locale, string>> = {
     fr: '/blog/',
   },
 
+  // WDA-963: Partner detail pages
+  'partner-detail': {
+    es: '/socio/',
+    ca: '/soci/',
+    en: '/partner/',
+    fr: '/partenaire/',
+  },
+
+  // WDA-963: Session detail pages
+  'session-detail': {
+    es: '/sesion/',
+    ca: '/sessio/',
+    en: '/session/',
+    fr: '/seance/',
+  },
+
   // Legal pages - WDA-556: Translated slugs per language
   'aviso-legal': {
     es: '/aviso-legal/',

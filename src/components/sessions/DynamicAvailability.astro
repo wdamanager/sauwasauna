@@ -1,0 +1,290 @@
+---
+/**
+ * DynamicAvailability Component - WDA-963
+ * Real-time availability badge with ARIA live region
+ * Updates every 30 seconds via client-side fetch
+ */
+
+import type { InventoryStatus } from '../../lib/types/sessions';
+import type { Locale } from '../../lib/types/blog';
+
+export interface Props {
+  sessionId: string;
+  initialAvailable: number;
+  initialTotal: number;
+  initialStatus: InventoryStatus;
+  locale?: Locale;
+  class?: string;
+}
+
+const {
+  sessionId,
+  initialAvailable,
+  initialTotal,
+  initialStatus,
+  locale = 'es',
+  class: className = '',
+} = Astro.props;
+
+// i18n labels
+const labels = {
+  es: {
+    available: 'Plazas disponibles',
+    limited: 'Últimas plazas',
+    soldout: 'Agotado',
+    of: 'de',
+  },
+  ca: {
+    available: 'Places disponibles',
+    limited: 'Últimes places',
+    soldout: 'Exhaurit',
+    of: 'de',
+  },
+  en: {
+    available: 'Spots available',
+    limited: 'Last spots',
+    soldout: 'Sold out',
+    of: 'of',
+  },
+  fr: {
+    available: 'Places disponibles',
+    limited: 'Dernières places',
+    soldout: 'Complet',
+    of: 'sur',
+  },
+};
+
+const t = labels[locale];
+---
+
+<div
+  class={`availability-badge ${className}`}
+  data-session-id={sessionId}
+  data-status={initialStatus}
+  role="status"
+  aria-live="polite"
+  aria-atomic="true"
+>
+  <span class="status-icon" aria-hidden="true"></span>
+  <span class="status-text">
+    <strong class="available-count">{initialAvailable}</strong>
+    <span class="total-text">/ {initialTotal} {t.available}</span>
+  </span>
+</div>
+
+<style>
+  .availability-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-base);
+    font-family: var(--font-family-primary);
+    font-size: var(--font-scale-sm);
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition-base);
+  }
+
+  /* Status: available (green) */
+  .availability-badge[data-status="available"] {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--color-success);
+  }
+
+  .availability-badge[data-status="available"] .status-icon {
+    background-color: var(--color-success);
+  }
+
+  /* Status: limited (warning orange) */
+  .availability-badge[data-status="limited"] {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: var(--color-warning);
+  }
+
+  .availability-badge[data-status="limited"] .status-icon {
+    background-color: var(--color-warning);
+  }
+
+  /* Status: soldout (grey) */
+  .availability-badge[data-status="soldout"] {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--color-text-tertiary);
+  }
+
+  .availability-badge[data-status="soldout"] .status-icon {
+    background-color: var(--color-text-tertiary);
+  }
+
+  /* Status icon (circle) */
+  .status-icon {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Status text */
+  .status-text {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-1);
+  }
+
+  .available-count {
+    font-size: var(--font-scale-md);
+  }
+
+  .total-text {
+    font-weight: var(--font-weight-regular);
+    opacity: 0.8;
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 767px) {
+    .availability-badge {
+      font-size: var(--font-scale-xs);
+      padding: var(--spacing-2) var(--spacing-3);
+    }
+
+    .available-count {
+      font-size: var(--font-scale-base);
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Client-side hydration for real-time availability updates
+   * Fetches fresh data every 30 seconds
+   */
+
+  interface SessionRealtimeData {
+    id: string;
+    inventory: {
+      available: number;
+      total: number;
+      status: 'available' | 'limited' | 'soldout';
+    };
+    paymentInfo: {
+      canPurchase: boolean;
+      saleStatus: 'open' | 'closed' | 'coming_soon';
+    };
+  }
+
+  class AvailabilityBadge extends HTMLElement {
+    private sessionId: string;
+    private intervalId: number | null = null;
+    private readonly GRAPHQL_URL = import.meta.env.PUBLIC_WORDPRESS_GRAPHQL_URL || 'https://backend.sauwasauna.com/graphql';
+    private readonly UPDATE_INTERVAL = 30000; // 30 seconds
+
+    constructor() {
+      super();
+      this.sessionId = this.dataset.sessionId || '';
+    }
+
+    connectedCallback() {
+      if (!this.sessionId) {
+        console.warn('[AvailabilityBadge] No session ID provided');
+        return;
+      }
+
+      // Initial update on page load
+      this.updateAvailability();
+
+      // Set up interval for updates
+      this.intervalId = window.setInterval(() => {
+        this.updateAvailability();
+      }, this.UPDATE_INTERVAL);
+    }
+
+    disconnectedCallback() {
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+      }
+    }
+
+    private async updateAvailability(): Promise<void> {
+      try {
+        const data = await this.fetchSessionData();
+
+        if (!data) {
+          console.warn('[AvailabilityBadge] No data returned');
+          return;
+        }
+
+        this.updateUI(data);
+      } catch (error) {
+        console.error('[AvailabilityBadge] Update failed:', error);
+        // Fail silently - keep showing static data
+      }
+    }
+
+    private async fetchSessionData(): Promise<SessionRealtimeData | null> {
+      const query = `
+        query GetSessionRealtime($id: ID!) {
+          sauwaSession(id: $id, idType: DATABASE_ID) {
+            id
+            inventory {
+              available
+              total
+              status
+            }
+            paymentInfo {
+              canPurchase
+              saleStatus
+            }
+          }
+        }
+      `;
+
+      const response = await fetch(this.GRAPHQL_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query,
+          variables: { id: this.sessionId },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`GraphQL request failed: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.errors) {
+        throw new Error(`GraphQL errors: ${result.errors[0].message}`);
+      }
+
+      return result.data?.sauwaSession || null;
+    }
+
+    private updateUI(data: SessionRealtimeData): void {
+      const availableCount = this.querySelector('.available-count');
+      const currentStatus = this.dataset.status;
+
+      // Update availability count
+      if (availableCount && availableCount.textContent !== String(data.inventory.available)) {
+        availableCount.textContent = String(data.inventory.available);
+      }
+
+      // Update status if changed
+      if (currentStatus !== data.inventory.status) {
+        this.dataset.status = data.inventory.status;
+      }
+
+      // Dispatch custom event for other components (e.g., BookingWidget)
+      this.dispatchEvent(
+        new CustomEvent('availabilityUpdate', {
+          detail: data,
+          bubbles: true,
+        })
+      );
+    }
+  }
+
+  // Register custom element
+  if (!customElements.get('availability-badge')) {
+    customElements.define('availability-badge', AvailabilityBadge);
+  }
+</script>

@@ -1,0 +1,235 @@
+---
+/**
+ * SessionCard Component - WDA-963
+ * Card component for session display with dynamic availability
+ */
+
+import type { Session } from '../../lib/types/sessions';
+import type { Locale } from '../../lib/types/blog';
+import { getSessionTranslation, formatPrice, formatDateTime } from '../../lib/types/sessions';
+import DynamicAvailability from './DynamicAvailability.astro';
+
+export interface Props {
+  session: Session;
+  partnerSlug: string;
+  locale?: Locale;
+  class?: string;
+}
+
+const { session, partnerSlug, locale = 'es', class: className = '' } = Astro.props;
+
+const translation = getSessionTranslation(session, locale);
+const sessionSlug = translation?.slug || session.slug;
+
+// Build session URL
+const sessionUrl = `/${locale}/${partnerSlug}/${sessionSlug}/`;
+
+// Format data
+const formattedPrice = formatPrice(session.paymentInfo.price, session.paymentInfo.currency, locale);
+const formattedDate = formatDateTime(session.schedule.startDate, locale);
+
+// i18n labels
+const labels = {
+  es: {
+    bookNow: 'Reservar ahora',
+    viewDetails: 'Ver detalles',
+    duration: 'Duración',
+    minutes: 'min',
+  },
+  ca: {
+    bookNow: 'Reservar ara',
+    viewDetails: 'Veure detalls',
+    duration: 'Durada',
+    minutes: 'min',
+  },
+  en: {
+    bookNow: 'Book now',
+    viewDetails: 'View details',
+    duration: 'Duration',
+    minutes: 'min',
+  },
+  fr: {
+    bookNow: 'Réserver maintenant',
+    viewDetails: 'Voir détails',
+    duration: 'Durée',
+    minutes: 'min',
+  },
+};
+
+const t = labels[locale];
+---
+
+<article class={`session-card ${className}`} data-session-id={session.id}>
+  <a href={sessionUrl} class="card-link">
+    {/* Featured Image */}
+    {session.featuredImage && (
+      <div class="card-image">
+        <img
+          src={session.featuredImage.sourceUrl}
+          alt={session.featuredImage.altText || translation?.title || 'Session'}
+          loading="lazy"
+          width={session.featuredImage.mediaDetails?.width || 600}
+          height={session.featuredImage.mediaDetails?.height || 400}
+        />
+      </div>
+    )}
+
+    {/* Card Content */}
+    <div class="card-content">
+      {/* Title */}
+      <h3 class="card-title">{translation?.title || 'Session'}</h3>
+
+      {/* Date & Time */}
+      <p class="card-date">{formattedDate}</p>
+
+      {/* Price & Duration */}
+      <div class="card-meta">
+        <span class="card-price">{formattedPrice}</span>
+        <span class="card-duration">
+          {session.schedule.duration} {t.minutes}
+        </span>
+      </div>
+
+      {/* Dynamic Availability */}
+      <DynamicAvailability
+        sessionId={session.id}
+        initialAvailable={session.inventory.available}
+        initialTotal={session.inventory.total}
+        initialStatus={session.inventory.status}
+        locale={locale}
+        class="card-availability"
+      />
+    </div>
+  </a>
+</article>
+
+<style>
+  .session-card {
+    position: relative;
+    background: var(--color-bg-white);
+    border-radius: var(--radius-base);
+    overflow: hidden;
+    box-shadow: var(--shadow-base);
+    transition: var(--transition-base);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .session-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Image */
+  .card-image {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: var(--color-bg-light);
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease-out;
+  }
+
+  .session-card:hover .card-image img {
+    transform: scale(1.05);
+  }
+
+  /* Content */
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding: var(--spacing-5);
+    flex-grow: 1;
+  }
+
+  /* Title */
+  .card-title {
+    font-family: var(--font-family-secondary);
+    font-size: var(--font-scale-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--line-height-tight);
+  }
+
+  /* Date */
+  .card-date {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-scale-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  /* Meta (Price & Duration) */
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--spacing-2);
+    border-top: 1px solid var(--border-color-base);
+  }
+
+  .card-price {
+    font-size: var(--font-scale-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+  }
+
+  .card-duration {
+    font-size: var(--font-scale-sm);
+    color: var(--color-text-tertiary);
+  }
+
+  /* Availability */
+  .card-availability {
+    margin-top: auto;
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 767px) {
+    .card-image {
+      height: 180px;
+    }
+
+    .card-content {
+      padding: var(--spacing-4);
+      gap: var(--spacing-2);
+    }
+
+    .card-title {
+      font-size: var(--font-scale-base);
+    }
+  }
+
+  /* Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .session-card,
+    .card-image img {
+      transition: none;
+    }
+
+    .session-card:hover {
+      transform: none;
+    }
+
+    .session-card:hover .card-image img {
+      transform: none;
+    }
+  }
+</style>
