@@ -23,6 +23,34 @@
 - Client-side JS queries GraphQL for dynamic content
 - Same server hosts both WP and Astro build
 
+### Dynamic Content System (WDA-990)
+Sistema híbrido SSG + Client Hydration para contenido sin rebuild:
+
+```
+BUILD TIME (SSG):
+├── Páginas con datos iniciales de WordPress
+├── Script de hidratación incluido
+└── Hash de contenido para change detection
+
+RUNTIME (Browser):
+├── Mostrar SSG inmediatamente (SEO ✓)
+├── Fetch datos frescos de GraphQL
+├── Comparar hash → Actualizar si cambió
+└── Cache 5 min en cliente
+
+CATCH-ALL (URLs nuevas post-build):
+├── .htaccess rewrite → /[locale]/dynamic/
+└── Validar slug via GraphQL → Cargar o 404
+```
+
+**Core Files:**
+- `src/lib/dynamic-content-client.ts` - Cliente JS con cache y change detection
+- `src/lib/dynamic-queries.ts` - Queries GraphQL para partners/sessions
+- `src/lib/dynamic-renderers.ts` - Funciones DOM update
+- `src/components/core/DynamicContent.astro` - Wrapper SSG + Hydration
+- `src/components/core/DynamicPageLoader.astro` - Loader catch-all
+- `src/components/core/skeletons/` - Skeleton components
+
 ## Key Features
 
 ### 🌐 Experiencia Multiidioma
@@ -91,13 +119,17 @@
 Hito: 1-2 (26 Sep - 5 Oct)
 Estado Epic: In Progress
 
-HISTORIA en Progreso:
-Landing Page Multiidioma con Newsletter (WDA-65)
-Estado: In Progress
+## Recent Completed
+
+- **WDA-990**: Sistema de contenido dinámico SSG + Client Hydration (2025-12-08)
+  - Nuevo partner/sesión accesible sin rebuild
+  - Cambios visibles en < 5 min
+  - Funciona en hosting sin Node.js
 
 ## Next Actions
 
- WDA-294: Correcciones landing
+- Test en staging: crear partner/sesión nuevo y verificar acceso sin rebuild
+- WDA-294: Correcciones landing
 
 ## Project Documentation
 

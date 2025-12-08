@@ -20,6 +20,7 @@ A modern, fast, and SEO-optimized template for building headless WordPress sites
 - 🔧 ESLint + Prettier configured
 - 🌐 WordPress GraphQL integration
 - 🎭 Component-based architecture
+- 🔄 **Dynamic Content System** - SSG + Client Hydration for content updates without rebuild
 
 ## 🚀 Quick Start
 
@@ -65,13 +66,21 @@ A modern, fast, and SEO-optimized template for building headless WordPress sites
 ├── public/              # Static assets
 ├── src/
 │   ├── components/      # Reusable components
+│   │   ├── core/        # Dynamic content system (WDA-990)
+│   │   │   ├── DynamicContent.astro
+│   │   │   ├── DynamicPageLoader.astro
+│   │   │   └── skeletons/
 │   │   ├── layout/      # Layout components (Header, Footer)
 │   │   └── ui/          # UI components
 │   ├── layouts/         # Page layouts
 │   ├── lib/            # Utilities and helpers
 │   │   ├── graphql.ts  # GraphQL client
+│   │   ├── dynamic-content-client.ts  # Client-side hydration
+│   │   ├── dynamic-queries.ts         # Dynamic GraphQL queries
+│   │   ├── dynamic-renderers.ts       # DOM update functions
 │   │   └── types.ts    # TypeScript types
 │   ├── pages/          # File-based routing
+│   │   └── [locale]/dynamic/  # Catch-all for new content
 │   ├── styles/         # Global styles
 │   └── env.d.ts        # Environment types
 ├── .env.example        # Environment variables template

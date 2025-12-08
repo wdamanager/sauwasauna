@@ -13,6 +13,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Asistente IA 24/7
 - Panel de gestión completo
 
+## [0.10.0] - 2025-12-08
+
+### Added
+- **WDA-990: Sistema de Contenido Dinámico SSG + Client Hydration**
+  - Arquitectura híbrida para contenido sin rebuild en hosting estático
+  - Nuevo partner/sesión accesible inmediatamente sin rebuild
+  - Cambios de contenido visibles en < 5 minutos (cache TTL)
+  - SEO no afectado (SSG para crawlers)
+
+- **Core Components**:
+  - `src/lib/dynamic-content-client.ts` - Cliente JS con cache 5min, retry logic, change detection via hash
+  - `src/lib/dynamic-queries.ts` - Queries GraphQL optimizadas para partners/sessions
+  - `src/lib/dynamic-renderers.ts` - Funciones para actualizar DOM selectivamente
+  - `src/components/core/DynamicContent.astro` - Wrapper SSG + Client Hydration
+  - `src/components/core/DynamicPageLoader.astro` - Loader para catch-all routing
+  - `src/components/core/skeletons/PartnerSkeleton.astro` - Skeleton loading partner
+  - `src/components/core/skeletons/SessionSkeleton.astro` - Skeleton loading session
+
+- **Catch-All Routing**:
+  - `src/pages/[locale]/dynamic/partner.astro` - Carga partners nuevos sin rebuild (4 idiomas)
+  - `src/pages/[locale]/dynamic/session.astro` - Carga sessions nuevas sin rebuild (4 idiomas)
+  - `src/pages/404.astro` - Página 404 mejorada con i18n
+  - `public/.htaccess` - Reglas de rewrite para redirigir URLs no existentes
+
+### Changed
+- **Partner Page Migration** (`src/pages/[locale]/[partnerSlug]/index.astro`):
+  - Envuelto con `DynamicContent` wrapper
+  - Atributos `data-dynamic` para actualización selectiva de DOM
+  - Hash de contenido para change detection
+
+- **Session Page Migration** (`src/pages/[locale]/[partnerSlug]/[sessionSlug]/index.astro`):
+  - Envuelto con `DynamicContent` wrapper
+  - Atributos `data-dynamic` para actualización selectiva de DOM
+  - Hash de contenido para change detection
+
+### Technical
+- **Arquitectura**:
+  ```
+  BUILD TIME (SSG):
+  ├── Páginas con datos iniciales de WordPress
+  ├── Script de hidratación incluido
+  └── Hash de contenido para change detection
+
+  RUNTIME (Browser):
+  ├── Mostrar SSG inmediatamente (SEO ✓)
+  ├── Fetch datos frescos de GraphQL
+  ├── Comparar hash → Actualizar si cambió
+  └── Cache 5 min en cliente
+
+  CATCH-ALL (URLs nuevas):
+  ├── .htaccess rewrite → /dynamic/
+  └── Validar slug → Cargar o 404
+  ```
+
+- **Features implementados**:
+  - Cache de 5 minutos con TTL
+  - Retry logic (2 intentos con 1s delay)
+  - Change detection via hash comparison
+  - Event system para debugging (`content:loading`, `content:loaded`, etc.)
+  - Soporte View Transitions API de Astro
+  - URL cleanup con `history.replaceState`
+
+- **Archivos creados**: 16 nuevos
+- **Archivos modificados**: 3
+- **Build**: 147 páginas en ~26s
+
 ### Known Issues (WDA-910, WDA-911, WDA-912, WDA-913)
 - Email de asistentes adicionales debería ser opcional (WDA-910)
 - Cálculo de capacidad no cuenta el contacto principal (WDA-911)
