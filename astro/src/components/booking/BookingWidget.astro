@@ -981,6 +981,15 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
     display: none;
   }
 
+  /* WDA-1003: Generic hidden class for voucher flow elements */
+  .progress-step.hidden,
+  .progress-connector.hidden,
+  .back-button.hidden,
+  .selection-summary.hidden,
+  .attendees-section.hidden {
+    display: none !important;
+  }
+
   .session-type-info[data-session-type="pack"] {
     background: #eff6ff;
     border-color: #3b82f6;
@@ -2370,17 +2379,48 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       const infoBanner = this.widget.querySelector('.session-type-info');
       const infoBannerText = this.widget.querySelector('.session-type-text');
 
-      // Hide calendar for voucher purchases
+      // Hide calendar for voucher purchases - vouchers don't need date/time selection
       if (sessionType === 'voucher') {
+        // Hide calendar and slots steps
         const calendarStep = this.widget.querySelector('[data-step="calendar"]');
         const slotsStep = this.widget.querySelector('[data-step="slots"]');
         calendarStep?.classList.add('hidden');
         slotsStep?.classList.add('hidden');
-        // Update progress to skip calendar/slots steps
+
+        // Hide progress indicators for calendar/slots (steps 1 and 2)
         const calendarProgress = this.widget.querySelector('[data-step-index="0"]');
         const slotsProgress = this.widget.querySelector('[data-step-index="1"]');
+        const connector1 = calendarProgress?.nextElementSibling;
+        const connector2 = slotsProgress?.nextElementSibling;
         calendarProgress?.classList.add('hidden');
         slotsProgress?.classList.add('hidden');
+        connector1?.classList.add('hidden');
+        connector2?.classList.add('hidden');
+
+        // Hide "Cambiar horario" button - vouchers don't have time slots
+        const changeSlotBtn = this.widget.querySelector('[data-action="back-to-slots"]');
+        changeSlotBtn?.classList.add('hidden');
+
+        // Hide selection summary (date/time) - not applicable for vouchers
+        const selectionSummary = this.widget.querySelector('.selection-summary');
+        selectionSummary?.classList.add('hidden');
+
+        // Hide attendees section - vouchers are purchased, not attended
+        const attendeesSection = this.widget.querySelector('.attendees-section');
+        attendeesSection?.classList.add('hidden');
+
+        // Renumber visible progress steps (form becomes step 1, confirmation step 2)
+        const formProgress = this.widget.querySelector('[data-step-index="2"]');
+        const confirmProgress = this.widget.querySelector('[data-step-index="3"]');
+        if (formProgress) {
+          const stepNumber = formProgress.querySelector('.step-number');
+          if (stepNumber) stepNumber.textContent = '1';
+        }
+        if (confirmProgress) {
+          const stepNumber = confirmProgress.querySelector('.step-number');
+          if (stepNumber) stepNumber.textContent = '2';
+        }
+
         // Show form directly
         this.showStep('form');
       }
