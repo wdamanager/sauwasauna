@@ -13,6 +13,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Asistente IA 24/7
 - Panel de gestión completo
 
+## [0.11.0] - 2025-12-08
+
+### Added - Epic WDA-1001: Flujos de Reserva Diferenciados
+
+- **WDA-1002: Flujo Pack**
+  - Contador de asistentes fijo (N/N) según `included_persons`
+  - Campos de asistente pre-creados al seleccionar slot
+  - Botón "Añadir asistente" oculto para packs
+  - Validación: todos los nombres de asistente requeridos
+
+- **WDA-1003: Flujo Voucher (Compra)**
+  - Visualización de códigos generados en confirmación
+  - Sección `.voucher-codes-section` con copy-to-clipboard
+  - Integración con `voucher_codes` del backend
+  - Traducciones ES/CA/EN/FR
+
+- **WDA-1004: Flujo Private**
+  - Solo muestra slots con 100% disponibilidad
+  - Estilo visual diferenciado (púrpura)
+  - Texto "Uso exclusivo" en lugar de conteo de plazas
+  - Estado vacío específico para sesiones privadas
+
+- **WDA-1005: Páginas Voucher Redemption Multi-idioma**
+  - `/ca/bescanviar-bo/` - Catalán
+  - `/en/redeem-voucher/` - Inglés (actualizado)
+  - `/fr/echanger-bon/` - Francés
+  - Estructura consistente con página ES existente
+
+- **WDA-1006: Calendario Visual VoucherRedemptionFlow**
+  - Navegación mes anterior/siguiente
+  - Grid de días con estados de disponibilidad
+  - Indicador visual (punto verde) para días disponibles
+  - Integración con `getAvailableDates()` API
+  - Reemplaza date picker básico
+
+- **WDA-1007: Tests E2E**
+  - `e2e-booking-pack.spec.ts` (4 tests)
+    - TC-014: Contador fijo de asistentes
+    - TC-015: Campos pre-poblados
+    - TC-016: Validación de formulario
+    - TC-016B: Todos los campos requeridos
+  - `e2e-voucher-redemption.spec.ts` (6 tests)
+    - TC-017 a TC-022: Validación, calendario, multi-idioma
+
+### Changed
+- `BookingWidget.astro`: +400 líneas para flujos Pack/Voucher/Private
+- `VoucherRedemptionFlow.astro`: +370 líneas para calendario visual
+- `types.ts`: Añadido `voucher_codes?: string[]` a `CreateBookingResponse`
+
+### Tests
+- 17 tests E2E pasados (Chromium)
+- Cobertura: Single, Pack, Private, Voucher Redemption
+
 ## [0.10.0] - 2025-12-08
 
 ### Added
