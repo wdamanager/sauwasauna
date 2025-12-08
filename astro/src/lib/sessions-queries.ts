@@ -612,6 +612,7 @@ export const GET_PUBLIC_SESSIONS_QUERY = `
       includedPersons
       requiresFullCapacity
       availabilityStatus
+      duration
       featuredImage {
         sourceUrl
         altText
@@ -668,6 +669,7 @@ interface SauwaPublicSession {
   includedPersons?: number;
   requiresFullCapacity: boolean;
   availabilityStatus: 'active' | 'no_future_dates';
+  duration?: number;
   featuredImage?: {
     sourceUrl: string;
     altText?: string;
@@ -736,7 +738,7 @@ function transformPublicSession(session: SauwaPublicSession): SessionData {
     databaseId: session.databaseId,
     slug: session.slug,
     title: session.title,
-    duration: 90, // Default, would need to be added to GraphQL if needed
+    duration: session.duration || 90, // WDA-1008: Dynamic from GraphQL, fallback to 90
     capacity: session.inventory?.capacity || 6,
     price: session.inventory ? session.inventory.priceCents / 100 : 0,
     // WDA-998: Session type categorization
