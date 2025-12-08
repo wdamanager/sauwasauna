@@ -127,6 +127,9 @@ const translations = {
     // WDA-1002: Pack slot capacity
     insufficientForPack: 'Mín. {n} plazas requeridas',
     noPackSlots: 'No hay horarios con {n} plazas disponibles',
+    // WDA-1004: Private sessions
+    privateExclusive: 'Uso exclusivo',
+    noPrivateSlots: 'No hay horarios con disponibilidad exclusiva para esta fecha',
   },
   ca: {
     selectDate: 'Selecciona una data',
@@ -222,6 +225,9 @@ const translations = {
     // WDA-1002: Pack slot capacity
     insufficientForPack: 'Mín. {n} places requerides',
     noPackSlots: 'No hi ha horaris amb {n} places disponibles',
+    // WDA-1004: Private sessions
+    privateExclusive: 'Ús exclusiu',
+    noPrivateSlots: 'No hi ha horaris amb disponibilitat exclusiva per aquesta data',
   },
   en: {
     selectDate: 'Select a date',
@@ -317,6 +323,9 @@ const translations = {
     // WDA-1002: Pack slot capacity
     insufficientForPack: 'Min. {n} spots required',
     noPackSlots: 'No time slots with {n} spots available',
+    // WDA-1004: Private sessions
+    privateExclusive: 'Exclusive use',
+    noPrivateSlots: 'No time slots with exclusive availability for this date',
   },
   fr: {
     selectDate: 'Sélectionnez une date',
@@ -412,6 +421,9 @@ const translations = {
     // WDA-1002: Pack slot capacity
     insufficientForPack: 'Min. {n} places requises',
     noPackSlots: 'Aucun horaire avec {n} places disponibles',
+    // WDA-1004: Private sessions
+    privateExclusive: 'Usage exclusif',
+    noPrivateSlots: 'Aucun horaire avec disponibilité exclusive pour cette date',
   },
 };
 
@@ -1324,6 +1336,26 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
 
   .slot-capacity.full {
     color: var(--booking-error);
+  }
+
+  /* WDA-1004: Private session slots */
+  .slot-capacity.private {
+    color: #8b5cf6; /* Purple for exclusive */
+    font-weight: 600;
+  }
+
+  .time-slot.private-slot {
+    border-color: #8b5cf6;
+  }
+
+  .time-slot.private-slot:hover:not(.disabled) {
+    border-color: #7c3aed;
+    background: rgba(139, 92, 246, 0.05);
+  }
+
+  .time-slot.private-slot.selected {
+    border-color: #7c3aed;
+    background: rgba(139, 92, 246, 0.1);
   }
 
   /* ============================================
@@ -2602,11 +2634,20 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       // WDA-1002: Filter slots for pack sessions - need enough capacity for all included persons
       const minCapacityRequired = sessionType === 'pack' && includedPersons ? includedPersons : 1;
 
+      // WDA-1004: For private sessions, only show slots with 100% availability
+      const isPrivate = sessionType === 'private';
+
       let html = '';
       let hasAvailableSlots = false;
+      let renderedSlotIndex = 0;
 
-      daySlots.forEach((slot, index) => {
+      daySlots.forEach((slot, originalIndex) => {
         const slotStatus = slot.status.toLowerCase();
+
+        // WDA-1004: Skip slots that are not 100% available for private sessions
+        if (isPrivate && slot.capacity.available !== slot.capacity.maximum) {
+          return; // Skip this slot entirely - don't render it
+        }
 
         // WDA-1002: For packs, also disable slots without enough capacity
         const insufficientCapacity = slot.capacity.available < minCapacityRequired;
@@ -2619,6 +2660,7 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         const classes = ['time-slot'];
         if (isDisabled) classes.push('disabled');
         if (isSelected) classes.push('selected');
+        if (isPrivate) classes.push('private-slot'); // WDA-1004: Add visual distinction
 
         let capacityText = '';
         let capacityClass = '';
@@ -2633,6 +2675,11 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
           // WDA-1002: Show "insufficient capacity" for packs
           capacityText = (translations.insufficientForPack || 'Mín. {n} plazas').replace('{n}', String(minCapacityRequired));
           capacityClass = 'full';
+        } else if (isPrivate) {
+          // WDA-1004: For private sessions, show "Exclusive" instead of spots count
+          hasAvailableSlots = true;
+          capacityText = translations.privateExclusive || 'Uso exclusivo';
+          capacityClass = 'private';
         } else {
           hasAvailableSlots = true;
           const spotWord = slot.capacity.available === 1 ? translations.spot : translations.spots;
@@ -2644,26 +2691,40 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
           <button
             type="button"
             class="${classes.join(' ')}"
-            data-slot-index="${index}"
+            data-slot-index="${originalIndex}"
             ${isDisabled ? 'disabled' : ''}
           >
             <div class="slot-time">${formatTime(slot.startTime)}</div>
             <div class="slot-capacity ${capacityClass}">${capacityText}</div>
           </button>
         `;
+        renderedSlotIndex++;
       });
 
       container.innerHTML = html;
 
-      // WDA-1002: Show empty state if no slots available for pack
+      // Handle empty states for different session types
       const empty = this.widget.querySelector('.slots-empty');
-      if (sessionType === 'pack' && !hasAvailableSlots && daySlots.length > 0) {
-        const emptyText = empty?.querySelector('.slots-empty-text');
+      const emptyText = empty?.querySelector('.slots-empty-text');
+
+      // WDA-1004: Show empty state if no private slots available
+      if (isPrivate && !hasAvailableSlots && daySlots.length > 0) {
+        if (emptyText) {
+          emptyText.textContent = translations.noPrivateSlots || 'No hay horarios con disponibilidad exclusiva';
+        }
+        empty?.classList.remove('hidden');
+        container.classList.add('hidden');
+      }
+      // WDA-1002: Show empty state if no slots available for pack
+      else if (sessionType === 'pack' && !hasAvailableSlots && daySlots.length > 0) {
         if (emptyText) {
           emptyText.textContent = (translations.noPackSlots || 'No hay horarios con {n} plazas disponibles').replace('{n}', String(minCapacityRequired));
         }
         empty?.classList.remove('hidden');
         container.classList.add('hidden');
+      } else {
+        empty?.classList.add('hidden');
+        container.classList.remove('hidden');
       }
 
       // Bind click events
