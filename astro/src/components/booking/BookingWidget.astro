@@ -121,6 +121,9 @@ const translations = {
     voucherCodesTitle: 'Tus códigos de bono',
     groupSize: '¿Cuántas personas vendrán?',
     groupSizeOptional: '(opcional, solo informativo)',
+    // WDA-1002: Pack slot capacity
+    insufficientForPack: 'Mín. {n} plazas requeridas',
+    noPackSlots: 'No hay horarios con {n} plazas disponibles',
   },
   ca: {
     selectDate: 'Selecciona una data',
@@ -210,6 +213,9 @@ const translations = {
     voucherCodesTitle: 'Els teus codis de bo',
     groupSize: 'Quantes persones vindran?',
     groupSizeOptional: '(opcional, només informatiu)',
+    // WDA-1002: Pack slot capacity
+    insufficientForPack: 'Mín. {n} places requerides',
+    noPackSlots: 'No hi ha horaris amb {n} places disponibles',
   },
   en: {
     selectDate: 'Select a date',
@@ -299,6 +305,9 @@ const translations = {
     voucherCodesTitle: 'Your voucher codes',
     groupSize: 'How many people will come?',
     groupSizeOptional: '(optional, informative only)',
+    // WDA-1002: Pack slot capacity
+    insufficientForPack: 'Min. {n} spots required',
+    noPackSlots: 'No time slots with {n} spots available',
   },
   fr: {
     selectDate: 'Sélectionnez une date',
@@ -388,6 +397,9 @@ const translations = {
     voucherCodesTitle: 'Vos codes de bon',
     groupSize: 'Combien de personnes viendront?',
     groupSizeOptional: '(optionnel, informatif uniquement)',
+    // WDA-1002: Pack slot capacity
+    insufficientForPack: 'Min. {n} places requises',
+    noPackSlots: 'Aucun horaire avec {n} places disponibles',
   },
 };
 
@@ -2278,16 +2290,6 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       }
     }
 
-    private initializePackAttendees(count: number): void {
-      // Add (count - 1) more attendees since we already have 1
-      for (let i = 1; i < count; i++) {
-        this.addAttendee();
-      }
-      // Update UI to reflect fixed count
-      this.updateAttendeesCount();
-      this.updateAddAttendeeButton();
-    }
-
     // =========================================
     // CALENDAR
     // =========================================
@@ -2499,15 +2501,22 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       const container = this.widget.querySelector('.slots-container');
       if (!container) return;
 
-      const { daySlots, translations } = this.state;
+      const { daySlots, translations, sessionType, includedPersons } = this.state;
+
+      // WDA-1002: Filter slots for pack sessions - need enough capacity for all included persons
+      const minCapacityRequired = sessionType === 'pack' && includedPersons ? includedPersons : 1;
 
       let html = '';
+      let hasAvailableSlots = false;
 
       daySlots.forEach((slot, index) => {
         const slotStatus = slot.status.toLowerCase();
-        // A slot is disabled if not bookable OR if status is 'full' or 'closed'
-        // 'available' and 'below_minimum' are both bookable states
-        const isDisabled = !slot.bookable || slotStatus === 'full' || slotStatus === 'closed';
+
+        // WDA-1002: For packs, also disable slots without enough capacity
+        const insufficientCapacity = slot.capacity.available < minCapacityRequired;
+
+        // A slot is disabled if not bookable OR if status is 'full' or 'closed' OR insufficient capacity for pack
+        const isDisabled = !slot.bookable || slotStatus === 'full' || slotStatus === 'closed' || insufficientCapacity;
         const isSelected = this.state.selectedSlot?.startTime === slot.startTime;
         const capacityColor = getCapacityColor(slot.capacity);
 
@@ -2524,7 +2533,12 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
         } else if (slotStatus === 'closed') {
           capacityText = translations.closed;
           capacityClass = 'full';
+        } else if (insufficientCapacity && sessionType === 'pack') {
+          // WDA-1002: Show "insufficient capacity" for packs
+          capacityText = (translations.insufficientForPack || 'Mín. {n} plazas').replace('{n}', String(minCapacityRequired));
+          capacityClass = 'full';
         } else {
+          hasAvailableSlots = true;
           const spotWord = slot.capacity.available === 1 ? translations.spot : translations.spots;
           capacityText = `${slot.capacity.available} ${spotWord} ${translations.available}`;
           capacityClass = capacityColor === 'yellow' ? 'low' : '';
@@ -2544,6 +2558,17 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       });
 
       container.innerHTML = html;
+
+      // WDA-1002: Show empty state if no slots available for pack
+      const empty = this.widget.querySelector('.slots-empty');
+      if (sessionType === 'pack' && !hasAvailableSlots && daySlots.length > 0) {
+        const emptyText = empty?.querySelector('.slots-empty-text');
+        if (emptyText) {
+          emptyText.textContent = (translations.noPackSlots || 'No hay horarios con {n} plazas disponibles').replace('{n}', String(minCapacityRequired));
+        }
+        empty?.classList.remove('hidden');
+        container.classList.add('hidden');
+      }
 
       // Bind click events
       container.querySelectorAll('.time-slot:not(.disabled)').forEach((slot) => {
@@ -2569,6 +2594,11 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
 
       // WDA-909: Initialize attendees section with max capacity
       this.initAttendeesSection(slot.capacity.available);
+
+      // WDA-1002: For pack sessions, initialize fixed attendees after base section
+      if (this.state.sessionType === 'pack' && this.state.includedPersons) {
+        this.initializePackAttendees(this.state.includedPersons);
+      }
 
       // WDA-920: Show capacity warning and badge
       this.updateCapacityWarning(slot.capacity.available);
@@ -2654,6 +2684,64 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
 
       // Update button state
       this.updateAddAttendeeButton();
+    }
+
+    // WDA-1002: Initialize fixed attendees for pack sessions
+    private initializePackAttendees(includedPersons: number): void {
+      const { translations, sessionType } = this.state;
+      if (sessionType !== 'pack') return;
+
+      // Set fixed capacity for packs
+      this.state.maxCapacity = includedPersons;
+      this.state.attendeeCount = 1; // Start with main contact
+
+      const list = this.widget.querySelector('.attendees-list');
+      if (!list) return;
+
+      // Clear any existing additional attendees
+      const additionalAttendees = list.querySelectorAll('.attendee-row:not(.main-contact)');
+      additionalAttendees.forEach(row => row.remove());
+
+      // Add remaining attendees (N-1 since main contact is already there)
+      for (let i = 1; i < includedPersons; i++) {
+        const row = document.createElement('div');
+        row.className = 'attendee-row pack-attendee'; // Mark as pack attendee
+        row.setAttribute('data-attendee-index', String(i));
+        row.innerHTML = `
+          <div class="attendee-header">
+            <span class="attendee-number">${translations.attendeeData} ${i + 1}</span>
+          </div>
+          <div class="attendee-fields">
+            <div class="attendee-field">
+              <input
+                type="text"
+                name="attendee_name_${i}"
+                placeholder="${translations.attendeeName}"
+                required
+                class="form-input attendee-name"
+              />
+            </div>
+            <div class="attendee-field">
+              <input
+                type="email"
+                name="attendee_email_${i}"
+                placeholder="${translations.attendeeEmail}"
+                class="form-input attendee-email"
+              />
+            </div>
+          </div>
+        `;
+        list.appendChild(row);
+        this.state.attendeeCount++;
+      }
+
+      // Update displays
+      this.updateAttendeesCount();
+      this.updateAddAttendeeButton();
+      this.updateHiddenAttendeesField();
+
+      // Hide add attendee button for packs (handled in updateAddAttendeeButton)
+      console.log(`[BookingWidget] Pack initialized with ${includedPersons} attendees`);
     }
 
     private addAttendee(): void {
@@ -2755,10 +2843,23 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
 
     private updateAddAttendeeButton(): void {
       const addBtn = this.widget.querySelector('[data-action="add-attendee"]') as HTMLButtonElement;
+      const addBtnContainer = this.widget.querySelector('.add-attendee-container');
       const hint = this.widget.querySelector('.add-attendee-disabled-hint');
       const t = this.state.translations;
 
       if (addBtn) {
+        // WDA-1002: Hide add button entirely for pack sessions (fixed attendees)
+        if (this.state.sessionType === 'pack') {
+          addBtn.classList.add('hidden');
+          addBtnContainer?.classList.add('hidden');
+          hint?.classList.add('hidden');
+          return;
+        }
+
+        // Show button for other session types
+        addBtn.classList.remove('hidden');
+        addBtnContainer?.classList.remove('hidden');
+
         const isDisabled = this.state.attendeeCount >= this.state.maxCapacity;
         addBtn.disabled = isDisabled;
 
