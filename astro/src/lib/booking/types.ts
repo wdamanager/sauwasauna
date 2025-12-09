@@ -284,9 +284,9 @@ export interface BookingAttendee {
 export interface CreateBookingRequest {
   /** Session post ID */
   session_id: number;
-  /** Date in YYYY-MM-DD format */
+  /** Date in YYYY-MM-DD format (empty for voucher purchases) */
   slot_date: string;
-  /** Time in HH:MM format */
+  /** Time in HH:MM format (empty for voucher purchases) */
   slot_time: string;
   /** Array of attendees with name and optional email */
   attendees: BookingAttendee[];
@@ -300,6 +300,8 @@ export interface CreateBookingRequest {
   notes?: string;
   /** Language for confirmation emails (ES, CA, EN, FR) - WDA-941 */
   language?: string;
+  /** WDA-1003: Flag indicating this is a voucher purchase (no date/time selection needed) */
+  is_voucher_purchase?: boolean;
 }
 
 /**

@@ -3173,16 +3173,30 @@ const uniqueId = `booking-${sessionId}-${Date.now()}`;
       // WDA-941: Get language from current locale (uppercase for GraphQL)
       const language = this.state.locale.toUpperCase();
 
+      // WDA-1003: Vouchers don't have date/slot selection - they are purchased for future redemption
+      const isVoucherPurchase = this.state.sessionType === 'voucher';
+
+      // Backend requires date/time even for vouchers (since v1.5.0)
+      // For vouchers, send placeholder values - the is_voucher_purchase flag tells backend not to reserve inventory
+      const getPlaceholderDate = () => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow.toISOString().split('T')[0]; // YYYY-MM-DD
+      };
+
       const bookingData: CreateBookingRequest = {
         session_id: this.state.sessionId,
-        slot_date: this.state.selectedDate!,
-        slot_time: formatTime(this.state.selectedSlot!.startTime),
+        // For vouchers: placeholder date/time (actual redemption date chosen later)
+        slot_date: isVoucherPurchase ? getPlaceholderDate() : this.state.selectedDate!,
+        slot_time: isVoucherPurchase ? '10:00' : formatTime(this.state.selectedSlot!.startTime),
         attendees: attendees,
         customer_name: mainContact.name,
         customer_email: formData.get('customer_email') as string,
         customer_phone: formData.get('customer_phone') as string || undefined,
         notes: notes || undefined,
         language: language, // WDA-941: ES, CA, EN, FR
+        // WDA-1003: Mark as voucher purchase for backend to generate voucher codes
+        is_voucher_purchase: isVoucherPurchase,
       };
 
       try {
